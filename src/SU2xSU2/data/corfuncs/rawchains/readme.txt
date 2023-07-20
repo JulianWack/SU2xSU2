@@ -1,0 +1,1 @@
+Location to store raw chains for simulations at different L and beta to compute the correlation function for.

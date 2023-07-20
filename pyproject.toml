@@ -18,6 +18,6 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
 ]
 
-# [project.urls]
-# Repository = " "
+[project.urls]
+Repository = "https://github.com/JulianWack/SU2xSU2"
 # Documentation = " "

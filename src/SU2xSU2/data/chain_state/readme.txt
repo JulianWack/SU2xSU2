@@ -1,0 +1,1 @@
+Location to store the state of the random number generator allowing to resume previous runs.
