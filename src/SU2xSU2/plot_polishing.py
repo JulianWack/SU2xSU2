@@ -18,13 +18,15 @@ mpl.rcParams['xtick.minor.size'], mpl.rcParams['ytick.minor.size'] = 5, 5
 
 
 def run_sim():
-    '''run single simulation'''
+    '''
+    Runs a single simulation with hard coded parameters 
+    '''
     # # manual parameters
-    # model = SU2xSU2(N=64, a=1, ell=7, eps=1/7, beta=0.8667)
+    # model = SU2xSU2(L=64, a=1, ell=7, eps=1/7, beta=0.8667)
     # model.run_HMC(100000, 1, 0, accel=True, measurements=[model.ww_correlation_func], chain_paths=['data/corfunc_long'], partial_save=5000) 
 
     # calibration
-    model_paras = {'N':96, 'a':1, 'ell':15, 'eps':1/15, 'beta':1}
+    model_paras = {'L':96, 'a':1, 'ell':15, 'eps':1/15, 'beta':1}
     paras_calibrated = calibrate(model_paras, accel=True)
 
     model = SU2xSU2(**paras_calibrated)
@@ -37,10 +39,14 @@ def run_sim():
 
 
 def corfunc_plot():
-    '''Produces correlation function plot over range [0,N) with a linear y scale using a stored raw chain'''
+    '''
+    Produces a plot of the correlation function over the range [0,L) with a linear y scale using a stored raw measurement data
+    '''
     def corfunc_plot_linear(ww_cor, ww_cor_err):
-        '''Plot correlation function on linear scale'''
-        # normalize and use periodic bcs to get correlation for wall separation of N to equal that of separation 0
+        '''
+        Plots the correlation function on a linear scale
+        '''
+        # normalize and use periodic bcs to get correlation for wall separation of L to equal that of separation 0
         ww_cor, ww_cor_err = ww_cor/ww_cor[0], ww_cor_err/ww_cor[0]
         ww_cor, ww_cor_err = np.concatenate((ww_cor, [ww_cor[0]])), np.concatenate((ww_cor_err, [ww_cor_err[0]]))
 
@@ -65,10 +71,11 @@ def corfunc_plot():
 
 
 def plot_burn_in():
-    '''Plots raw chain against computer time to gauge when convergence has been achieved.
+    '''
+    Plots raw chain against computer time to gauge when convergence has been achieved.
     observables of interest:
         susceptibility: sufficient burn in needed for critical slowing down plot
-        correlation function at a fixed separation (ideally chosen close to the correlation length): slowly converging quantity and thus gives lower bund for burn in
+        correlation function at a fixed separation (ideally chosen close to the correlation length): slowly converging quantity and thus gives a lower bound for burn in
     
     Note that it is necessary to account for any burn in that has been rejected already before storing the data
     '''
@@ -101,7 +108,8 @@ def plot_burn_in():
 
 
 def chi_vs_xi():
-    '''Fit a power law relation between chi and xi
+    '''
+    Fit a power law relation between chi and xi
     '''
     def power_law(x, z, c):
         return c*x**z
@@ -113,11 +121,19 @@ def chi_vs_xi():
         '''
         Fit power law for susceptibility as function of the correlation length xi.
 
+        Parameters
+        ----------
+        xi: (n,) array
+            values of the correlation length for different values of beta
+        IAT: (n,) array
+            values of the susceptibility IAT for different values of beta
+
         Returns
+        -------
         popt: list length 2
-            optimal parameters of fitted function
+            fitted parameters of the power law
         z: float
-            the dynamical exponent of xi
+            the critical dynamical exponent of xi quantifying the degree of critical slowing down
         z_err: float
             error of the found dynamical exponent 
         '''
@@ -160,7 +176,8 @@ def chi_vs_xi():
 
 
 def sim_time_compare():
-    '''Plots ratio of the HMC and FA HMC simulation time  
+    '''
+    Plots the ratio of the HMC and FA HMC simulation time  
     '''
     n = 10
     IATs, IATs_err = np.zeros((2,n)), np.zeros((2,n))
@@ -245,7 +262,9 @@ def coupling_exp_residual():
 
 
 def chi_speed():
-    '''Makes ratio plot of CPU time needed to compute the susceptibility via a double sum and the cross correlation theorem'''
+    '''
+    Makes a ratio plot of the CPU time needed to compute the susceptibility via a double sum and the cross correlation theorem.
+    '''
     L, CC, DS = np.loadtxt('data\chi_speed.txt')
 
     fig = plt.figure(figsize=(16,6))
@@ -297,12 +316,12 @@ def correlation_func_plot():
     These can then be manually added to the data/corlen_data.txt file.
     '''
     def fit(d,xi):
-        return (np.cosh((d-N_2)/xi) - 1) / (np.cosh(N_2/xi) - 1)
+        return (np.cosh((d-L_2)/xi) - 1) / (np.cosh(L_2/xi) - 1)
     
     ds, cor, cor_err = np.load('data/corfuncs/beta_0_8667.npy')
 
     fit_upper = 27 # inclusive upper bound on wall separation to include in fitting
-    N_2 = ds[-1]
+    L_2 = ds[-1]
     
     mask = ds <= fit_upper
     # mask = cor > 0

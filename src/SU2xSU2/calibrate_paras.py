@@ -3,27 +3,34 @@ from SU2xSU2 import SU2xSU2
 
 
 def calibrate(model_paras, accel=False, sim_paras=None):
-    '''For a model, specified by the dictionary model_paras, this function calibrates the values of ell and eps to produce an acceptance rate in the desireable range between 60 and 75%.
-    When acceptance rate is outside this range, the number of steps is adjusted according to the difference to the ideal acceptance rate of 65%. The step size if fixed by requiring
-    trajectories to be of unit length. To avoid getting caught in a loop, the calibration is limited to 10 iterations.
-    When sim_paras is not passed, a default calibration is performed: 500 trajectories (no thinning and 50% burn in) are simulated and no measurements are taken.
-    Passing a dictionary for sim_paras overwrites this.
-
-    Recommended use: For the model of interest, specify the acceleration boolean and leave the simulation parameters as a default. Use the returned calibrated parameters to perform a
-    production run i.e. call run_HMC(**sim_paras) where sim_paras specifies the chain and measurements you want to take.
-    One can also perform the production run through this function by passing sim_paras.
+    '''
+    For a model, specified by the dictionary model_paras, this function calibrates the number of leapfrog integration steps and their size 
+    under the constraint that the trajectory length is 1 and that the acceptance rate is with in desireable range between 60 and 75%.
     
+    The calibration is done by performing short simulation runs (500 trajectories with 50% burn in unless overridden by passing ``sim_paras``), extracting the acceptance rate
+    and, if the acceptance rate is outside this range, adjusting the number of steps according to the difference to the ideal acceptance rate of 65% for the next run. The 
+    number of steps is inferred from constraining the trajectory length to unity.
+    It is not guaranteed that the calibration is successful for all possible model specification given the fixed trajectory length. Hence the calibration is limited to 10 
+    iterations. An indicator that longer trajectories are required is when the calibration algorithm tries to reduce the number of steps below one.
+
+    Recommended to use the returned calibrated ``model_paras`` to define the model for the production run. 
+            
+    Parameters
+    ----------
     model_paras: dict
-        {N, a, ell, eps, beta} with ell, eps as guesses to start the calibration. Their product must be 1
-    accel: bool
-        use acceleration or not
-    sim_paras: dict
-        arguments of SU2xSU2.run_HMC, namely
+        {L, a, ell, eps, beta} denoting lattice size, lattice spacing, number of integration steps, integration step size and the SU(2)xSU(2) model parameter beta respectively
+        The values of ell, eps are used as guesses to start the calibration and their product must be 1.
+    accel: bool, optional
+        use Fourier Acceleration or not
+    sim_paras: dict, optional
         {M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}
-        
+        Specifying the simulation parameters for the calibration run by calling *SU2xSU2.run_HMC*. 
+        Consider the associated docstring for definitions of these parameters.
+
     Returns
+    -------
     model_paras: dict
-        calibrated model parameters
+        calibrated model parameters and of the same form as model_paras
     '''
     # defining bounds for desireable acceptance rate
     lower_acc, upper_acc = 0.6, 0.75

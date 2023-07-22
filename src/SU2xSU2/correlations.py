@@ -2,29 +2,48 @@
 
 import numpy as np
 import time
-from astropy.stats import jackknife_stats
+
 
 
 def auto_window(IATs, c):
-    '''Windowing procedure of Caracciolo, Sokal 1986 to truncate the sum for the IAT.
+    '''
+    Windowing procedure of Caracciolo, Sokal 1986 (dx.doi.org/10.1088/0305-4470/19/13/008) to truncate the sum for the IAT.
 
+    Parameters
+    ----------
     IATs: array
         integrated autocorrelation time with increasingly late termination of the sum
     c: float
         defines the window width. For correlations that decay exponentially, a value of 4 of 5 is conventional
 
-    Returns index for array IATs, representing the IAT estimate from the windowing procedure
+    Returns 
+    -------
+    idx: int
+        index for array IATs, representing the IAT estimate from the windowing procedure
     ''' 
     ts = np.arange(len(IATs)) # all possible separation endpoints
     m =  ts < c * IATs # first occurrence where this is false gives IAT 
     if np.any(m):
-        return np.argmin(m)
-    return len(IATs) - 1
+        idx = np.argmin(m)
+    else:
+        idx = len(IATs) - 1
+    return idx
 
 
 def autocorr_func_1d(x):
-    '''Computes the autocorrelation of a 1D array x using FFT and the Wiener Khinchin theorem.
+    '''
+    Computes the autocorrelation of a 1D array x using FFT and the cross correlation (Wiener Khinchin) theorem.
     As FFTs yield circular convolutions and work most efficiently when the number of elements is a power of 2, pad the data with zeros to the next power of 2. 
+
+    Parameters
+    ----------
+    x: array
+        1 dimensional data series to find the autocorrelation function for
+
+    Returns
+    -------
+    acf: array
+        the autocorrelation function
     '''
     x = np.atleast_1d(x)
     if len(x.shape) != 1:
@@ -49,46 +68,52 @@ def autocorr_func_1d(x):
 
 
 def autocorrelator_repeats(data, c=4.0):
-    '''Based on the implementation in emcee: https://emcee.readthedocs.io/en/stable/tutorials/autocorr/
-    Computes the autocorrelation function and integrated autocorrelation time for passed data which is a 2D array such that each row represents a sample of observations.
+    '''
+    Based on the implementation in emcee: https://emcee.readthedocs.io/en/stable/tutorials/autocorr/
+    Computes the autocorrelation function and integrated autocorrelation time (IAT) for passed data which is a 2D array such that each row represents a sample of observations.
     The correlations are computed between rows of the data by finding the 1D autocorrelation function for each column of the data. The overall ACF between rows is estimated
     as the average of correlations across columns. This also allows to get an estimate of the error of the ACF.
-    An alternative is to average along rows first and to estimate the ACF as the autocorrelation of the final column (Goodman, Weare 2010)
+    An alternative is to average along rows first and to estimate the ACF as the autocorrelation of the final column (Goodman, Weare 2010).
 
-    data: 2D array (M,N)
-        each row contains N samples of the same observable while different rows correspond to different positions in the chain of M observations.
+    Parameters
+    ----------
+    data: array (M,L)
+        each row contains L samples of the same observable while different rows correspond to different positions in the chain of M observations.
         The correlation is computed across axis 1 i.e. gives the AFC for samples from different positions in the chain. 
+    c: float, optional
+        parameter used in determining when to truncate the sum for the IAT
 
     Returns
-        ts: array (M,)
-            array of considered separations between two samples
-        ACF: array (M,)
-            autocorrelation function
-        ACF_err:
-            error of the autocorrelation function
-        IAT: float
-            integrated autocorrelation time, showing how many rows in the data lie between uncorrelated samples
-        IAT_err: float
-            error of the autocorrelation time
-        delta_t: float
-            time needed to compute the ACF and the IAT
+    -------
+    ts: array (M,)
+        array of considered separations between two samples
+    ACF: array (M,)
+        autocorrelation function
+    ACF_err:
+        error of the autocorrelation function
+    IAT: float
+        integrated autocorrelation time, showing how many rows in the data lie between uncorrelated samples
+    IAT_err: float
+        error of the autocorrelation time
+    delta_t: float
+        time needed to compute the ACF and the IAT
     '''
-    M, N = data.shape
+    M, L = data.shape
     ts = np.arange(M)
     t1 = time.time()
 
     # get ACF and its error
     ACFs = np.zeros_like(data)
-    for i in range(N):
+    for i in range(L):
         ACFs[:,i] = autocorr_func_1d(data[:,i])
 
-    ACF, ACF_err = np.mean(ACFs, axis=1), np.std(ACFs, axis=1) / np.sqrt(N)
+    ACF, ACF_err = np.mean(ACFs, axis=1), np.std(ACFs, axis=1) / np.sqrt(L)
 
     # get all possible IAT and apply windowing
     IATs = 2.0 * np.cumsum(ACF) - 1.0 # IAT defined as 1 + sum starting from separation=1, but cumsum starts with t=0 for which ACF=1
     break_idx = auto_window(IATs, c)
     IAT = IATs[break_idx]
-    IAT_err = np.sqrt((4*break_idx+2)/data.shape[0]) * IAT #  Madras, Sokal 1988
+    IAT_err = np.sqrt((4*break_idx+2)/data.shape[0]) * IAT # Madras, Sokal 1988
 
     t2 = time.time()
     delta_t = t2-t1
@@ -97,19 +122,33 @@ def autocorrelator_repeats(data, c=4.0):
 
 
 def autocorrelator(data, c=4.0):
-    '''Alias for autocorrelator_repeats when the data has been observed only once.
-    data is of shape (M,)'''
+    '''
+    Alias for autocorrelator_repeats when the data has been observed only once, meaning data is of shape (M,)
+
+    See Also
+    --------
+    correlations.autocorrelator_repeats: for documentation
+    '''
     return autocorrelator_repeats(data.reshape((data.shape[0], 1)))
 
 
 def corr_func_1D(x, y):
-    '''Computes the correlation between the equal length 1D arrays x, y using the cross correlation theorem.
+    '''
+    Computes the correlation between the equal length 1D arrays x, y using the cross correlation theorem.
     FFTs yield circular convolutions, such that x and y are assumed to have periodic boundary conditions. 
     When the data is not circular, need to pad it with zeros as done in autocorr_func_1d.
 
+    Parameters
+    ----------
+    x: array
+        first data series to correlate
+    y: array
+        second data series to correlate
+
     Returns
-    cf: 1D array of same length as x and y
-        correlation function between the data in x and y   
+    -------
+    cf: array
+        correlation function between the data in x and y and of the same length as either array
     '''
     f = np.fft.fft(x)
     g = np.fft.fft(y)
@@ -119,29 +158,35 @@ def corr_func_1D(x, y):
 
 
 def correlator_repeats(xs, ys):
-    '''Find correlation function using FFTs between two equally sized 1D arrays for which several measurements exists. 
+    '''
+    Computes the correlation function (CF) using FFTs between two equally sized 1D arrays for which several measurements exists. 
     Each column presents a new observation and correlations are computed along axis 0. The final CF is the average along axis 1.
 
-    xs, ys: (N,M) array
-        M measurements of a data vector of length N
+    Parameters
+    ----------
+    xs: (L,M) array
+        M measurements of first data vector of length L
+    ys: (L,M) array
+        M measurements of second data vector of length L
 
     Returns
-    CF: (N,) array
+    -------
+    CF: (L,) array
         average correlation function based on the M measurements 
-    CF_err (N,) array
-        IAT corrected SEM of the CF
+    CF_err (L,) array
+        uncertainty in the CF, estimated as the standard error on the mean corrected by the square root of the integrated autocorrelation time
     '''
-    N, M = xs.shape # length of one data measurement, number of measurements
+    L, M = xs.shape # length of one data measurement, number of measurements
 
-    # get ACF and its error
+    # get CF and its naive error
     CFs = np.zeros_like(xs)
     for i in range(M):
         CFs[:,i] = corr_func_1D(xs[:,i], ys[:,i])
 
     CF, CF_err = np.mean(CFs, axis=1), np.std(CFs, axis=1) / np.sqrt(M)
     
-    # correct error by IAT
-    for i in range(N):
+    # correct CF error for autocorrelations
+    for i in range(L):
         ts, ACF, ACF_err, IAT, IAT_err, delta_t = autocorrelator(CFs[i])
         CF_err[i] *= np.sqrt(IAT)
 
@@ -149,7 +194,12 @@ def correlator_repeats(xs, ys):
 
 
 def correlator(xs, ys):
-    '''Alias for correlator_repeats when the x and y have been observed only once.
-    xs and ys are arrays of shape (N,)
-    Note that this implies, no error on the correlation function can be estimated.'''
+    '''
+    Alias for correlator_repeats when the x and y have been observed only once, i.e. are both of shape (L,)
+    This implies that the error of the correlation function cannot be estimated.
+
+    See Also
+    --------
+    correlations.correlator_repeats: for documentation
+    '''
     return correlator_repeats(xs.reshape((xs.shape[0], 1)), ys.reshape((ys.shape[0], 1)))

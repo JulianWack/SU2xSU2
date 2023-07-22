@@ -1,6 +1,5 @@
 # routines to process stored correlation function data and make related plots
 import numpy as np
-from scipy.optimize import curve_fit
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -18,20 +17,21 @@ mpl.rcParams['xtick.minor.size'], mpl.rcParams['ytick.minor.size'] = 5, 5
 
 
 def process_rawchain():
-    '''Processes raw correlation function data:
-    Finds ensemble average, normalizes data and applies mirroring about N/2 to reduce errors. Resulting data is stored.
-    To be used on data from partially compute simulations. 
+    '''
+    Processes raw correlation function data, by finding the ensemble average, normalizing data and averaging it about its symmetry axis at L/2, increasing
+    the statistics by a factor 2. The resulting data is stored at a hard coded path.
+    Recommended to be used on data from partially complete simulations (identically functionality is contained in SU2xSU2.corlength). 
     '''
     beta_str = '1_4'
     corfunc_chain = np.load('data/corfuncs/rawchains/%s.npy'%beta_str)
     ww_cor, ww_cor_err = get_avg_error(corfunc_chain)
     print('data shape: ', corfunc_chain.shape)
 
-    # normalize and use periodic bcs to get correlation for wall separation of N to equal that of separation 0
+    # normalize and use periodic bcs to get correlation for wall separation of L to equal that of separation 0
     ww_cor, ww_cor_err = ww_cor/ww_cor[0], ww_cor_err/ww_cor[0]
     ww_cor, ww_cor_err = np.concatenate((ww_cor, [ww_cor[0]])), np.concatenate((ww_cor_err, [ww_cor_err[0]]))
 
-    # use symmetry about N/2 due to periodic bcs and mirror the data to reduce errors (effectively increasing number of data points by factor of 2)
+    # use symmetry about L/2 due to periodic bcs and mirror the data to reduce errors (effectively increasing number of data points by factor of 2)
     N_2 = int(ww_cor.shape[0]/2) 
     ds = np.arange(N_2+1) # wall separations covering half the lattice length
     cor = 1/2 * (ww_cor[:N_2+1] + ww_cor[N_2:][::-1])
@@ -44,27 +44,36 @@ def process_rawchain():
 
 def effective_mass(beta):
     '''
-    Effective mass plot for simulation results at the passed value of beta. This tends to highlight the worst in the data.
-    The normalized and mirrored data of the correlation function is loaded to produce the plot.
-    The effective mass will be computed based on the assumption that the correlation function follows the shape of
-    a cosh (analytically expected due to periodic boundary conditions) or of a pure exponential decay.
-    For small separations the two methods should agree, allowing to gauge is the chosen lattice size is too small.
+    Produces an effective mass plot form the correlation function data collected during the run with the passed value of beta.
+    The normalized and averaged (ensemble and symmetry axis) correlation function data is used to produce the plot, either based on the 
+    assumption that the correlation function follows the shape of a cosh (analytically expected due to periodic boundary conditions) or of a pure exponential decay.
+
+    For small physical separations the two methods should agree, allowing to gauge if significant finite size effects are present.
     The cosh assumption will generally produce a noisier plot as each data point considers 3 values of the correlation function while 
     in the decay assumption only two are used.
+
+    Parameters
+    ----------
+    beta: float
+        value of the model parameter beta used in the considered simulation run
     '''
     def cosh_corfunc(cor, cor_err):
-        '''effective mass and its error based on a cosh correlation function.
+        '''
+        Finds the effective mass and its error based on a cosh correlation function.
         A lattice of even size is assumed.
 
-        cor: (N/2)
+        Parameters
+        ----------
+        cor: (L/2)
             value of wall to wall correlation function on the first half of the lattice
-        cor_err: (N/2)
+        cor_err: (L/2)
             error of correlation function on the first half of the lattice
 
         Returns
-        m_eff: (N/2,)
+        -------
+        m_eff: (L/2,)
             effective mass
-        m_eff_err: (N/2)
+        m_eff_err: (L/2,)
             error of the effective mass
         '''
         rel_err = cor_err / cor # relative error
@@ -84,18 +93,21 @@ def effective_mass(beta):
         return m_eff, m_eff_err
 
     def exp_corfunc(cor, cor_err):
-        '''effective mass and its error based on a cosh correlation function.
+        '''
+        Finds the effective mass and its error based on an exp correlation function.
         A lattice of even size is assumed.
 
-        cor: (N/2,)
+        Parameters
+        ----------
+        cor: (L/2,)
             value of  wall to wall correlation function on the first half of the lattice
-        cor_err: (N/2,)
+        cor_err: (L/2,)
             error of correlation function on the first half of the lattice
 
         Returns
-        m_eff: (N/2,)
+        m_eff: (L/2,)
             effective mass
-        m_eff_err: (N/2,)
+        m_eff_err: (L/2,)
             error of the effective mass
         '''
         cor_1 = np.roll(cor, -1) # shift to d+1

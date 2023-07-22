@@ -16,8 +16,11 @@ mpl.rcParams['axes.prop_cycle'] = cycler(color=['k', 'g', 'b', 'r'])
 
 
 def internal_energy_coupling_exp(betas):
-    '''Find and stores internal energy per site for different values of beta. Produces a plot comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).
+    '''Computes and stores the internal energy per site for the passed values of beta. 
+    A plot is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).
     
+    Parameters
+    ----------
     betas: (n,) array
         value of beta to run simulations for
     '''

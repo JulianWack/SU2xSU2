@@ -13,20 +13,24 @@ mpl.rcParams['axes.prop_cycle'] = cycler(color=['k', 'g', 'b', 'r'])
 
 
 def mass_eff_finite_spacing():
-    '''Illustarte finite lattice spacing effect in effective mass plot'''
+    '''Illustrates a finite lattice spacing effect in the effective mass plot'''
     def cosh_corfunc(cor, cor_err):
-        '''effective mass and its error based on a cosh correlation function.
+        '''
+        Finds the effective mass and its error based on a cosh correlation function.
         A lattice of even size is assumed.
 
-        cor: (N/2)
+        Parameters
+        ----------
+        cor: (L/2)
             value of wall to wall correlation function on the first half of the lattice
-        cor_err: (N/2)
+        cor_err: (L/2)
             error of correlation function on the first half of the lattice
 
         Returns
-        m_eff: (N/2,)
+        -------
+        m_eff: (L/2,)
             effective mass
-        m_eff_err: (N/2)
+        m_eff_err: (L/2)
             error of the effective mass
         '''
         rel_err = cor_err / cor # relative error

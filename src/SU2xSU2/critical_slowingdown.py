@@ -22,13 +22,21 @@ def linear_func(x, z, b):
 
 def fit_IAT(xi, IAT, IAT_err):
     '''
-    Fit power law for integrated autocorrelation time as function of the correlation length xi.
+    Fits power law for integrated autocorrelation time (IAT) as function of the correlation length xi.
+
+    Parameters
+    ----------
+    xi: (n,) array
+        values of the correlation length for different values of beta
+    IAT: (n,) array
+        values of the susceptibility IAT for different values of beta
 
     Returns
+    -------
     popt: list length 2
-        optimal parameters of fitted function
+        fitted parameters of the power law
     z: float
-        the dynamical exponent of xi
+        the critical dynamical exponent of xi quantifying the degree of critical slowing down
     z_err: float
         error of the found dynamical exponent 
     '''
@@ -43,14 +51,15 @@ def fit_IAT(xi, IAT, IAT_err):
 
 def chi_IAT_scaling():
     '''
-    Computes the IAT of the susceptibility for the beta,N value pairs used in the asymptotic scaling plot.
+    Computes the integrated autocorrelation time IAT of the susceptibility for the beta,L value pairs used in the asymptotic scaling plot.
     The computation is done for accelerated and unaccelerated dynamics to highlight the difference in scaling which is quantified by the fitted value of the 
-    critical exponent z. 
+    critical exponent z.
     The acceleration mass parameter is chosen as the inverse of the fitted correlation length, which was found to yield close to optimal acceleration.
+    Plots of the power law and the cost function against the correlation length are produced. 
     '''
     a = 1
-    Ns, betas, xis, _, _ = np.loadtxt('data/corlen_beta.txt')
-    M = 100000 # number of trajectories to simulate for each N, beta pair
+    Ls, betas, xis, _, _ = np.loadtxt('data/corlen_beta.txt')
+    M = 100000 # number of trajectories to simulate for each L, beta pair
   
     accel_bool = [False, True]
     n = len(betas)
@@ -65,14 +74,14 @@ def chi_IAT_scaling():
         dir_path = os.path.dirname(path)
         os.makedirs(dir_path, exist_ok=True)
 
-    description = 'dynamics with %d total measurements of susceptibility \nN, beta, IAT and error, chi and error, simulation time [sec], acceptance rate'%M
+    description = 'dynamics with %d total measurements of susceptibility \nL, beta, IAT and error, chi and error, simulation time [sec], acceptance rate'%M
     des_str = ['Unaccelerated '+description, 'Accelerated '+description]
 
     prev_ell, prev_eps = [4,4], [1/4, 1/4] 
     for i,beta in enumerate(betas):
         for k, accel in enumerate(accel_bool):
             beta_str = str(np.round(beta, 4)).replace('.', '_')
-            model_paras = {'N':Ns[i], 'a':1, 'ell':prev_ell[k], 'eps':prev_eps[k], 'beta':beta, 'mass':1/xis[i]}
+            model_paras = {'L':Ls[i], 'a':1, 'ell':prev_ell[k], 'eps':prev_eps[k], 'beta':beta, 'mass':1/xis[i]}
             paras_calibrated = calibrate(model_paras, accel=accel)
             prev_ell[k], prev_eps[k] = paras_calibrated['ell'], paras_calibrated['eps']
 
@@ -86,7 +95,7 @@ def chi_IAT_scaling():
             chis[k,i], chis_err[k,i], IATs[k,i], IATs_err[k,i] = get_avg_error(data, get_IAT=True)
             times[k,i], acc[k,i] = model.time, model.acc_rate
 
-            np.savetxt(file_path[k], np.row_stack((Ns, betas, IATs[k], IATs_err[k], chis[k], chis_err[k], times[k], acc[k])), header=des_str[k])
+            np.savetxt(file_path[k], np.row_stack((Ls, betas, IATs[k], IATs_err[k], chis[k], chis_err[k], times[k], acc[k])), header=des_str[k])
         print('-'*32)
         print('Completed %d / %d: beta=%.3f'%(i+1, len(betas), beta))
         print('-'*32)

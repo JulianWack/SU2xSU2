@@ -14,11 +14,10 @@ mpl.rcParams['axes.prop_cycle'] = cycler(color=['k', 'g', 'b', 'r'])
 
 def mass_lambda():
     '''
-    Computes the mass to lambda parameter ratio for a range of beta values at fixed lattice size and spacing.
-    To do so, need to compute correlation function and correlation length. Raw measurement chain for correlation functions and the associated plot are saved for
-    each considered value pair beta,N. 
-    Finally, plot of mass over lambda is produced, showing convergence of the simulation data to the continuum constant as beta gets large.
-    The value of beta for which reasonable convergence is reached, defines the beginning of the beta region in which the continuum is well approximated by a finite sized lattice.  
+    Computes the mass over lambda parameter ratio for a range of beta and L (lattice size along one dimension) value pairs.
+    To do so, the correlation length is needed. For each of the considered value pairs, the raw measurement chain for the correlation function is saved
+    to memory. A plot of the averaged (ensemble and across the symmetry axis at L/2) and normalized correlation function is produced and saved.
+    A plot of mass over lambda ratio is produced, to assess the convergence of the simulation data to the continuum mass gap prediction as beta gets large. 
     '''
     a = 1
     Ns = [40, 40, 64, 64, 64, 96, 96, 160, 160, 224, 400, 512, 700]
