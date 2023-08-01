@@ -48,14 +48,23 @@ Please cite the following papers if you found this code useful in your research:
 
 ## To DO
 - move get_avg_error, corlength and main analysis functions (including effective mass and cost function) into one file
-    - add 3 loop beta function to mass over lambda plot
+    - corlength->get_corlength in critical slowingdown.py
+    - make separate plotting for correlation funcs, and update docstring for get_corlength
+    - update mass_lambda docstring
 - make file for all plotting functions
 - data storage
     - manual data paths relative to current directory
     - readme files to describe contents of saved files
     - manual chain state path
 - improve tests
-- plotting style file
+- plotting
+    - no apparent option to add errorbar format '.' in style sheet 
+    - include mplstyle file in stylelib/ to be used globally. Currently, the file needs to be copied manually into the directory. Possible approaches:
+        - https://github.com/garrettj403/SciencePlots/blob/master/scienceplots/__init__.py
+        using https://github.com/matplotlib/matplotlib/blob/main/lib/matplotlib/style/core.py
+        - https://matplotlib.org/stable/tutorials/introductory/customizing.html#distributing-styles
+        - https://stackoverflow.com/a/52997575
+        - https://stackoverflow.com/questions/35851201/how-can-i-share-matplotlib-style
 - possibly change the location of functions used in the main analysis
 - fill in requirements.txt
 - create documentation
