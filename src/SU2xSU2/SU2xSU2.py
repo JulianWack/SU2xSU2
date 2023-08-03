@@ -414,8 +414,8 @@ class SU2xSU2():
             can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the 
             internal energy density, susceptibility, and wall-to-wall correlation respectively
         chain_paths: list of str, optional
-            Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to root folder to store the measurements. 
-            Do not include file extension, as the data is always saved as an .npy file.
+            Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. 
+            The data will always be saved as a .npy file, allowing to omit the file extension.
         saving_bool: bool, optional
             save measurement data
         partial save: int, optional
@@ -442,10 +442,11 @@ class SU2xSU2():
                 relative file paths of measurements in the order that they appear in data
             '''
             # store measurement data collected so far at passed file paths
+            # first check if paths contains any directories and create those if they don't exist already
             for k,file_path in enumerate(file_paths):
-                # make directory if it doesn't exist
                 dir_path = os.path.dirname(file_path)
-                os.makedirs(dir_path, exist_ok=True)
+                if dir_path != '':
+                    os.makedirs(dir_path, exist_ok=True)
                 np.save(file_path, data[k][:j+1])
         
             # store chain state
@@ -615,138 +616,3 @@ class SU2xSU2():
         chi = np.sum( 1/2*self.ww_correlation_func(phi) )
 
         return chi
-
-
-
-### ------------------------------------ ### 
-# Model independent routines commonly used #
-### ------------------------------------ ###
-
-def get_avg_error(data, get_IAT=False):
-    '''
-    Performs the ensemble average based on a sequence of measurements of a single observable and estimates its error 
-    as the standard error on the mean (SEM), corrected by the square root of the observable's integrated autocorrelation time.
-    Optionally also returns integrated autocorrelation time and its error.
-    Each element of data is refereed to as a data point and can either be a float or a 1D array of length N. 
-    The returned average and error will be of the same shape as the data point.
-
-    Parameters
-    ----------
-    data: (M,) or (M,N) array
-        set of measurements made during the chain
-    get_IAT: bool (optional)
-        False by default. Set to True to return IAT and its error
-
-    Returns
-    -------
-    avg: float or (N, )
-        ensemble average of data
-    error: float or (N, )
-        autocorrelation corrected SEM
-    IAT: float (if get_IAT==True)
-        integrated autocorrelation time (IAT)
-    IAT_err: float (if get_IAT==True)
-        error of IAT
-    '''
-    if len(data.shape) == 1:
-        data = data.reshape((data.shape[0], 1))
-    M, N = data.shape # number of repetitions, length of each data point
-
-    avg = np.mean(data, axis=0)
-    error = np.std(data, axis=0) / np.sqrt(M)
-
-    # correct error through IAT
-    IAT, IAT_err = np.zeros((2,N))
-    for i in range(N):
-        ts, ACF, ACF_err, IAT[i], IAT_err[i], comp_time = correlations.autocorrelator(data[:,i])
-        error[i] *= np.sqrt(IAT[i])
-
-    # to return floats if data points were floats
-    if N == 1:
-        avg, error = avg[0], error[0]
-        IAT, IAT_err = IAT[0], IAT_err[0]
-
-    if get_IAT:
-        return avg, error, IAT, IAT_err
-    
-    return avg, error
-
-
-# fit correlation length 
-def corlength(ww_cor, ww_cor_err, data_save_path='', plot_save_path='', make_plot=False, show_plot=True):
-    ''' 
-    Infers the correlation length based on the wall to wall correlation function. Optionally plots the correlation and function and the fitted, analytical expectation. 
-    The correlation function data is processed by normalizing and averaging it about its symmetry axis at L/2.
-    
-    Parameters
-    ----------
-    ww_cor: (L,) array
-        ensemble average of correlation function on a lattice of length L
-    ww_cor_err: (L,) array
-        associated error for all possible wall separations
-    data_save_path: str (optional)
-        path at which the processed correlation function will be stored as an .npy file (extension not needed in path)
-    plot_save_path: str (optional)
-        path at which the processed correlation function (with fit) plot will be stored. File extension needed.
-    make_plot: bool (optional)
-        make plot of correlation function with fit
-    show_plot: bool (optional)
-        show the produced plot. Only has an effect if make_plot==True
-
-    Returns
-    -------
-    cor_length: float
-        fitted correlation length in units of the lattice spacing
-    cor_length_err: float
-        error in the fitted correlation length
-    reduced_chi2: float
-        chi-square per degree of freedom as a goodness of fit proxy
-    '''
-    def fit(d,xi):
-        return (np.cosh((d-N_2)/xi) - 1) / (np.cosh(N_2/xi) - 1)
-
-    # normalize and use periodic bcs to get correlation for wall separation of L to equal that of separation 0
-    ww_cor, ww_cor_err = ww_cor/ww_cor[0], ww_cor_err/ww_cor[0]
-    ww_cor, ww_cor_err = np.concatenate((ww_cor, [ww_cor[0]])), np.concatenate((ww_cor_err, [ww_cor_err[0]]))
-
-    # use symmetry about L/2 due to periodic bcs and mirror the data to reduce errors (effectively increasing number of data points by factor of 2)
-    N_2 = int(ww_cor.shape[0]/2) 
-    ds = np.arange(N_2+1) # wall separations covering half the lattice length
-    cor = 1/2 * (ww_cor[:N_2+1] + ww_cor[N_2:][::-1])
-    cor_err = np.sqrt(ww_cor_err[:N_2+1]**2 + ww_cor_err[N_2::-1]**2) / np.sqrt(2)
-
-    # store processed correlation function data
-    if data_save_path != '':
-        dir_path = os.path.dirname(data_save_path) # make directory if it doesn't exist
-        os.makedirs(dir_path, exist_ok=True)
-        np.save(data_save_path, np.row_stack([ds, cor, cor_err]))
-
-    # perform the fit  
-    mask = cor > 0 # fitting range
-    popt, pcov = curve_fit(fit, ds[mask], cor[mask], sigma=cor_err[mask], absolute_sigma=True)
-    cor_length = popt[0] # in units of lattice spacing
-    cor_length_err = np.sqrt(pcov[0][0])
-
-    r = cor[mask] - fit(ds[mask], *popt)
-    reduced_chi2 = np.sum((r/cor_err[mask])**2) / (mask.size - 1) # dof = number of observations - number of fitted parameters
-
-    if make_plot:
-        fig = plt.figure(figsize=(8,6))
-
-        plt.errorbar(ds, cor, yerr=cor_err, fmt='.', capsize=2)
-        ds_fit = np.linspace(0, ds[mask][-1], 500)
-        plt.plot(ds_fit, fit(ds_fit,*popt), c='g', label='$\\xi = %.3f \pm %.3f$\n $\chi^2/DoF = %.3f$'%(cor_length, cor_length_err, reduced_chi2))
-        plt.yscale('log')
-        plt.xlabel(r'wall separation $d$ [$a$]')
-        plt.ylabel('wall wall correlation $C_{ww}(d)$')
-        plt.legend(prop={'size':12}, frameon=True, loc='upper right') # location to not conflict with error bars
-        fig.gca().xaxis.set_major_locator(MaxNLocator(integer=True)) # set major ticks at integer positions only
-        if show_plot:
-            plt.show()
-        else:
-            dir_path = os.path.dirname(plot_save_path) # make directory if it doesn't exist
-            os.makedirs(dir_path, exist_ok=True)
-            fig.savefig(plot_save_path)
-            plt.close() # for memory purposes
-
-    return cor_length, cor_length_err, reduced_chi2

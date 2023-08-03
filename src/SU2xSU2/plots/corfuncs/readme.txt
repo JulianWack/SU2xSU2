@@ -1,1 +1,0 @@
-Location to store correlation function plots for different values of L and beta.

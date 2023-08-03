@@ -1,1 +1,0 @@
-Location to store raw chains for simulations at different L and beta to compute the integrated autocorrelation time, needed to assess the degree of critical slowing down.

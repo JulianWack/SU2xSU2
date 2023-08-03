@@ -8,19 +8,14 @@ Currently the simulation is only supported for a two dimensional cubic lattice.
 ## Example
 
 from SU2xSU2.SU2xSU2 import SU2xSU2
-from SU2xSU2.calibrate_paras import calibrate
 
-# define lattice and integration parameters as well as model parameter beta
-model_paras = {'L':96, 'a':1, 'ell':15, 'eps':1/15, 'beta':1}
-# find number of integration steps and their size (under the constraint that their product is 1) to get an acceptance rate in the interval [0.6, 0.75]
-paras_calibrated = calibrate(model_paras, accel=True)
-
-# make a model with the calibrated parameters
-model = SU2xSU2(**paras_calibrated)
-# define the simulation parameters, what observables should be measures and where the chain is stored
-sim_paras = {'M':3000, 'thin_freq':1, 'burnin_frac':0.05, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_beta1']}
-# run simulation
+# define model and lattice parameters 
+model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
+model = SU2xSU2(**model_paras)
+# define simulation parameters and measurements
+sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
 model.run_HMC(**sim_paras) 
+
 
 ## Documentation
 Read the docs [here](insert URL)
@@ -47,17 +42,16 @@ Please cite the following papers if you found this code useful in your research:
 ``SU2xSU2`` is free software made available under the MIT License. For details see the `LICENSE` file.
 
 ## To DO
-- move get_avg_error, corlength and main analysis functions (including effective mass and cost function) into one file
-    - corlength->get_corlength in critical slowingdown.py
-    - make separate plotting for correlation funcs, and update docstring for get_corlength
-    - update mass_lambda docstring
-- make file for all plotting functions
-- data storage
-    - manual data paths relative to current directory
-    - readme files to describe contents of saved files
-    - manual chain state path
-- improve tests
+- chain state storage location to be manually adjustable
+- fill in requirements.txt
+- create documentation
+- add tests
+- once package is published and can be installed
+    - check if example in README works
+    - check if example.py works
+    - data storage: Check that paths are relative to the to current working directory
 - plotting
+    - get latex error when plotting within analysis.py
     - no apparent option to add errorbar format '.' in style sheet 
     - include mplstyle file in stylelib/ to be used globally. Currently, the file needs to be copied manually into the directory. Possible approaches:
         - https://github.com/garrettj403/SciencePlots/blob/master/scienceplots/__init__.py
@@ -65,7 +59,4 @@ Please cite the following papers if you found this code useful in your research:
         - https://matplotlib.org/stable/tutorials/introductory/customizing.html#distributing-styles
         - https://stackoverflow.com/a/52997575
         - https://stackoverflow.com/questions/35851201/how-can-i-share-matplotlib-style
-- possibly change the location of functions used in the main analysis
-- fill in requirements.txt
-- create documentation
-- generalise simulation and data analysis to d-dimensional cubic lattice 
+- generalize simulation and data analysis to d-dimensional cubic lattice 
