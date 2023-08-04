@@ -42,8 +42,6 @@ Please cite the following papers if you found this code useful in your research:
 ``SU2xSU2`` is free software made available under the MIT License. For details see the `LICENSE` file.
 
 ## To DO
-- chain state storage location to be manually adjustable
-- fill in requirements.txt
 - create documentation
 - add tests
 - once package is published and can be installed

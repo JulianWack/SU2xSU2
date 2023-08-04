@@ -36,7 +36,7 @@ class SU2xSU2():
             Step size for integrating Hamilton's equations
         beta: float
             Model parameter defined in terms of the nearest neighbor coupling parameter g via beta = 1/(2g^2)
-        mass: float, optional
+        mass: float (optional)
             Mass parameter used in Fourier Acceleration. The physics is independent of the parameter value which only effects the simulation performance.
             The most efficient choice depends on beta.
         '''
@@ -388,7 +388,8 @@ class SU2xSU2():
 
 
     def run_HMC(self, M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], 
-                saving_bool=True, partial_save=5000, starting_config=None, RNG_state=None, renorm_freq=10000):
+                saving_bool=True, partial_save=5000, starting_config_path='', RNG_state_path='',
+                chain_state_dir='data/chain_state/', renorm_freq=10000):
         '''
         Performs the Hybrid Monte Carlo simulation, by default with Fourier Acceleration.
     
@@ -408,24 +409,26 @@ class SU2xSU2():
             frequency at which measurements will be taken
         burin_frac: float
             fraction of total HMC samples which are rejected as burn in  
-        accel: bool, optional
+        accel: bool (optional)
             By default True, indicating to use Fourier Acceleration
-        measurements: list of callables, optional
+        measurements: list of callables (optional)
             can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the 
             internal energy density, susceptibility, and wall-to-wall correlation respectively
-        chain_paths: list of str, optional
+        chain_paths: list of str (optional)
             Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. 
             The data will always be saved as a .npy file, allowing to omit the file extension.
-        saving_bool: bool, optional
+        saving_bool: bool (optional)
             save measurement data
-        partial save: int, optional
+        partial save: int (optional)
             after how many steps preliminary measurements and chain state is saved to disk. Requires saving_bool=True
-        starting_config: (L,L,4), optional
-            configuration to initialize the chain. If not passed a disordered (i.e hot) start will be used.
-        RNG_state: str, optional
+        starting_config_path: str (optional)
+            path to configuration to initialize the chain (.npy file). If not passed a disordered (i.e hot) start will be used.
+        RNG_state_path: str (optional)
             relative path to a .obj file containing the internal state of the random number generator from a previous run. 
             When using the final configuration and the associated RNG state of a previous run as the starting configuration for a new one, the chain is seamlessly continued.
-        renorm_freq: int, optional
+        chain_state_dir: str (optional)
+            path to directory in which the RNG state and the last configuration will be saved  
+        renorm_freq: int (optional)
             after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to 'None' to never renormalize
         '''
         def saving(j, data, file_paths):
@@ -450,16 +453,16 @@ class SU2xSU2():
                 np.save(file_path, data[k][:j+1])
         
             # store chain state
-            os.makedirs('data/chain_state', exist_ok=True)
-            with open('data/chain_state/RNG_state.obj', 'wb') as f:
+            os.makedirs(chain_state_dir, exist_ok=True)
+            with open(os.path.join(chain_state_dir, 'RNG_state.obj'), 'wb') as f:
                 dump(np.random.get_state(), f)
-            np.save('data/chain_state/config.npy', phi)
+            np.save(os.path.join(chain_state_dir, 'config.npy'), phi)
 
             return
 
         # np.random.seed(42) # for debugging
-        if RNG_state is not None:
-            with open(RNG_state, 'rb') as f:
+        if RNG_state_path != '':
+            with open(RNG_state_path, 'rb') as f:
                 np.random.set_state(load(f))
         
         # take measurements and count accepted candidates after burn in
@@ -478,7 +481,7 @@ class SU2xSU2():
 
 
         t1 = time.time()
-        if starting_config is None:
+        if starting_config_path == '':
             # # cold/ordered start
             # a0 = np.ones((self.L,self.L,1))
             # ai = np.zeros((self.L,self.L,3))
@@ -490,7 +493,7 @@ class SU2xSU2():
             a = np.random.standard_normal((self.L,self.L,4))
             phi = SU2.renorm(a)
         else:
-            phi = starting_config
+            phi = np.load(starting_config_path)
 
         if accel:
             self.A = self.kernel_inv_F()

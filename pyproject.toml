@@ -11,7 +11,7 @@ authors = [
 description = "Hybrid Monte Carlo with Fourier Acceleration simulation package for the N=2 Principal Chiral model."
 keywords = ["Hybrid Monte Carlo", "Fourier Acceleration", "Principal Chiral model"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11.4"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

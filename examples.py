@@ -5,21 +5,32 @@ from SU2xSU2.calibrate_paras import calibrate
 import analysis
 import plotting
 
-### compute the correlation function and plot it ### 
+### basic model creation and simulation call signature ###
+# measuring and plotting the correlation function is used in this example but the structure is identical for other observables  
 model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6} # define lattice and integration parameters as well as model parameter beta
 # find number of integration steps and their size (under the constraint that their product is 1) to get an acceptance rate in the interval [0.6, 0.75]
 paras_calibrated = calibrate(model_paras, accel=True)
-
 # make a model with the calibrated parameters
 model = SU2xSU2(**paras_calibrated)
+
 # define the simulation parameters, what observables should be measures and where the chain is stored
-sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_test']}
+sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 
+            'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_test'],
+            'chain_state_dir':'corfunc_test/chain_state/'}
 # run simulation
 model.run_HMC(**sim_paras) 
 
+# find ensemble average of the measurement chain and make plot
 avg, err = analysis.get_avg_error(np.load('corfunc_test.npy'))
 analysis.get_corlength(avg, err, 'corfunc_processed')
 plotting.correlation_func_plot('corfunc_processed.npy', 'plots/corfunc.pdf')
+
+# optionally can continue the previous chain
+sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.0, 'accel':True, 
+            'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_test_continue'],
+            'starting_config_path':'corfunc_test/chain_state/config.npy', 'RNG_state_path':'corfunc_test/chain_state/RNG_state.obj',
+            'chain_state_dir':'corfunc_test/chain_state/'}
+model.run_HMC(**sim_paras) 
 
 
 ### compute internal energy density and plot it to compare it to coupling expansions ###
