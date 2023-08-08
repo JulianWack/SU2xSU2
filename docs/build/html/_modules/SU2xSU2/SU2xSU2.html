@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU2xSU2.SU2xSU2 &mdash; SU2xSU2 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SU2xSU2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">SU2xSU2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SU2xSU2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SU2xSU2.SU2xSU2</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SU2xSU2.SU2xSU2</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dump</span><span class="p">,</span> <span class="n">load</span> 
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">cycler</span> <span class="kn">import</span> <span class="n">cycler</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+
+<span class="kn">import</span> <span class="nn">SU2_mat_routines</span> <span class="k">as</span> <span class="nn">SU2</span>
+<span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;science&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
+<span class="c1"># plt.rcParams.update({&#39;text.usetex&#39;: False}) # faster rendering</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="SU2xSU2"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2">[docs]</a><span class="k">class</span> <span class="nc">SU2xSU2</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Each instance describes a realization of the SU(2)xSU(2) model on a lattice whose dynamics can be simulated using the </span>
+<span class="sd">    Fourier Accelerated Hybrid Monte Carlo algorithm.&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="SU2xSU2.__init__"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">ell</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        L: int</span>
+<span class="sd">            Number of lattice sites along one dimension. Must be even for implementation of Fourier acceleration to work properly </span>
+<span class="sd">        a: float</span>
+<span class="sd">            Lattice spacing</span>
+<span class="sd">        ell: int</span>
+<span class="sd">            Number of steps to integrate Hamilton&#39;s equation, each of size eps</span>
+<span class="sd">        eps: float</span>
+<span class="sd">            Step size for integrating Hamilton&#39;s equations</span>
+<span class="sd">        beta: float</span>
+<span class="sd">            Model parameter defined in terms of the nearest neighbor coupling parameter g via beta = 1/(2g^2)</span>
+<span class="sd">        mass: float (optional)</span>
+<span class="sd">            Mass parameter used in Fourier Acceleration. The physics is independent of the parameter value which only effects the simulation performance.</span>
+<span class="sd">            The most efficient choice depends on beta.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># lattice parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">L</span><span class="p">),</span> <span class="n">a</span>
+        <span class="c1"># leapfrog parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ell</span><span class="p">),</span> <span class="n">eps</span>
+        <span class="c1"># model parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="c1"># acceleration parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">mass</span>
+
+        <span class="c1"># find mask to index the SU(2) valued field phi, giving the parameters of the right, left, top, and bottom nearest neighbor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NN_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_NN_mask</span><span class="p">()</span> </div>
+
+
+<div class="viewcode-block" id="SU2xSU2.make_NN_mask"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.make_NN_mask">[docs]</a>    <span class="k">def</span> <span class="nf">make_NN_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Makes mask to apply to SU(2) valued field phi or momentum field pi which then gives the matrix parameter values of the nearest neighbors (NN) for each lattice site.</span>
+<span class="sd">        Hence phi[self.NN_mask] is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        NN_mask: tuple</span>
+<span class="sd">            tuple of two (L,L,4,1) arrays, each giving the row and column coordinate for all nearest neighbors</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+     
+        <span class="c1"># make a (L,L,2) array storing the row and col indices of each lattice sites</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">))</span> 
+        <span class="n">lattice_coords</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># shift lattice coordinates by 1 such that the coordinates at (i,j) are those of the right, left, top, and bottom neighbor of lattice site (i,j)</span>
+        <span class="c1"># rolling axis=1 by -1 means all columns are moved one step to the left with periodic bcs. </span>
+        <span class="c1"># Hence value of resulting array at (i,j) is (i,j+1), i.e the coordinates of the right neighbor.</span>
+        <span class="c1"># all of shape (L,L,2)</span>
+        <span class="n">right_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">lattice_coords</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">left_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">lattice_coords</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">top_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">lattice_coords</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">bottom_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">lattice_coords</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># for each lattice site, for each neighbor, store row and column coordinates</span>
+        <span class="c1"># order of neighbors: right, left, top, bottom</span>
+        <span class="n">NN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">NN</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">right_n</span> <span class="c1"># row and col indices of right neighbors</span>
+        <span class="n">NN</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">left_n</span>
+        <span class="n">NN</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">top_n</span>
+        <span class="n">NN</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">bottom_n</span>
+
+        <span class="c1"># make mask to index phi</span>
+        <span class="c1"># separate the row and column neighbor coordinates for each lattice site: (L,L,4,1)</span>
+        <span class="n">NN_rows</span> <span class="o">=</span> <span class="n">NN</span><span class="p">[:,:,:,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">NN_cols</span> <span class="o">=</span> <span class="n">NN</span><span class="p">[:,:,:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">NN_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">NN_rows</span><span class="p">,</span> <span class="n">NN_cols</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">NN_mask</span> </div>
+
+        
+<div class="viewcode-block" id="SU2xSU2.action"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the action for lattice configuration phi</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            parameters of the SU(2) valued field at each lattice site</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        S: float</span>
+<span class="sd">            the action</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">phi_hc</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">hc</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">phi_NN</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_mask</span><span class="p">]</span> <span class="c1"># (L,L,4,4): containing the 4 paras of each of the 4 NN</span>
+
+        <span class="c1"># sum over lattice unit vectors: to the right and up. Hence only need right and top NN, stored at position 0,3 respectively</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">phi_hc</span><span class="p">,</span> <span class="n">phi_NN</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">,:])</span>
+            <span class="n">G</span> <span class="o">+=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">tr</span><span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="n">SU2</span><span class="o">.</span><span class="n">hc</span><span class="p">(</span><span class="n">A</span><span class="p">))</span> <span class="c1"># when getting UFuncTypeError, check that dtype of G and SU2.tr is the same (float64 by default)</span>
+
+        <span class="c1"># sum over lattice sites    </span>
+        <span class="n">S</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">S</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.Ham"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.Ham">[docs]</a>    <span class="k">def</span> <span class="nf">Ham</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the Hamiltonian for a lattice configuration phi and momentum configuration pi.</span>
+<span class="sd">        The kinetic term is chosen such that the momenta follow a standard Gaussian.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            parameters of the SU(2) valued field</span>
+<span class="sd">        pi: (L,L,3) array</span>
+<span class="sd">            parameter values of the conjugate momenta at each lattice site</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H: float</span>
+<span class="sd">            the Hamiltonian as the sum of the action and the kinetic term</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># equivalent to first summing the square of the parameters at each site and then sum over all sites</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span>
+
+        <span class="k">return</span> <span class="n">H</span> </div>
+
+
+<div class="viewcode-block" id="SU2xSU2.Ham_FA"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.Ham_FA">[docs]</a>    <span class="k">def</span> <span class="nf">Ham_FA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Analogous to the method self.Ham but computes the modified Hamiltonian used to accelerate the dynamics.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            parameters of the SU(2) valued field</span>
+<span class="sd">        pi: (L,L,3) array</span>
+<span class="sd">            parameter values of the conjugate momenta at each lattice site</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H: float</span>
+<span class="sd">            the modified Hamiltonian as the sum of the action and the modified kinetic term</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># (L,L) find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components</span>
+        <span class="n">pi_F_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span> <span class="p">)</span> 
+        <span class="n">T</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pi_F_mag</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">)</span> <span class="c1"># sum over momentum Fourier lattice</span>
+        <span class="n">S</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">H</span> <span class="o">=</span> <span class="n">T</span> <span class="o">+</span> <span class="n">S</span> 
+
+        <span class="k">return</span> <span class="n">H</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.prod_A_pi"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.prod_A_pi">[docs]</a>    <span class="k">def</span> <span class="nf">prod_A_pi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pi_F</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Computes the elementwise product of the inverse action kernel in Fourier space (denoted as &#39;A&#39;) and the momenta in Fourier space.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pi_F: (L,L,3) array</span>
+<span class="sd">            parameter vector of momenta in Fourier space</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prod: (L,L,3)</span>
+<span class="sd">            parameter vector of momenta in Fourier space, each site being weighted by the inverse Fourier space kernel</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">prod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span> <span class="n">pi_F</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prod</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.kernel_inv_F"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.kernel_inv_F">[docs]</a>    <span class="k">def</span> <span class="nf">kernel_inv_F</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Finds inverse of the action kernel computed in the Fourier space, usually referred to as &#39;A&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        A: (L,L) array</span>
+<span class="sd">            inverse action kernel in Fourier space</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># x = 0.9 # parameter interpolating between accelerated (x=1) and unaccelerated (x=0) case. </span>
+        <span class="c1"># Appropriate kernel: A[k,k_] = (1 - x/2 - x/4*(np.cos(np.pi*ks[k]/self.L) + np.cos(np.pi*ks[k_]/self.L)) )**(-1)</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span> <span class="c1"># lattice sites in Fourier space along one direction</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">))</span> <span class="c1"># inverse kernel computed at every site in Fourier space</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">):</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">k_</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">ks</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">ks</span><span class="p">[</span><span class="n">k_</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>   
+                <span class="n">A</span><span class="p">[</span><span class="n">k_</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">k_</span><span class="p">]</span> <span class="c1"># exploit symmetry of kernel under exchange of directions </span>
+
+        <span class="k">return</span> <span class="n">A</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.pi_dot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.pi_dot">[docs]</a>    <span class="k">def</span> <span class="nf">pi_dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Computes the derivative of pi with respect to the Hamiltonian time. From Hamilton&#39;s equations, this is given as i times the derivative of the action wrt. phi.</span>
+<span class="sd">        pi and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            parameters of the SU(2) valued field</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pi_t: (L,L,3) array</span>
+<span class="sd">            parameters of the time derivative of the conjugate momenta</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">phi_hc</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">hc</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">phi_NN</span> <span class="o">=</span> <span class="n">phi</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">NN_mask</span><span class="p">]</span>
+        <span class="c1"># need sum of NN pairs along the two lattice unit vectors i.e. right+left and top+bottom</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">neg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="c1"># sum is proportional to SU2 matrix, allowing to apply the SU2 product routine once proportionality constant has been identified</span>
+            <span class="n">sum_in_SU2</span><span class="p">,</span> <span class="n">prop_const</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phi_NN</span><span class="p">[:,:,</span><span class="n">pos</span><span class="p">,:],</span> <span class="n">phi_NN</span><span class="p">[:,:,</span><span class="n">neg</span><span class="p">,:])</span> <span class="c1"># both are potentially complex but their product is always real</span>
+            <span class="n">V</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop_const</span> <span class="o">*</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sum_in_SU2</span><span class="p">,</span> <span class="n">phi_hc</span><span class="p">))</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">alpha</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">*</span><span class="n">V</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># 3 parameters describing matrix -i(V - V^dagger) for the currently considered direction in the lattice</span>
+        <span class="n">pi_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">alpha</span>
+
+        <span class="k">return</span> <span class="n">pi_t</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.exp_update"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.exp_update">[docs]</a>    <span class="k">def</span> <span class="nf">exp_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pi_dt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Computes the update matrix of the field for the transition t -&gt; t + dt.</span>
+<span class="sd">        The update matrix is given by the exponential of the conjugate momenta pi times i dt. </span>
+<span class="sd">        As the momentum field is a linear combination of the SU(2) generators, the update matrix is itself an SU(2) element, described by </span>
+<span class="sd">        the parameter vector of pi scaled by dt.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pi_dt: (L,L,4) array</span>
+<span class="sd">            parameters of the momenta times the integration step size</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        update: (L,L,4) array</span>
+<span class="sd">            parameters of the update matrices</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">alpha_to_a</span><span class="p">(</span><span class="n">pi_dt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">update</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.leapfrog"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog">[docs]</a>    <span class="k">def</span> <span class="nf">leapfrog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi_old</span><span class="p">,</span> <span class="n">pi_old</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Performs the leapfrog integration of Hamilton&#39;s equations for self.ell steps, each of size self.eps. The passed arguments define the initial conditions. </span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi_old: (L,L,4) array</span>
+<span class="sd">            last accepted sample in the chain of the SU(2) valued field</span>
+<span class="sd">        pi_old: (L,L,3) array</span>
+<span class="sd">            parameters of conjugate momenta associated with phi_old</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        phi_cur: (L,L,4) array</span>
+<span class="sd">            SU(2) matrix parameters after simulating dynamics</span>
+<span class="sd">        pi_cur: (L,L,3) array</span>
+<span class="sd">            momenta parameters after simulating dynamics</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># half step in pi, full step in phi</span>
+        <span class="n">pi_dot_dt_half</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_old</span><span class="p">)</span>
+        <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_old</span> <span class="o">+</span> <span class="n">pi_dot_dt_half</span>
+        <span class="n">phi_cur</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_update</span><span class="p">(</span><span class="n">pi_cur</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">),</span> <span class="n">phi_old</span><span class="p">)</span>
+
+        <span class="c1"># ell-1 alternating full steps</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ell</span><span class="p">):</span>
+            <span class="n">pi_dot_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_cur</span><span class="p">)</span>
+            <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_cur</span> <span class="o">+</span> <span class="n">pi_dot_dt</span>
+            <span class="n">phi_cur</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_update</span><span class="p">(</span><span class="n">pi_cur</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">),</span> <span class="n">phi_cur</span><span class="p">)</span>
+    
+        <span class="c1"># half step in pi</span>
+        <span class="n">pi_dot_dt_half</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_cur</span><span class="p">)</span>
+        <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_cur</span> <span class="o">+</span> <span class="n">pi_dot_dt_half</span>
+
+        <span class="k">return</span> <span class="n">phi_cur</span><span class="p">,</span> <span class="n">pi_cur</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.leapfrog_FA"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog_FA">[docs]</a>    <span class="k">def</span> <span class="nf">leapfrog_FA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi_old</span><span class="p">,</span> <span class="n">pi_old</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Leapfrog integrator analogous to self.leapfrog but using the modified EoMs.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        SU2xSU2.SU2xSU2.leapfrog</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">def</span> <span class="nf">pi_FA</span><span class="p">(</span><span class="n">pi</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Computes the modified momentum term entering in the exponential update in the accelerated dynamics.</span>
+<span class="sd">            The modified momentum is given by the ordinary momentum pi, weighted by the inverse kernel which is easiest computed in Fourier space.</span>
+<span class="sd">            </span>
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            pi: (L,L,4) array</span>
+<span class="sd">                real space parameters of conjugate momenta</span>
+<span class="sd">            </span>
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            pi_mod: (L,L,4) array</span>
+<span class="sd">                real space parameters of modified conjugate momenta</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="n">pi_F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">pi_mod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prod_A_pi</span><span class="p">(</span><span class="n">pi_F</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="p">)</span>
+            <span class="k">return</span> <span class="n">pi_mod</span>
+
+        <span class="c1"># half step in pi, full step in phi</span>
+        <span class="n">pi_dot_dt_half</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_old</span><span class="p">)</span>
+        <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_old</span> <span class="o">+</span> <span class="n">pi_dot_dt_half</span>
+        <span class="n">phi_cur</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_update</span><span class="p">(</span><span class="n">pi_FA</span><span class="p">(</span><span class="n">pi_cur</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">),</span> <span class="n">phi_old</span> <span class="p">)</span>
+
+        <span class="c1"># ell-1 alternating full steps</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ell</span><span class="p">):</span>
+            <span class="n">pi_dot_dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_cur</span><span class="p">)</span>
+            <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_cur</span> <span class="o">+</span> <span class="n">pi_dot_dt</span>
+            <span class="n">phi_cur</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_update</span><span class="p">(</span><span class="n">pi_FA</span><span class="p">(</span><span class="n">pi_cur</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span><span class="p">),</span> <span class="n">phi_cur</span> <span class="p">)</span>
+    
+        <span class="c1"># half step in pi</span>
+        <span class="n">pi_dot_dt_half</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_dot</span><span class="p">(</span><span class="n">phi_cur</span><span class="p">)</span>
+        <span class="n">pi_cur</span> <span class="o">=</span> <span class="n">pi_cur</span> <span class="o">+</span> <span class="n">pi_dot_dt_half</span>
+
+        <span class="k">return</span> <span class="n">phi_cur</span><span class="p">,</span> <span class="n">pi_cur</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.pi_samples"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.pi_samples">[docs]</a>    <span class="k">def</span> <span class="nf">pi_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.</span>
+<span class="sd">        The sampling is easiest done in Fourier space and in terms of a real and hermitian object PI from which the momentum samples can be reconstructed (both in Fourier space) </span>
+<span class="sd">        The size of the lattice along one dimension L is assumed to be even.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pi: (L,L,3) array</span>
+<span class="sd">            parameters for the sample of the conjugate momenta in real space</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># momenta in Fourier space</span>
+        <span class="n">pi_F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+        <span class="n">PI_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">A</span><span class="p">)</span> 
+        <span class="n">STD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">PI_std</span><span class="p">[:,:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">repeats</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># standard deviation is identical for components at same position</span>
+        <span class="n">PI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">STD</span><span class="p">)</span> <span class="c1">#  (L,L,3) as returned array matches shape of STD</span>
+
+        <span class="c1"># assign special modes for which FT exponential becomes +/-1. To get real pi in real space, the modes must be real themselves.</span>
+        <span class="n">N_2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># two spacial indices</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span>
+
+        <span class="c1"># one special index</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># imposing hermitean symmetry</span>
+
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">0</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># no special index</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># imposing hermitean symmetry</span>
+   
+        <span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">PI</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">PI</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">pi_F</span><span class="p">[</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:,</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">pi_F</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">N_2</span><span class="p">,</span><span class="n">N_2</span><span class="o">+</span><span class="mi">1</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">,::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># pi is real by construction</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">pi_F</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">pi</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.run_HMC"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.run_HMC">[docs]</a>    <span class="k">def</span> <span class="nf">run_HMC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">thin_freq</span><span class="p">,</span> <span class="n">burnin_frac</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">measurements</span><span class="o">=</span><span class="p">[],</span> <span class="n">chain_paths</span><span class="o">=</span><span class="p">[],</span> 
+                <span class="n">saving_bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">partial_save</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">starting_config_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">RNG_state_path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">chain_state_dir</span><span class="o">=</span><span class="s1">&#39;data/chain_state/&#39;</span><span class="p">,</span> <span class="n">renorm_freq</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Performs the Hybrid Monte Carlo simulation, by default with Fourier Acceleration.</span>
+<span class="sd">    </span>
+<span class="sd">        A total of M trajectories will be simulated and measurements are taken every thin_freq steps after the</span>
+<span class="sd">        thermalisation period defined as the first M*burnin_frac samples.</span>
+<span class="sd">        Due to accumulating rounding errors, the molecular dynamics cause field to leave the group manifold slowly. This is counteracted by enforcing the unitarity constraint</span>
+<span class="sd">        of the matrix parameters every renorm_freq-th step.</span>
+<span class="sd">        The Monte Carlo chain is fully defined (and thus reproducible) by the model and simulation parameters as well as the initial configuration of the chain and </span>
+<span class="sd">        the state of the random number generator (RNG). By using the last configuration of a previous chain and the associated RNG state,</span>
+<span class="sd">        one can continue the chain seamlessly in a new simulation.</span>
+
+<span class="sd">        Parameters </span>
+<span class="sd">        ----------</span>
+<span class="sd">        M: int</span>
+<span class="sd">            number of HMC trajectories and thus total number of generated samples</span>
+<span class="sd">        thin_freq: int</span>
+<span class="sd">            frequency at which measurements will be taken</span>
+<span class="sd">        burin_frac: float</span>
+<span class="sd">            fraction of total HMC samples which are rejected as burn in  </span>
+<span class="sd">        accel: bool (optional)</span>
+<span class="sd">            By default True, indicating to use Fourier Acceleration</span>
+<span class="sd">        measurements: list of callables (optional)</span>
+<span class="sd">            can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the </span>
+<span class="sd">            internal energy density, susceptibility, and wall-to-wall correlation respectively</span>
+<span class="sd">        chain_paths: list of str (optional)</span>
+<span class="sd">            Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. </span>
+<span class="sd">            The data will always be saved as a .npy file, allowing to omit the file extension.</span>
+<span class="sd">        saving_bool: bool (optional)</span>
+<span class="sd">            save measurement data</span>
+<span class="sd">        partial save: int (optional)</span>
+<span class="sd">            after how many steps preliminary measurements and chain state is saved to disk. Requires saving_bool=True</span>
+<span class="sd">        starting_config_path: str (optional)</span>
+<span class="sd">            path to configuration to initialize the chain (.npy file). If not passed a disordered (i.e hot) start will be used.</span>
+<span class="sd">        RNG_state_path: str (optional)</span>
+<span class="sd">            relative path to a .obj file containing the internal state of the random number generator from a previous run. </span>
+<span class="sd">            When using the final configuration and the associated RNG state of a previous run as the starting configuration for a new one, the chain is seamlessly continued.</span>
+<span class="sd">        chain_state_dir: str (optional)</span>
+<span class="sd">            path to directory in which the RNG state and the last configuration will be saved  </span>
+<span class="sd">        renorm_freq: int (optional)</span>
+<span class="sd">            after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to &#39;None&#39; to never renormalize</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">def</span> <span class="nf">saving</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">            Saving measurement chains and the RNG state of chain to potentially continue the current chain in a later run</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            j: int</span>
+<span class="sd">                number of measurements made</span>
+<span class="sd">            data: list of np arrays</span>
+<span class="sd">                each element is a chain of measurements, which might be (j,) or (j,n) (measuring scalar quantity or array of length n j times)</span>
+<span class="sd">            file_paths: list of str</span>
+<span class="sd">                relative file paths of measurements in the order that they appear in data</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="c1"># store measurement data collected so far at passed file paths</span>
+            <span class="c1"># first check if paths contains any directories and create those if they don&#39;t exist already</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">file_paths</span><span class="p">):</span>
+                <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][:</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+        
+            <span class="c1"># store chain state</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">chain_state_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chain_state_dir</span><span class="p">,</span> <span class="s1">&#39;RNG_state.obj&#39;</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">dump</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">get_state</span><span class="p">(),</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chain_state_dir</span><span class="p">,</span> <span class="s1">&#39;config.npy&#39;</span><span class="p">),</span> <span class="n">phi</span><span class="p">)</span>
+
+            <span class="k">return</span>
+
+        <span class="c1"># np.random.seed(42) # for debugging</span>
+        <span class="k">if</span> <span class="n">RNG_state_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">RNG_state_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">set_state</span><span class="p">(</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+        
+        <span class="c1"># take measurements and count accepted candidates after burn in</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">M</span><span class="o">*</span><span class="n">burnin_frac</span><span class="p">))</span> <span class="c1"># number of steps taken in chain before measurements being</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">M</span><span class="p">)[</span><span class="n">start_id</span><span class="o">+</span><span class="mi">1</span><span class="p">::</span><span class="n">thin_freq</span><span class="p">]</span> <span class="c1"># positions in the chain when measurements were made</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweeps</span><span class="o">.</span><span class="n">size</span> <span class="c1"># number of measurements</span>
+
+        <span class="c1"># initialize arrays to store chain of measurements </span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">internal_energy_density</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">susceptibility</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ww_correlation_func</span> <span class="ow">in</span> <span class="n">measurements</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)))</span> <span class="c1"># unprocessed (not normalized, on range [0,L)) wall to wall correlation function for each sample</span>
+
+
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">starting_config_path</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="c1"># # cold/ordered start</span>
+            <span class="c1"># a0 = np.ones((self.L,self.L,1))</span>
+            <span class="c1"># ai = np.zeros((self.L,self.L,3))</span>
+            <span class="c1"># phi = np.concatenate([a0,ai], axis=2)</span>
+
+            <span class="c1"># # hot start</span>
+            <span class="c1"># sampling 4 points form 4D unit sphere assures that norm of parameter vector is 1 to describe SU(2) matrices. </span>
+            <span class="c1"># Use a spherically symmetric distribution such as gaussian</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">SU2</span><span class="o">.</span><span class="n">renorm</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">starting_config_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">accel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_inv_F</span><span class="p">()</span>
+
+        <span class="c1"># construct chain and take measurements</span>
+        <span class="n">n_acc</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># number of accepted candidates</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># counter for position in chain of measurements</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+            <span class="c1"># phi is most recent accepted sample, phi_new is a candidate sample.</span>
+            <span class="c1"># if candidate gets accepted: phi -&gt; phi_new, otherwise phi -&gt; phi</span>
+            <span class="k">if</span> <span class="n">renorm_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">renorm_freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">SU2</span><span class="o">.</span><span class="n">renorm</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+
+            <span class="c1"># take one step in the chain</span>
+            <span class="k">if</span> <span class="n">accel</span><span class="p">:</span> 
+                <span class="n">pi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pi_samples</span><span class="p">()</span>
+                <span class="n">phi_new</span><span class="p">,</span> <span class="n">pi_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leapfrog_FA</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">)</span>
+                <span class="n">delta_H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ham_FA</span><span class="p">(</span><span class="n">phi_new</span><span class="p">,</span><span class="o">-</span><span class="n">pi_new</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ham_FA</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># the conjugate momenta are linear combination of Pauli matrices and thus described by 3 parameters</span>
+                <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                <span class="n">phi_new</span><span class="p">,</span> <span class="n">pi_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">leapfrog</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">)</span>
+                <span class="n">delta_H</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ham</span><span class="p">(</span><span class="n">phi_new</span><span class="p">,</span><span class="o">-</span><span class="n">pi_new</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ham</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">pi</span><span class="p">)</span>
+
+            <span class="n">acc_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">delta_H</span><span class="p">)])</span>
+
+            <span class="k">if</span> <span class="n">acc_prob</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
+                <span class="n">phi</span> <span class="o">=</span> <span class="n">phi_new</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">start_id</span><span class="p">:</span>
+                    <span class="n">n_acc</span> <span class="o">+=</span> <span class="mi">1</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">phi</span> <span class="o">=</span> <span class="n">phi</span> 
+
+            <span class="c1"># take measurements after burin and every thin_freq-th step in chain</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="n">start_id</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="p">(</span><span class="n">start_id</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">%</span><span class="n">thin_freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">measurements</span><span class="p">):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># store partial results of measurements and current state of chain</span>
+            <span class="k">if</span> <span class="n">saving_bool</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span><span class="o">%</span><span class="n">partial_save</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;saving partial results&#39;</span><span class="p">)</span>
+                <span class="n">saving</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">chain_paths</span><span class="p">)</span>
+
+
+        <span class="c1"># store full chain of measurements and current state of chain</span>
+        <span class="k">if</span> <span class="n">saving_bool</span><span class="p">:</span>
+            <span class="n">saving</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">chain_paths</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">acc_rate</span> <span class="o">=</span> <span class="n">n_acc</span><span class="o">/</span><span class="p">(</span><span class="n">M</span><span class="o">-</span><span class="n">start_id</span><span class="p">)</span> <span class="c1"># acceptance rate as decimal number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t1</span> <span class="c1"># combined simulation and measurement time in seconds</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Completed </span><span class="si">%d</span><span class="s1"> steps in </span><span class="si">%s</span><span class="s1">. </span><span class="se">\n</span><span class="s1">Simulation rate: </span><span class="si">%.2f</span><span class="s1"> steps/sec </span><span class="se">\n</span><span class="s1">Acceptance rate: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)),</span> <span class="n">M</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">acc_rate</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+        
+        <span class="k">return</span></div>
+
+
+
+    <span class="c1">### ----------------- ###</span>
+    <span class="c1"># possible measurements #</span>
+    <span class="c1">### ----------------- ###</span>
+
+<div class="viewcode-block" id="SU2xSU2.internal_energy_density"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.internal_energy_density">[docs]</a>    <span class="k">def</span> <span class="nf">internal_energy_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the internal energy (action) per site of a lattice configuration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            lattice configuration to perform computation on</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        e: float</span>
+<span class="sd">            action per site</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># definition of internal energy in terms of the action</span>
+
+        <span class="k">return</span> <span class="n">e</span></div>
+      
+
+<div class="viewcode-block" id="SU2xSU2.ww_correlation_func"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.ww_correlation_func">[docs]</a>    <span class="k">def</span> <span class="nf">ww_correlation_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">        Computes the *non*-normalized wall to wall correlation function for the lattice configuration phi.</span>
+<span class="sd">        Observing that the correlation of two variables can be written as a convolution, one can apply the cross correlation theorem to efficiently compute</span>
+<span class="sd">        the latter using FFTs.  </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            configuration to perform computation on</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ww_cor: (L,) array</span>
+<span class="sd">            wall to wall correlation evaluated for wall separation in interval [0, L), *not* normalized to value at zero separation.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ww_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span>
+        <span class="n">Phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># (L,4)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">cf</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">correlations</span><span class="o">.</span><span class="n">correlator</span><span class="p">(</span><span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">],</span> <span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">ww_cor</span> <span class="o">+=</span> <span class="n">cf</span>
+        <span class="n">ww_cor</span> <span class="o">*=</span> <span class="mi">4</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">ww_cor</span></div>
+
+
+<div class="viewcode-block" id="SU2xSU2.susceptibility"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.susceptibility">[docs]</a>    <span class="k">def</span> <span class="nf">susceptibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the susceptibility (the average point to point correlation) for the configuration phi which can be obtained by summing up the correlation function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        phi: (L,L,4) array</span>
+<span class="sd">            configuration to perform computation on</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        chi: float</span>
+<span class="sd">            susceptibility of phi</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ww_correlation_func</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">chi</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Julian Wack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

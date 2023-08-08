@@ -18,6 +18,11 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
 ]
 
+[project.optional.dependencies]
+doc = [
+    "sphinx=6.1.3",
+]
+
 [project.urls]
 Repository = "https://github.com/JulianWack/SU2xSU2"
 # Documentation = " "

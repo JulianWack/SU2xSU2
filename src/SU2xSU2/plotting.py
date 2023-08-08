@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
-plt.style.use('scientific.mplstyle')
+# plt.style.use('scientific.mplstyle')
 # plt.rcParams.update({'text.usetex': True}) # uncomment when latex is installed
 
 

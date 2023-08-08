@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU2xSU2.correlations &mdash; SU2xSU2 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SU2xSU2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">SU2xSU2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SU2xSU2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SU2xSU2.correlations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SU2xSU2.correlations</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Routines to compute correlations between samples of observables </span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+
+<div class="viewcode-block" id="auto_window"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.auto_window">[docs]</a><span class="k">def</span> <span class="nf">auto_window</span><span class="p">(</span><span class="n">IATs</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Windowing procedure of Caracciolo, Sokal 1986 (dx.doi.org/10.1088/0305-4470/19/13/008) to truncate the sum for the IAT.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    IATs: array</span>
+<span class="sd">        integrated autocorrelation time with increasingly late termination of the sum</span>
+<span class="sd">    c: float</span>
+<span class="sd">        defines the window width. For correlations that decay exponentially, a value of 4 of 5 is conventional</span>
+
+<span class="sd">    Returns </span>
+<span class="sd">    -------</span>
+<span class="sd">    idx: int</span>
+<span class="sd">        index for array IATs, representing the IAT estimate from the windowing procedure</span>
+<span class="sd">    &#39;&#39;&#39;</span> 
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">IATs</span><span class="p">))</span> <span class="c1"># all possible separation endpoints</span>
+    <span class="n">m</span> <span class="o">=</span>  <span class="n">ts</span> <span class="o">&lt;</span> <span class="n">c</span> <span class="o">*</span> <span class="n">IATs</span> <span class="c1"># first occurrence where this is false gives IAT </span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">IATs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">idx</span></div>
+
+
+<div class="viewcode-block" id="autocorr_func_1d"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.autocorr_func_1d">[docs]</a><span class="k">def</span> <span class="nf">autocorr_func_1d</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the autocorrelation of a 1D array x using FFT and the cross correlation (Wiener Khinchin) theorem.</span>
+<span class="sd">    As FFTs yield circular convolutions and work most efficiently when the number of elements is a power of 2, pad the data with zeros to the next power of 2. </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: array</span>
+<span class="sd">        1 dimensional data series to find the autocorrelation function for</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    acf: array</span>
+<span class="sd">        the autocorrelation function</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid dimensions for 1D autocorrelation function&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">next_pow_two</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span> <span class="c1"># shifts bits to the left by one position i.e. multiplies by 2 </span>
+        <span class="k">return</span> <span class="n">i</span>
+    
+    <span class="n">n</span> <span class="o">=</span> <span class="n">next_pow_two</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="c1"># Compute the FFT and then the auto-correlation function</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">n</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">acf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">f</span><span class="p">))[:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span><span class="o">.</span><span class="n">real</span>
+    <span class="n">acf</span> <span class="o">/=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">n</span>
+    <span class="c1"># normalize to get autocorrelation rather than autocovariance</span>
+    <span class="n">acf</span> <span class="o">/=</span> <span class="n">acf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">acf</span></div>
+
+
+<div class="viewcode-block" id="autocorrelator_repeats"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.autocorrelator_repeats">[docs]</a><span class="k">def</span> <span class="nf">autocorrelator_repeats</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Based on the implementation in emcee: https://emcee.readthedocs.io/en/stable/tutorials/autocorr/</span>
+<span class="sd">    Computes the autocorrelation function and integrated autocorrelation time (IAT) for passed data which is a 2D array such that each row represents a sample of observations.</span>
+<span class="sd">    The correlations are computed between rows of the data by finding the 1D autocorrelation function for each column of the data. The overall ACF between rows is estimated</span>
+<span class="sd">    as the average of correlations across columns. This also allows to get an estimate of the error of the ACF.</span>
+<span class="sd">    An alternative is to average along rows first and to estimate the ACF as the autocorrelation of the final column (Goodman, Weare 2010).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: array (M,L)</span>
+<span class="sd">        each row contains L samples of the same observable while different rows correspond to different positions in the chain of M observations.</span>
+<span class="sd">        The correlation is computed across axis 1 i.e. gives the AFC for samples from different positions in the chain. </span>
+<span class="sd">    c: float, optional</span>
+<span class="sd">        parameter used in determining when to truncate the sum for the IAT</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ts: array (M,)</span>
+<span class="sd">        array of considered separations between two samples</span>
+<span class="sd">    ACF: array (M,)</span>
+<span class="sd">        autocorrelation function</span>
+<span class="sd">    ACF_err:</span>
+<span class="sd">        error of the autocorrelation function</span>
+<span class="sd">    IAT: float</span>
+<span class="sd">        integrated autocorrelation time, showing how many rows in the data lie between uncorrelated samples</span>
+<span class="sd">    IAT_err: float</span>
+<span class="sd">        error of the autocorrelation time</span>
+<span class="sd">    delta_t: float</span>
+<span class="sd">        time needed to compute the ACF and the IAT</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">L</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># get ACF and its error</span>
+    <span class="n">ACFs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+        <span class="n">ACFs</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">autocorr_func_1d</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">ACF</span><span class="p">,</span> <span class="n">ACF_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ACFs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ACFs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+    <span class="c1"># get all possible IAT and apply windowing</span>
+    <span class="n">IATs</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">ACF</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="c1"># IAT defined as 1 + sum starting from separation=1, but cumsum starts with t=0 for which ACF=1</span>
+    <span class="n">break_idx</span> <span class="o">=</span> <span class="n">auto_window</span><span class="p">(</span><span class="n">IATs</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">IAT</span> <span class="o">=</span> <span class="n">IATs</span><span class="p">[</span><span class="n">break_idx</span><span class="p">]</span>
+    <span class="n">IAT_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">4</span><span class="o">*</span><span class="n">break_idx</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">IAT</span> <span class="c1"># Madras, Sokal 1988</span>
+
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">delta_t</span> <span class="o">=</span> <span class="n">t2</span><span class="o">-</span><span class="n">t1</span>
+
+    <span class="k">return</span> <span class="n">ts</span><span class="p">,</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">ACF_err</span><span class="p">,</span> <span class="n">IAT</span><span class="p">,</span> <span class="n">IAT_err</span><span class="p">,</span> <span class="n">delta_t</span></div>
+
+
+<div class="viewcode-block" id="autocorrelator"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.autocorrelator">[docs]</a><span class="k">def</span> <span class="nf">autocorrelator</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Alias for autocorrelator_repeats when the data has been observed only once, meaning data is of shape (M,)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    correlations.autocorrelator_repeats: for documentation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">autocorrelator_repeats</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="corr_func_1D"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.corr_func_1D">[docs]</a><span class="k">def</span> <span class="nf">corr_func_1D</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the correlation between the equal length 1D arrays x, y using the cross correlation theorem.</span>
+<span class="sd">    FFTs yield circular convolutions, such that x and y are assumed to have periodic boundary conditions. </span>
+<span class="sd">    When the data is not circular, need to pad it with zeros as done in autocorr_func_1d.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x: array</span>
+<span class="sd">        first data series to correlate</span>
+<span class="sd">    y: array</span>
+<span class="sd">        second data series to correlate</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cf: array</span>
+<span class="sd">        correlation function between the data in x and y and of the same length as either array</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">cf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">g</span><span class="p">))</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="k">return</span> <span class="n">cf</span></div>
+
+
+<div class="viewcode-block" id="correlator_repeats"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.correlator_repeats">[docs]</a><span class="k">def</span> <span class="nf">correlator_repeats</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the correlation function (CF) using FFTs between two equally sized 1D arrays for which several measurements exists. </span>
+<span class="sd">    Each column presents a new observation and correlations are computed along axis 0. The final CF is the average along axis 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xs: (L,M) array</span>
+<span class="sd">        M measurements of first data vector of length L</span>
+<span class="sd">    ys: (L,M) array</span>
+<span class="sd">        M measurements of second data vector of length L</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    CF: (L,) array</span>
+<span class="sd">        average correlation function based on the M measurements </span>
+<span class="sd">    CF_err (L,) array</span>
+<span class="sd">        uncertainty in the CF, estimated as the standard error on the mean corrected by the square root of the integrated autocorrelation time</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">L</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># length of one data measurement, number of measurements</span>
+
+    <span class="c1"># get CF and its naive error</span>
+    <span class="n">CFs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="n">CFs</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">corr_func_1D</span><span class="p">(</span><span class="n">xs</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="n">ys</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">CF</span><span class="p">,</span> <span class="n">CF_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">CFs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">CFs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    
+    <span class="c1"># correct CF error for autocorrelations</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+        <span class="n">ts</span><span class="p">,</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">ACF_err</span><span class="p">,</span> <span class="n">IAT</span><span class="p">,</span> <span class="n">IAT_err</span><span class="p">,</span> <span class="n">delta_t</span> <span class="o">=</span> <span class="n">autocorrelator</span><span class="p">(</span><span class="n">CFs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">CF_err</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">IAT</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">CF</span><span class="p">,</span> <span class="n">CF_err</span></div>
+
+
+<div class="viewcode-block" id="correlator"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.correlations.correlator">[docs]</a><span class="k">def</span> <span class="nf">correlator</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Alias for correlator_repeats when the x and y have been observed only once, i.e. are both of shape (L,)</span>
+<span class="sd">    This implies that the error of the correlation function cannot be estimated.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    correlations.correlator_repeats: for documentation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">correlator_repeats</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">ys</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">ys</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)))</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Julian Wack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

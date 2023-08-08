@@ -1,5 +1,5 @@
 import numpy as np
-from SU2xSU2 import SU2xSU2
+from .SU2xSU2 import SU2xSU2
 
 
 def calibrate(model_paras, accel=False, sim_paras=None):

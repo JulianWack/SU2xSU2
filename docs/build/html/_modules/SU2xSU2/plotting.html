@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU2xSU2.plotting &mdash; SU2xSU2 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SU2xSU2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">SU2xSU2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SU2xSU2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SU2xSU2.plotting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SU2xSU2.plotting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># some additional plotting routines</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span>
+
+<span class="c1"># plt.style.use(&#39;scientific.mplstyle&#39;)</span>
+<span class="c1"># plt.rcParams.update({&#39;text.usetex&#39;: True}) # uncomment when latex is installed</span>
+
+
+<div class="viewcode-block" id="plot_chain"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.plotting.plot_chain">[docs]</a><span class="k">def</span> <span class="nf">plot_chain</span><span class="p">(</span><span class="n">data_chain_path</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">start_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Plots raw measurement chain against computer time to gauge when convergence has been achieved.</span>
+<span class="sd">    Observables of particular interest are the susceptibility (as sufficient burn is needed for the critical slowing down analysis) and </span>
+<span class="sd">    the correlation function at a fixed separation (ideally chosen close to the correlation length as this is a slowly converging quantity</span>
+<span class="sd">    and thus gives a lower bound for burn in).</span>
+<span class="sd">    If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by &#39;start_idx&#39;. </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_chain_path: str</span>
+<span class="sd">        path to measurement chain file (must be .npy)</span>
+<span class="sd">    ylabel: str</span>
+<span class="sd">        label for the plotted measurement. When Latex commands are contained, pass as raw string i.e. r&#39;$\chi$&#39;</span>
+<span class="sd">    start_idx: int (optional)</span>
+<span class="sd">        amount of burn in already removed from the measurement chain</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_chain_path</span><span class="p">)</span>
+    <span class="n">comp_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="n">start_idx</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">comp_time</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;computer time&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="correlation_func_plot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.plotting.correlation_func_plot">[docs]</a><span class="k">def</span> <span class="nf">correlation_func_plot</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">,</span> <span class="n">fit_upper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ybottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xright</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Produces a plot (with a logarithmic y axis) of the correlation function data (stored at &#39;data_path&#39;) and the fitted, analytical expectation. </span>
+<span class="sd">    The plot is saved at &#39;plot_path&#39; with the fitting range and other plot parameters can be adjusted through the arguments.</span>
+
+<span class="sd">    Allows manual adjustment of fitting the correlation length to the processed correlation function data (normalized and mirror averaged).</span>
+<span class="sd">    A plot with the new fitting is produced and the inferred correlation length, its error and the associated chi2 are printed.</span>
+<span class="sd">    These can then be manually added to the data/corlen_data.txt file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_path: str</span>
+<span class="sd">        file path to the correlation function data that will be plotted. The file is assumed to be .npy and </span>
+<span class="sd">        contain the rows separation [0,L/2], correlation function, correlation function error respectively </span>
+<span class="sd">    plot_path: str </span>
+<span class="sd">        file path (including file extension) to store the plot at</span>
+<span class="sd">    fit_upper: int (optional)</span>
+<span class="sd">        largest separation (in units of the lattice spacing) to be included in the fit.</span>
+<span class="sd">        If left as &#39;None&#39;, only all non-zero values of the correlation function will be included in the fit</span>
+<span class="sd">    show_plot: bool (optional)</span>
+<span class="sd">        shows produced plot before saving it</span>
+<span class="sd">    ybottom: float (optional)</span>
+<span class="sd">        lower limit for y axis</span>
+<span class="sd">    xright: float (optional)</span>
+<span class="sd">        upper limit for x axis</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">xi</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">((</span><span class="n">d</span><span class="o">-</span><span class="n">L_2</span><span class="p">)</span><span class="o">/</span><span class="n">xi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">L_2</span><span class="o">/</span><span class="n">xi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="n">ds</span><span class="p">,</span> <span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">L_2</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">fit_upper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">ds</span> <span class="o">&lt;=</span> <span class="n">fit_upper</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">cor</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">cor</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">sigma</span><span class="o">=</span><span class="n">cor_err</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">absolute_sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cor_length</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># in units of lattice spacing</span>
+    <span class="n">cor_length_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">cor</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">fit</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="o">*</span><span class="n">popt</span><span class="p">)</span>
+    <span class="n">reduced_chi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">r</span><span class="o">/</span><span class="n">cor_err</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># dof = number of observations - number of fitted parameters</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">cor</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">cor_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ds_fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds_fit</span><span class="p">,</span> <span class="n">fit</span><span class="p">(</span><span class="n">ds_fit</span><span class="p">,</span><span class="o">*</span><span class="n">popt</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$</span><span class="se">\\</span><span class="s1">xi = </span><span class="si">%.3f</span><span class="s1"> \pm </span><span class="si">%.3f</span><span class="s1">$</span><span class="se">\n</span><span class="s1"> $\chi_r^2 = </span><span class="si">%.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cor_length</span><span class="p">,</span> <span class="n">cor_length_err</span><span class="p">,</span> <span class="n">reduced_chi2</span><span class="p">))</span>
+    <span class="c1"># set axes limits</span>
+    <span class="k">if</span> <span class="n">ybottom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="n">ybottom</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xright</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="n">xright</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;wall separation $d$ [$a$]&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;wall wall correlation $C_</span><span class="si">{ww}</span><span class="s1">(d)$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1"># set major ticks at integer positions only</span>
+    
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="c1"># check if path contains directory. If it does, the directory is created should it not exist already</span>
+    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># for memory purposes</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corlen: </span><span class="si">%.18E</span><span class="s1"> </span><span class="se">\n</span><span class="s1">corlen_err: </span><span class="si">%.18E</span><span class="s1"> </span><span class="se">\n</span><span class="s1">chi2: </span><span class="si">%.18E</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">cor_length</span><span class="p">,</span> <span class="n">cor_length_err</span><span class="p">,</span> <span class="n">reduced_chi2</span><span class="p">))</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="effective_mass_plot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.plotting.effective_mass_plot">[docs]</a><span class="k">def</span> <span class="nf">effective_mass_plot</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">xright</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ytop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ybottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_path</span><span class="o">=</span><span class="s1">&#39;plots/effective_mass.pdf&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Produces an effective mass plot using the processed correlation function data stored at &#39;data_path&#39;.</span>
+<span class="sd">    The data is expected to contain the separation, the correlation function value and its error row wise.</span>
+<span class="sd">    The effective mass will be computed based on the assumption that the correlation function follows the shape of</span>
+<span class="sd">    a cosh as analytically expected due to periodic boundary conditions. </span>
+<span class="sd">    As the effective mass becomes noisy for large separations, the plot range can be adjusted using the remaining keywords.  </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_path: str</span>
+<span class="sd">        path to .npy file containing the averaged (ensemble and across the symmetry axis at L/2) and normalized correlation function</span>
+<span class="sd">    xright: float</span>
+<span class="sd">        upper limit of the separation shown in the plot</span>
+<span class="sd">    ytop: float</span>
+<span class="sd">        upper limit for the effective mass</span>
+<span class="sd">    ybottom: float</span>
+<span class="sd">        lower limit for the effective mass </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">effective_mass</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Computes the effective mass and its error based on a cosh correlation function.</span>
+<span class="sd">        A lattice of even size is assumed.</span>
+
+<span class="sd">        cor: (L/2)</span>
+<span class="sd">            value of wall to wall correlation function on the first half of the lattice</span>
+<span class="sd">        cor_err: (L/2)</span>
+<span class="sd">            error of correlation function on the first half of the lattice</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        m_eff: (L/2,)</span>
+<span class="sd">            effective mass</span>
+<span class="sd">        m_eff_err: (L/2)</span>
+<span class="sd">            error of the effective mass</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rel_err</span> <span class="o">=</span> <span class="n">cor_err</span> <span class="o">/</span> <span class="n">cor</span> <span class="c1"># relative error</span>
+        <span class="n">cor_1</span><span class="p">,</span> <span class="n">cor_err_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cor_err</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># shift to d+1</span>
+        <span class="n">rel_err_1</span> <span class="o">=</span> <span class="n">cor_err_1</span> <span class="o">/</span> <span class="n">cor_1</span>
+        <span class="n">cor__1</span><span class="p">,</span> <span class="n">cor_err__1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">cor_err</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># shift to d-1</span>
+        <span class="n">rel_err__1</span> <span class="o">=</span> <span class="n">cor_err__1</span> <span class="o">/</span> <span class="n">cor__1</span>
+
+        <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">cor_1</span><span class="o">/</span><span class="n">cor</span><span class="p">,</span> <span class="n">cor__1</span><span class="o">/</span><span class="n">cor</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> 
+        <span class="n">m_eff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="n">delta_x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="p">(</span><span class="n">rel_err_1</span> <span class="o">-</span> <span class="n">rel_err</span><span class="p">)</span> <span class="o">+</span> <span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="n">rel_err__1</span> <span class="o">-</span> <span class="n">rel_err</span><span class="p">))</span>
+        <span class="c1"># delta_x = A/2*(np.sqrt(rel_err_1**2 + rel_err**2)) + B/2*(np.sqrt(rel_err__1**2 + rel_err**2))</span>
+        <span class="n">m_eff_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">m_eff</span><span class="p">,</span> <span class="n">m_eff_err</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">ds</span><span class="p">,</span> <span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">m_eff</span><span class="p">,</span> <span class="n">m_eff_err</span> <span class="o">=</span> <span class="n">effective_mass</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">m_eff</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">m_eff_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xright</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="n">xright</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ybottom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="n">ybottom</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ytop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="n">ytop</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;wall separation [$a$]&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;effective mass $m_</span><span class="si">{eff}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">MaxNLocator</span><span class="p">(</span><span class="n">integer</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span> <span class="c1"># set major ticks at integer positions only</span>
+    
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># create directories in plot_path if necessary</span>
+    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Julian Wack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -7,13 +7,13 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
-plt.style.use('scientific.mplstyle')
+# plt.style.use('scientific.mplstyle')
 # plt.rcParams.update({'text.usetex': True}) # uncomment when latex is installed
 
-from SU2xSU2 import SU2xSU2
-from calibrate_paras import calibrate
-import correlations
-import plotting
+from .SU2xSU2 import SU2xSU2
+from .calibrate_paras import calibrate
+from .correlations import *
+from .plotting import *
 
 
 

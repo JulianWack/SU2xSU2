@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU2xSU2.calibrate_paras &mdash; SU2xSU2 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SU2xSU2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">SU2xSU2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SU2xSU2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SU2xSU2.calibrate_paras</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SU2xSU2.calibrate_paras</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.SU2xSU2</span> <span class="kn">import</span> <span class="n">SU2xSU2</span>
+
+
+<div class="viewcode-block" id="calibrate"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.calibrate_paras.calibrate">[docs]</a><span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="n">model_paras</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sim_paras</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For a model, specified by the dictionary model_paras, this function calibrates the number of leapfrog integration steps and their size </span>
+<span class="sd">    under the constraint that the trajectory length is 1 and that the acceptance rate is with in desireable range between 60 and 75%.</span>
+<span class="sd">    </span>
+<span class="sd">    The calibration is done by performing short simulation runs (500 trajectories with 50% burn in unless overridden by passing ``sim_paras``), extracting the acceptance rate</span>
+<span class="sd">    and, if the acceptance rate is outside this range, adjusting the number of steps according to the difference to the ideal acceptance rate of 65% for the next run. The </span>
+<span class="sd">    number of steps is inferred from constraining the trajectory length to unity.</span>
+<span class="sd">    It is not guaranteed that the calibration is successful for all possible model specification given the fixed trajectory length. Hence the calibration is limited to 10 </span>
+<span class="sd">    iterations. An indicator that longer trajectories are required is when the calibration algorithm tries to reduce the number of steps below one.</span>
+
+<span class="sd">    Recommended to use the returned calibrated ``model_paras`` to define the model for the production run. </span>
+<span class="sd">            </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    model_paras: dict</span>
+<span class="sd">        {L, a, ell, eps, beta} denoting lattice size, lattice spacing, number of integration steps, integration step size and the SU(2)xSU(2) model parameter beta respectively</span>
+<span class="sd">        The values of ell, eps are used as guesses to start the calibration and their product must be 1.</span>
+<span class="sd">    accel: bool, optional</span>
+<span class="sd">        use Fourier Acceleration or not</span>
+<span class="sd">    sim_paras: dict, optional</span>
+<span class="sd">        {M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}</span>
+<span class="sd">        Specifying the simulation parameters for the calibration run by calling *SU2xSU2.run_HMC*. </span>
+<span class="sd">        Consider the associated docstring for definitions of these parameters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    model_paras: dict</span>
+<span class="sd">        calibrated model parameters and of the same form as model_paras</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># defining bounds for desireable acceptance rate</span>
+    <span class="n">lower_acc</span><span class="p">,</span> <span class="n">upper_acc</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.75</span>
+
+    <span class="k">if</span> <span class="n">sim_paras</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># default for fast calibration</span>
+        <span class="n">sim_paras</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;M&#39;</span><span class="p">:</span><span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;thin_freq&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;burnin_frac&#39;</span><span class="p">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;accel&#39;</span><span class="p">:</span><span class="n">accel</span><span class="p">,</span> <span class="s1">&#39;saving_bool&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
+    
+    <span class="n">good_acc_rate</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span> 
+    <span class="n">stop_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">good_acc_rate</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">SU2xSU2</span><span class="p">(</span><span class="o">**</span><span class="n">model_paras</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">run_HMC</span><span class="p">(</span><span class="o">**</span><span class="n">sim_paras</span><span class="p">)</span>  
+        <span class="n">acc_rate</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">acc_rate</span>
+        <span class="n">d_acc_rate</span> <span class="o">=</span> <span class="mf">0.65</span> <span class="o">-</span> <span class="n">acc_rate</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">good_acc_rate</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">acc_rate</span> <span class="o">&lt;</span> <span class="n">lower_acc</span> <span class="ow">or</span> <span class="n">acc_rate</span> <span class="o">&gt;</span> <span class="n">upper_acc</span><span class="p">:</span>
+            <span class="n">new_ell</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">d_acc_rate</span><span class="p">)))</span>
+            <span class="c1"># due to rounding it can happen that ell is not updated. To avoid getting stuck in a loop, enforce minimal update of +/- 1</span>
+            <span class="k">if</span> <span class="n">new_ell</span> <span class="o">==</span> <span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">d_acc_rate</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">new_ell</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_ell</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">new_ell</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># stop calibration when step size has to be reduce below 1.</span>
+                        <span class="n">stop_flag</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>  
+            <span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_ell</span>
+            <span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;eps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">]</span>
+            <span class="n">count</span> <span class="o">+=</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">good_acc_rate</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="s1">&#39;acc= </span><span class="si">%.2f%%</span><span class="s1">, ell=</span><span class="si">%d</span><span class="s1">, eps=</span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">acc_rate</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;ell&#39;</span><span class="p">],</span> <span class="n">model_paras</span><span class="p">[</span><span class="s1">&#39;eps&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stop_flag</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Successful calibration: &#39;</span><span class="o">+</span><span class="n">stats</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unsuccessful calibration: &#39;</span><span class="o">+</span><span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model_paras</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Julian Wack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

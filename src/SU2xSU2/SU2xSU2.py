@@ -10,7 +10,7 @@ from datetime import timedelta
 from scipy.optimize import curve_fit
 
 import SU2_mat_routines as SU2
-import correlations
+from .correlations import *
 
 
 plt.style.use('science')

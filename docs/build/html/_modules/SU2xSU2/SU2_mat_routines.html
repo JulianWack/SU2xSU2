@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU2xSU2.SU2_mat_routines &mdash; SU2xSU2 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SU2xSU2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">SU2xSU2</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SU2xSU2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">SU2xSU2.SU2_mat_routines</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for SU2xSU2.SU2_mat_routines</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Several functions to perform common matrix operations for SU(2) matrices.</span>
+<span class="c1"># By exploiting their properties, these routines are more efficient than general matrix methods</span>
+<span class="c1"># Specifically, an SU(2) matrix is fully specified by 4 real parameters:</span>
+<span class="c1"># [[a0 + i*a3, a2 + i*a1],</span>
+<span class="c1"># [-a2 + i*a1, a0 - i*a3]]</span>
+<span class="c1">#</span>
+<span class="c1"># The operations are designed to act on entire SU(2) valued lattices.</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="alpha_to_a"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.alpha_to_a">[docs]</a><span class="k">def</span> <span class="nf">alpha_to_a</span><span class="p">(</span><span class="n">alpha</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A lattice of SU(2) matrices may be defined through the exponential map with parameters alpha. </span>
+<span class="sd">    The exponential map can be explicitly evaluated, resulting in a linear combination of the Pauli matrices and unity:</span>
+<span class="sd">    U = exp(i alpha_i sigma_i) = a_0*1 + i*a_i sigma_i</span>
+<span class="sd">    This function finds the coefficients &#39;a&#39; based on &#39;alpha&#39;.    </span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha: (L,L,3) array</span>
+<span class="sd">        parameters when representing a SU(2) group element via the exponential map at every lattice site</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of matrices at each lattice site when explicitly evaluating the exponential map</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">alpha</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">L</span><span class="p">,</span><span class="n">L</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span> <span class="c1"># (L,L)</span>
+    <span class="c1"># to do arithmetic with other (L,L,3) array need to broadcast to include axis 2</span>
+    <span class="n">alpha_norm</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">L</span><span class="p">,</span><span class="n">L</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># To avoid division by zero: if alpha_norm is 0, then alpha must be zero, such that the normalized alpha must be zero too</span>
+    <span class="n">alpha_unit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">alpha_norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">alpha_norm</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">alpha_unit</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha_norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+<div class="viewcode-block" id="make_mats"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.make_mats">[docs]</a><span class="k">def</span> <span class="nf">make_mats</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Constructs explicit matrices corresponding to parameter vector a.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mats: (L,L) object array</span>
+<span class="sd">        np.matrix instance at every site</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">mats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">L</span><span class="p">,</span><span class="n">L</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+            <span class="n">paras</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,:]</span>
+            <span class="n">mat</span> <span class="o">=</span> <span class="p">[[</span><span class="n">paras</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">paras</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">paras</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">paras</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> 
+                <span class="p">[</span><span class="o">-</span><span class="n">paras</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">paras</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">paras</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">paras</span><span class="p">[</span><span class="mi">3</span><span class="p">]]]</span>
+            <span class="n">mats</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mats</span></div>
+
+
+<span class="c1">### ----------------------- ###</span>
+<span class="c1">### basic matrix quantities ###</span>
+<span class="c1">### ----------------------- ###</span>
+<div class="viewcode-block" id="hc"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.hc">[docs]</a><span class="k">def</span> <span class="nf">hc</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the parameter vector of the hermitian conjugate at each lattice site.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a_hc: (L,L,4) array</span>
+<span class="sd">        parameters of hermitian conjugate SU(2) valued lattice</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">a_hc</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span> 
+    <span class="n">a_hc</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">a_hc</span></div>
+
+
+<div class="viewcode-block" id="tr"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.tr">[docs]</a><span class="k">def</span> <span class="nf">tr</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns the trace of the matrices at each lattice site.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trace: (L,L) array </span>
+<span class="sd">        trace at each site of the SU(2) valued lattice</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">trace</span></div>
+
+
+<div class="viewcode-block" id="det"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.det">[docs]</a><span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The determinant of an SU(2) matrix is given by the squared length of the parameter vector.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    determinant: (L,L) array</span>
+<span class="sd">        determinants of the SU(2) valued lattice</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">determinant</span> <span class="o">=</span> <span class="n">norm2</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">determinant</span></div>
+
+
+<div class="viewcode-block" id="norm2"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.norm2">[docs]</a><span class="k">def</span> <span class="nf">norm2</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns squared norm of the parameter vector a.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    norm_sq: (L,L) array containing the norm at each site</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">norm_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">norm_sq</span></div>
+
+
+<div class="viewcode-block" id="renorm"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.renorm">[docs]</a><span class="k">def</span> <span class="nf">renorm</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Renormalises matrix to have det = 1</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of the SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    renormed: (L,L,4) array</span>
+<span class="sd">        renormalised parameters of the SU(2) valued lattice</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">norm</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">norm2</span><span class="p">(</span><span class="n">a</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">L</span><span class="p">,</span><span class="n">L</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="c1"># broadcast to do arithmetic with (L,L,4) array a</span>
+    <span class="n">renormed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">norm</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">renormed</span></div>
+
+
+<span class="c1">### ---------------------------- ###</span>
+<span class="c1">### combining two SU(2) matrices ### </span>
+<span class="c1">### ---------------------------- ###</span>
+<div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors a and b.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of first SU(2) valued lattice</span>
+<span class="sd">    b: (L,L,4) array</span>
+<span class="sd">        parameters of second SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    c: (L,L,4) array</span>
+<span class="sd">        parameters of SU(2) valued lattice resulting from the elementwise matrix products   </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">c</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">c</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">c</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Computes the elementwise sum of two SU(2) valued lattices A and B with parameters a and b.</span>
+<span class="sd">    Let C = A + B, i.e. c = a + b. </span>
+<span class="sd">    Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant k, meaning</span>
+<span class="sd">    D = C/k = 1/k (A + B) is in SU(2).</span>
+<span class="sd">    To only having to perform manipulations on SU(2) matrices, the parameters d of the SU(2) valued lattice D and the </span>
+<span class="sd">    constant k are returned such that their product gives the </span>
+<span class="sd">    parameter vectors of C, the sum of lattice A and B.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: (L,L,4) array</span>
+<span class="sd">        parameters of first SU(2) valued lattice</span>
+<span class="sd">    b: (L,L,4) array</span>
+<span class="sd">        parameters of second SU(2) valued lattice</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    d: (L,L,4) array</span>
+<span class="sd">        parameters of SU(2) valued lattice proportional to a+b</span>
+<span class="sd">    k: (L,L,1) array</span>
+<span class="sd">        proportionality constant between d and a+b</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="n">k2</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">*</span><span class="n">b</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="c1"># (L,L)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">L</span><span class="p">,</span><span class="n">L</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="n">k</span>
+
+    <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">k</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Julian Wack.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
