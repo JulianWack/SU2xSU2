@@ -73,26 +73,15 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">pickle</span> <span class="kn">import</span> <span class="n">dump</span><span class="p">,</span> <span class="n">load</span> 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">MaxNLocator</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="kn">from</span> <span class="nn">cycler</span> <span class="kn">import</span> <span class="n">cycler</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 
 <span class="kn">import</span> <span class="nn">SU2_mat_routines</span> <span class="k">as</span> <span class="nn">SU2</span>
 <span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="o">*</span>
 
 
-<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;science&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">})</span>
-<span class="c1"># plt.rcParams.update({&#39;text.usetex&#39;: False}) # faster rendering</span>
-<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">])</span>
-
-
 <div class="viewcode-block" id="SU2xSU2"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2">[docs]</a><span class="k">class</span> <span class="nc">SU2xSU2</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Each instance describes a realization of the SU(2)xSU(2) model on a lattice whose dynamics can be simulated using the </span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Each instance describes a realization of the SU(2)xSU(2) model on a square lattice whose dynamics can be simulated using the </span>
 <span class="sd">    Fourier Accelerated Hybrid Monte Carlo algorithm.&#39;&#39;&#39;</span>
 <div class="viewcode-block" id="SU2xSU2.__init__"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">ell</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
@@ -127,7 +116,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.make_NN_mask"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.make_NN_mask">[docs]</a>    <span class="k">def</span> <span class="nf">make_NN_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;Makes mask to apply to SU(2) valued field phi or momentum field pi which then gives the matrix parameter values of the nearest neighbors (NN) for each lattice site.</span>
-<span class="sd">        Hence phi[self.NN_mask] is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).</span>
+<span class="sd">        Hence ``phi[self.NN_mask]`` is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).</span>
 <span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -167,7 +156,7 @@
         
 <div class="viewcode-block" id="SU2xSU2.action"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.action">[docs]</a>    <span class="k">def</span> <span class="nf">action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Computes the action for lattice configuration phi</span>
+<span class="sd">        Computes the action for lattice configuration ``phi``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -196,7 +185,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.Ham"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.Ham">[docs]</a>    <span class="k">def</span> <span class="nf">Ham</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Computes the Hamiltonian for a lattice configuration phi and momentum configuration pi.</span>
+<span class="sd">        Computes the Hamiltonian for a lattice configuration ``phi`` and momentum configuration ``pi``.</span>
 <span class="sd">        The kinetic term is chosen such that the momenta follow a standard Gaussian.</span>
 
 <span class="sd">        Parameters</span>
@@ -220,7 +209,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.Ham_FA"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.Ham_FA">[docs]</a>    <span class="k">def</span> <span class="nf">Ham_FA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">,</span> <span class="n">pi</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Analogous to the method self.Ham but computes the modified Hamiltonian used to accelerate the dynamics.</span>
+<span class="sd">        Analogous to :py:meth:`SU2xSU2.SU2xSU2.Ham` but computes the modified Hamiltonian used to accelerate the dynamics.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -233,6 +222,10 @@
 <span class="sd">        -------</span>
 <span class="sd">        H: float</span>
 <span class="sd">            the modified Hamiltonian as the sum of the action and the modified kinetic term</span>
+<span class="sd">        </span>
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        SU2xSU2.SU2xSU2.Ham</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c1"># (L,L) find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components</span>
         <span class="n">pi_F_mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span> <span class="p">)</span> 
@@ -261,7 +254,7 @@
 
 
 <div class="viewcode-block" id="SU2xSU2.kernel_inv_F"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.kernel_inv_F">[docs]</a>    <span class="k">def</span> <span class="nf">kernel_inv_F</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Finds inverse of the action kernel computed in the Fourier space, usually referred to as &#39;A&#39;.</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Finds inverse of the action kernel computed in the Fourier space, here referred to as ``A``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -281,8 +274,8 @@
 
 
 <div class="viewcode-block" id="SU2xSU2.pi_dot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.pi_dot">[docs]</a>    <span class="k">def</span> <span class="nf">pi_dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Computes the derivative of pi with respect to the Hamiltonian time. From Hamilton&#39;s equations, this is given as i times the derivative of the action wrt. phi.</span>
-<span class="sd">        pi and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;Computes the derivative of ``pi`` with respect to the Hamiltonian time. From Hamilton&#39;s equations, this is given as i times the derivative of the action wrt. ``phi``.</span>
+<span class="sd">        ``pi`` and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -329,7 +322,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.leapfrog"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog">[docs]</a>    <span class="k">def</span> <span class="nf">leapfrog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi_old</span><span class="p">,</span> <span class="n">pi_old</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Performs the leapfrog integration of Hamilton&#39;s equations for self.ell steps, each of size self.eps. The passed arguments define the initial conditions. </span>
+<span class="sd">        Performs the leapfrog integration of Hamilton&#39;s equations for ``self.ell`` steps, each of size ``self.eps``. The passed arguments define the initial conditions. </span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -365,7 +358,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.leapfrog_FA"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog_FA">[docs]</a>    <span class="k">def</span> <span class="nf">leapfrog_FA</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi_old</span><span class="p">,</span> <span class="n">pi_old</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Leapfrog integrator analogous to self.leapfrog but using the modified EoMs.</span>
+<span class="sd">        Leapfrog integrator analogous to :py:meth:`SU2xSU2.SU2xSU2.leapfrog` but using the modified EoMs.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -410,7 +403,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.pi_samples"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.pi_samples">[docs]</a>    <span class="k">def</span> <span class="nf">pi_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.</span>
-<span class="sd">        The sampling is easiest done in Fourier space and in terms of a real and hermitian object PI from which the momentum samples can be reconstructed (both in Fourier space) </span>
+<span class="sd">        The sampling is easiest done in Fourier space and in terms of a real and hermitian object ``PI`` from which the momentum samples can be reconstructed (both in Fourier space) </span>
 <span class="sd">        The size of the lattice along one dimension L is assumed to be even.</span>
 
 <span class="sd">        Returns</span>
@@ -465,10 +458,10 @@
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Performs the Hybrid Monte Carlo simulation, by default with Fourier Acceleration.</span>
 <span class="sd">    </span>
-<span class="sd">        A total of M trajectories will be simulated and measurements are taken every thin_freq steps after the</span>
-<span class="sd">        thermalisation period defined as the first M*burnin_frac samples.</span>
+<span class="sd">        A total of ``M`` trajectories will be simulated and measurements are taken every ``thin_freq`` steps after the</span>
+<span class="sd">        thermalisation period defined as the first ``M*burnin_frac`` samples.</span>
 <span class="sd">        Due to accumulating rounding errors, the molecular dynamics cause field to leave the group manifold slowly. This is counteracted by enforcing the unitarity constraint</span>
-<span class="sd">        of the matrix parameters every renorm_freq-th step.</span>
+<span class="sd">        of the matrix parameters every ``renorm_freq``-th step.</span>
 <span class="sd">        The Monte Carlo chain is fully defined (and thus reproducible) by the model and simulation parameters as well as the initial configuration of the chain and </span>
 <span class="sd">        the state of the random number generator (RNG). By using the last configuration of a previous chain and the associated RNG state,</span>
 <span class="sd">        one can continue the chain seamlessly in a new simulation.</span>
@@ -487,12 +480,12 @@
 <span class="sd">            can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the </span>
 <span class="sd">            internal energy density, susceptibility, and wall-to-wall correlation respectively</span>
 <span class="sd">        chain_paths: list of str (optional)</span>
-<span class="sd">            Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. </span>
+<span class="sd">            Only required if ``saving_bool=True``, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. </span>
 <span class="sd">            The data will always be saved as a .npy file, allowing to omit the file extension.</span>
 <span class="sd">        saving_bool: bool (optional)</span>
 <span class="sd">            save measurement data</span>
-<span class="sd">        partial save: int (optional)</span>
-<span class="sd">            after how many steps preliminary measurements and chain state is saved to disk. Requires saving_bool=True</span>
+<span class="sd">        partial_save: int (optional)</span>
+<span class="sd">            after how many steps preliminary measurements and chain state is saved to disk. Requires ``saving_bool=True``.</span>
 <span class="sd">        starting_config_path: str (optional)</span>
 <span class="sd">            path to configuration to initialize the chain (.npy file). If not passed a disordered (i.e hot) start will be used.</span>
 <span class="sd">        RNG_state_path: str (optional)</span>
@@ -501,7 +494,7 @@
 <span class="sd">        chain_state_dir: str (optional)</span>
 <span class="sd">            path to directory in which the RNG state and the last configuration will be saved  </span>
 <span class="sd">        renorm_freq: int (optional)</span>
-<span class="sd">            after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to &#39;None&#39; to never renormalize</span>
+<span class="sd">            after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to ``None`` to never renormalize</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">def</span> <span class="nf">saving</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">file_paths</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&#39;&#39;&#39;</span>
@@ -650,7 +643,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.ww_correlation_func"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.ww_correlation_func">[docs]</a>    <span class="k">def</span> <span class="nf">ww_correlation_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39; </span>
-<span class="sd">        Computes the *non*-normalized wall to wall correlation function for the lattice configuration phi.</span>
+<span class="sd">        Computes the **non**-normalized wall to wall correlation function for the lattice configuration ``phi``.</span>
 <span class="sd">        Observing that the correlation of two variables can be written as a convolution, one can apply the cross correlation theorem to efficiently compute</span>
 <span class="sd">        the latter using FFTs.  </span>
 
@@ -662,7 +655,7 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ww_cor: (L,) array</span>
-<span class="sd">            wall to wall correlation evaluated for wall separation in interval [0, L), *not* normalized to value at zero separation.</span>
+<span class="sd">            wall to wall correlation evaluated for wall separation in interval [0, L), **not** normalized to value at zero separation.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">ww_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span>
         <span class="n">Phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># (L,4)</span>
@@ -676,7 +669,7 @@
 
 <div class="viewcode-block" id="SU2xSU2.susceptibility"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2.susceptibility">[docs]</a>    <span class="k">def</span> <span class="nf">susceptibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Computes the susceptibility (the average point to point correlation) for the configuration phi which can be obtained by summing up the correlation function.</span>
+<span class="sd">        Computes the susceptibility (the average point to point correlation) for the configuration ``phi`` which can be obtained by summing up the correlation function.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

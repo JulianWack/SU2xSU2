@@ -9,7 +9,7 @@ from .correlations import *
 
 
 class SU2xSU2():
-    '''Each instance describes a realization of the SU(2)xSU(2) model on a lattice whose dynamics can be simulated using the 
+    '''Each instance describes a realization of the SU(2)xSU(2) model on a square lattice whose dynamics can be simulated using the 
     Fourier Accelerated Hybrid Monte Carlo algorithm.'''
     def __init__(self, L, a, ell, eps, beta, mass=0.1): 
         '''
@@ -44,7 +44,7 @@ class SU2xSU2():
 
     def make_NN_mask(self):
         '''Makes mask to apply to SU(2) valued field phi or momentum field pi which then gives the matrix parameter values of the nearest neighbors (NN) for each lattice site.
-        Hence phi[self.NN_mask] is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).
+        Hence ``phi[self.NN_mask]`` is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).
         
         Returns
         -------
@@ -84,7 +84,7 @@ class SU2xSU2():
         
     def action(self, phi):
         '''
-        Computes the action for lattice configuration phi
+        Computes the action for lattice configuration ``phi``.
 
         Parameters
         ----------
@@ -113,7 +113,7 @@ class SU2xSU2():
 
     def Ham(self, phi, pi):
         '''
-        Computes the Hamiltonian for a lattice configuration phi and momentum configuration pi.
+        Computes the Hamiltonian for a lattice configuration ``phi`` and momentum configuration ``pi``.
         The kinetic term is chosen such that the momenta follow a standard Gaussian.
 
         Parameters
@@ -137,7 +137,7 @@ class SU2xSU2():
 
     def Ham_FA(self, phi, pi):
         '''
-        Analogous to the method self.Ham but computes the modified Hamiltonian used to accelerate the dynamics.
+        Analogous to :py:meth:`SU2xSU2.SU2xSU2.Ham` but computes the modified Hamiltonian used to accelerate the dynamics.
 
         Parameters
         ----------
@@ -150,6 +150,10 @@ class SU2xSU2():
         -------
         H: float
             the modified Hamiltonian as the sum of the action and the modified kinetic term
+        
+        See Also
+        --------
+        SU2xSU2.SU2xSU2.Ham
         '''
         # (L,L) find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components
         pi_F_mag = np.sum( np.abs(np.fft.fft2(pi, axes=(0,1)))**2, axis=-1 ) 
@@ -178,7 +182,7 @@ class SU2xSU2():
 
 
     def kernel_inv_F(self):
-        '''Finds inverse of the action kernel computed in the Fourier space, usually referred to as 'A'.
+        '''Finds inverse of the action kernel computed in the Fourier space, here referred to as ``A``.
 
         Returns
         -------
@@ -198,8 +202,8 @@ class SU2xSU2():
 
 
     def pi_dot(self, phi):
-        '''Computes the derivative of pi with respect to the Hamiltonian time. From Hamilton's equations, this is given as i times the derivative of the action wrt. phi.
-        pi and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.
+        '''Computes the derivative of ``pi`` with respect to the Hamiltonian time. From Hamilton's equations, this is given as i times the derivative of the action wrt. ``phi``.
+        ``pi`` and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.
 
         Parameters
         ----------
@@ -246,7 +250,7 @@ class SU2xSU2():
 
     def leapfrog(self, phi_old, pi_old):
         '''
-        Performs the leapfrog integration of Hamilton's equations for self.ell steps, each of size self.eps. The passed arguments define the initial conditions. 
+        Performs the leapfrog integration of Hamilton's equations for ``self.ell`` steps, each of size ``self.eps``. The passed arguments define the initial conditions. 
         
         Parameters
         ----------
@@ -282,7 +286,7 @@ class SU2xSU2():
 
     def leapfrog_FA(self, phi_old, pi_old):
         '''
-        Leapfrog integrator analogous to self.leapfrog but using the modified EoMs.
+        Leapfrog integrator analogous to :py:meth:`SU2xSU2.SU2xSU2.leapfrog` but using the modified EoMs.
 
         See Also
         --------
@@ -327,7 +331,7 @@ class SU2xSU2():
 
     def pi_samples(self):
         '''Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.
-        The sampling is easiest done in Fourier space and in terms of a real and hermitian object PI from which the momentum samples can be reconstructed (both in Fourier space) 
+        The sampling is easiest done in Fourier space and in terms of a real and hermitian object ``PI`` from which the momentum samples can be reconstructed (both in Fourier space) 
         The size of the lattice along one dimension L is assumed to be even.
 
         Returns
@@ -382,10 +386,10 @@ class SU2xSU2():
         '''
         Performs the Hybrid Monte Carlo simulation, by default with Fourier Acceleration.
     
-        A total of M trajectories will be simulated and measurements are taken every thin_freq steps after the
-        thermalisation period defined as the first M*burnin_frac samples.
+        A total of ``M`` trajectories will be simulated and measurements are taken every ``thin_freq`` steps after the
+        thermalisation period defined as the first ``M*burnin_frac`` samples.
         Due to accumulating rounding errors, the molecular dynamics cause field to leave the group manifold slowly. This is counteracted by enforcing the unitarity constraint
-        of the matrix parameters every renorm_freq-th step.
+        of the matrix parameters every ``renorm_freq``-th step.
         The Monte Carlo chain is fully defined (and thus reproducible) by the model and simulation parameters as well as the initial configuration of the chain and 
         the state of the random number generator (RNG). By using the last configuration of a previous chain and the associated RNG state,
         one can continue the chain seamlessly in a new simulation.
@@ -404,12 +408,12 @@ class SU2xSU2():
             can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the 
             internal energy density, susceptibility, and wall-to-wall correlation respectively
         chain_paths: list of str (optional)
-            Only required if saving_bool=True, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. 
+            Only required if ``saving_bool=True``, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. 
             The data will always be saved as a .npy file, allowing to omit the file extension.
         saving_bool: bool (optional)
             save measurement data
-        partial save: int (optional)
-            after how many steps preliminary measurements and chain state is saved to disk. Requires saving_bool=True
+        partial_save: int (optional)
+            after how many steps preliminary measurements and chain state is saved to disk. Requires ``saving_bool=True``.
         starting_config_path: str (optional)
             path to configuration to initialize the chain (.npy file). If not passed a disordered (i.e hot) start will be used.
         RNG_state_path: str (optional)
@@ -418,7 +422,7 @@ class SU2xSU2():
         chain_state_dir: str (optional)
             path to directory in which the RNG state and the last configuration will be saved  
         renorm_freq: int (optional)
-            after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to 'None' to never renormalize
+            after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to ``None`` to never renormalize
         '''
         def saving(j, data, file_paths):
             '''
@@ -567,7 +571,7 @@ class SU2xSU2():
 
     def ww_correlation_func(self, phi):
         ''' 
-        Computes the *non*-normalized wall to wall correlation function for the lattice configuration phi.
+        Computes the **non**-normalized wall to wall correlation function for the lattice configuration ``phi``.
         Observing that the correlation of two variables can be written as a convolution, one can apply the cross correlation theorem to efficiently compute
         the latter using FFTs.  
 
@@ -579,7 +583,7 @@ class SU2xSU2():
         Returns
         -------
         ww_cor: (L,) array
-            wall to wall correlation evaluated for wall separation in interval [0, L), *not* normalized to value at zero separation.
+            wall to wall correlation evaluated for wall separation in interval [0, L), **not** normalized to value at zero separation.
         '''
         ww_cor = np.zeros(self.L)
         Phi = np.sum(phi, axis=0) # (L,4)
@@ -593,7 +597,7 @@ class SU2xSU2():
 
     def susceptibility(self, phi):
         '''
-        Computes the susceptibility (the average point to point correlation) for the configuration phi which can be obtained by summing up the correlation function.
+        Computes the susceptibility (the average point to point correlation) for the configuration ``phi`` which can be obtained by summing up the correlation function.
 
         Parameters
         ----------

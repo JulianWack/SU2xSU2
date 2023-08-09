@@ -4,7 +4,7 @@ from .SU2xSU2 import SU2xSU2
 
 def calibrate(model_paras, accel=False, sim_paras=None):
     '''
-    For a model, specified by the dictionary model_paras, this function calibrates the number of leapfrog integration steps and their size 
+    For a model, specified by the dictionary ``model_paras``, this function calibrates the number of leapfrog integration steps and their size 
     under the constraint that the trajectory length is 1 and that the acceptance rate is with in desireable range between 60 and 75%.
     
     The calibration is done by performing short simulation runs (500 trajectories with 50% burn in unless overridden by passing ``sim_paras``), extracting the acceptance rate
@@ -18,13 +18,13 @@ def calibrate(model_paras, accel=False, sim_paras=None):
     Parameters
     ----------
     model_paras: dict
-        {L, a, ell, eps, beta} denoting lattice size, lattice spacing, number of integration steps, integration step size and the SU(2)xSU(2) model parameter beta respectively
+        ``{L, a, ell, eps, beta}`` denoting lattice size, lattice spacing, number of integration steps, integration step size and the SU(2)xSU(2) model parameter beta respectively
         The values of ell, eps are used as guesses to start the calibration and their product must be 1.
     accel: bool, optional
         use Fourier Acceleration or not
     sim_paras: dict, optional
-        {M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}
-        Specifying the simulation parameters for the calibration run by calling *SU2xSU2.run_HMC*. 
+        ``{M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}``
+        Specifying the simulation parameters for the calibration run by calling :py:meth:`SU2xSU2.SU2xSU2.run_HMC`. 
         Consider the associated docstring for definitions of these parameters.
 
     Returns

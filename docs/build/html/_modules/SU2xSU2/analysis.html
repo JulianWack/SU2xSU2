@@ -110,9 +110,9 @@
 <span class="sd">        ensemble average of data</span>
 <span class="sd">    error: float or (N, )</span>
 <span class="sd">        autocorrelation corrected SEM</span>
-<span class="sd">    IAT: float (if get_IAT==True)</span>
+<span class="sd">    IAT: float (if ``get_IAT==True``)</span>
 <span class="sd">        integrated autocorrelation time (IAT)</span>
-<span class="sd">    IAT_err: float (if get_IAT==True)</span>
+<span class="sd">    IAT_err: float (if ``get_IAT==True``)</span>
 <span class="sd">        error of IAT</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -143,7 +143,7 @@
 <span class="w">    </span><span class="sd">&#39;&#39;&#39; </span>
 <span class="sd">    Infers the correlation length based on the ensemble averaged wall to wall correlation function and its error. </span>
 <span class="sd">    The correlation function data is processed by normalizing and averaging it about its symmetry axis at L/2 which will be saved</span>
-<span class="sd">    at &#39;data_save_path&#39;.</span>
+<span class="sd">    at ``data_save_path``.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -199,13 +199,13 @@
 <div class="viewcode-block" id="internal_energy_coupling_exp"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.analysis.internal_energy_coupling_exp">[docs]</a><span class="k">def</span> <span class="nf">internal_energy_coupling_exp</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">num_traj</span><span class="p">,</span> <span class="n">burnin_frac</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                 <span class="n">chaindata_pathbase</span><span class="o">=</span><span class="s1">&#39;data/energy_density/&#39;</span><span class="p">,</span> <span class="n">simdata_path</span><span class="o">=</span><span class="s1">&#39;data/energy_density.txt&#39;</span><span class="p">,</span> <span class="n">plot_path</span><span class="o">=</span><span class="s1">&#39;plots/coupling_expansion.pdf&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Computes and stores the internal energy per site for the passed value pairs of betas, Ls.</span>
+<span class="sd">    Computes and stores the internal energy per site for the passed value pairs of ``betas``, ``Ls``.</span>
 <span class="sd">    As a density is computed, the value of the lattice size is not crucial and finite size effects are often negligible.</span>
-<span class="sd">    For each value pair, num_traj trajectories are simulated, with burnin_frac specifying the fraction of these rejected as burn in. </span>
+<span class="sd">    For each value pair, ``num_traj`` trajectories are simulated, with ``burnin_frac`` specifying the fraction of these rejected as burn in. </span>
 <span class="sd">    By default the Fourier accelerated Hybrid Monte Carlo algorithm is used. For each simulation, the chain of internal energy measurements is</span>
-<span class="sd">    stored at &#39;chaindata_pathbase&#39; and files are labeled by the used value of beta and L. </span>
-<span class="sd">    The ensemble average values of the internal energy densities are stored at &#39;simdata_path&#39; as a text file.</span>
-<span class="sd">    A plot, stored at &#39;plot_path&#39;, is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).</span>
+<span class="sd">    stored at ``chaindata_pathbase`` and files are labeled by the used value of beta and L. </span>
+<span class="sd">    The ensemble average values of the internal energy densities are stored at ``simdata_path`` as a text file.</span>
+<span class="sd">    A plot, stored at ``plot_path``, is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -221,7 +221,7 @@
 <span class="sd">    accel: bool (optional)</span>
 <span class="sd">        using Fourier Acceleration by default</span>
 <span class="sd">    chaindata_pathbase: str</span>
-<span class="sd">        path of the directory where the internal energy measurement chains for all value pairs of beta,L will be saved</span>
+<span class="sd">        path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved</span>
 <span class="sd">    simdata_path: str (optional)</span>
 <span class="sd">        path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the</span>
 <span class="sd">        internal energy density and its error (with file extension)</span>
@@ -308,17 +308,17 @@
                 <span class="n">corlengthdata_path</span><span class="o">=</span><span class="s1">&#39;data/corlength.txt&#39;</span><span class="p">,</span> <span class="n">corfuncs_chain_dir</span><span class="o">=</span><span class="s1">&#39;data/corfuncs/rawchains/&#39;</span><span class="p">,</span> <span class="n">corfuncs_dir</span><span class="o">=</span><span class="s1">&#39;data/corfuncs/&#39;</span><span class="p">,</span>
                 <span class="n">corfuncs_plot_dir</span><span class="o">=</span><span class="s1">&#39;plots/corfuncs/&#39;</span><span class="p">,</span> <span class="n">plot_path</span><span class="o">=</span><span class="s1">&#39;plots/asymptotic_scaling.pdf&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Computes the mass over lambda parameter ratio for for the passed value pairs of betas, Ls (lattice size along one dimension).</span>
+<span class="sd">    Computes the mass over lambda parameter ratio for for the passed value pairs of ``betas``, ``Ls`` (lattice size along one dimension).</span>
 <span class="sd">    The lattice size must be chosen sufficiently large (meaning a multiple of the correlation length) to avoid finite size effects.</span>
 <span class="sd">    In general, the required lattice size increases quickly with beta.</span>
 
-<span class="sd">    Computing the mass over lambda ratio requires the correlation length for each beta,L value pair and will be stored in the text file at &#39;corlengthdata_path&#39;.</span>
-<span class="sd">    For each of the considered beta,L value pairs, the raw measurement chain for the correlation function is saved in the directory &#39;corfuncs_chain_dir&#39;,</span>
+<span class="sd">    Computing the mass over lambda ratio requires the correlation length for each beta,L value pair and will be stored in the text file at ``corlengthdata_path``.</span>
+<span class="sd">    For each of the considered beta,L value pairs, the raw measurement chain for the correlation function is saved in the directory ``corfuncs_chain_dir``,</span>
 <span class="sd">    while the the processed correlation function data (normalized as well as ensemble averaged and averaged across the symmetry axis at L/2) </span>
-<span class="sd">    is stored at &#39;corfuncs_dir&#39;. Plots of the correlation functions, with the fitted analytical expectation are stored at &#39;corfuncs_plot_dir&#39;.</span>
+<span class="sd">    is stored at ``corfuncs_dir``. Plots of the correlation functions, with the fitted analytical expectation are stored at ``corfuncs_plot_dir``.</span>
 <span class="sd">    In all cases the file names are given by considered values of beta,L.</span>
 
-<span class="sd">    A plot of mass over lambda ratio is produced and stored at &#39;plot_path&#39;, allowing to assess the convergence of the simulation data to the continuum mass </span>
+<span class="sd">    A plot of mass over lambda ratio is produced and stored at ``plot_path``, allowing to assess the convergence of the simulation data to the continuum mass </span>
 <span class="sd">    gap prediction as beta gets large.</span>
 
 <span class="sd">    Parameters</span>
@@ -458,14 +458,14 @@
                          <span class="n">chi_data_dir</span><span class="o">=</span><span class="s1">&#39;data/slowdown/&#39;</span><span class="p">,</span> <span class="n">slowdownplot_path</span><span class="o">=</span><span class="s1">&#39;plots/slowdown.pdf&#39;</span><span class="p">,</span> <span class="n">costfuncplot_path</span><span class="o">=</span><span class="s1">&#39;plots/costfunc.pdf&#39;</span><span class="p">,</span>
                          <span class="n">xticks</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">25</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Computes the integrated autocorrelation time (IAT) of the susceptibility using beta,L form previous simulations where the correlation length was measured and stored.</span>
-<span class="sd">    For example, the data produced in &#39;mass_lambda&#39; and stored at its argument &#39;corlengthdata_path&#39; can be used. </span>
+<span class="sd">    Computes the integrated autocorrelation time (IAT) of the susceptibility using beta, L form previous simulations where the correlation length was measured and stored.</span>
+<span class="sd">    For example, the data produced in :py:func:`SU2xSU2.analysis.mass_lambda` and stored at its argument ``corlengthdata_path`` can be used. </span>
 <span class="sd">    Its is assumed that the data has a row wise structure of Ls, betas, correlation length.</span>
-<span class="sd">    The computation is done for accelerated and unaccelerated dynamics, with the measurement chains being stored in directories accel, unaccel at &#39;chi_chain_dir&#39;.</span>
-<span class="sd">    Files are labeled by the used value of beta and L. The ensemble average results are stored as text files at &#39;chi_data_dir&#39; while the </span>
-<span class="sd">    associated plot of IAT vs correlation length is stored at &#39;slowdownplot_path&#39;. Power laws are fitted for either acceleration choice, </span>
-<span class="sd">    allowing to quantify the degree of critical slowing down through the fitted value of the critical exponent z. </span>
-<span class="sd">    A further plot, showing the simulation cost of either acceleration choice, is stored at &#39;costfuncplot_path&#39;. </span>
+<span class="sd">    The computation is done for accelerated and unaccelerated dynamics, with the measurement chains being stored in directories ``accel/``, ``unaccel/`` at ``chi_chain_dir``.</span>
+<span class="sd">    Files are labeled by the used value of beta and L. The ensemble average results are stored as text files at ``chi_data_dir`` while the </span>
+<span class="sd">    associated plot of IAT vs correlation length is stored at ``slowdownplot_path``. Power laws are fitted for either acceleration choice, </span>
+<span class="sd">    allowing to quantify the degree of critical slowing down through the fitted value of the critical exponent &#39;z&#39;. </span>
+<span class="sd">    A further plot, showing the simulation cost of either acceleration choice, is stored at ``costfuncplot_path``. </span>
 <span class="sd">     </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -474,12 +474,12 @@
 <span class="sd">    burnin_frac: float</span>
 <span class="sd">        fraction of trajectories discarded as burn in</span>
 <span class="sd">    corlengthdata_path: str (optional)</span>
-<span class="sd">        path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from &#39;mass_lambda&#39; when its argument with </span>
-<span class="sd">        the same name is also left as default</span>
+<span class="sd">        path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from :py:func:`SU2xSU2.analysis.mass_lambda`</span>
+<span class="sd">        when its argument with the same name is also left as default.</span>
 <span class="sd">    chi_chain_dir: str (optional)</span>
-<span class="sd">        path of directory where two directories (accel and unaccel) will be created to store the measurement chains of the susceptibility.</span>
+<span class="sd">        path of directory where two directories (named accel and unaccel) will be created to store the measurement chains of the susceptibility.</span>
 <span class="sd">    chi_data_dir: str (optional)</span>
-<span class="sd">        path of directory where two directories (accel and unaccel) will be created to store L, beta, the IAT, its error, </span>
+<span class="sd">        path of directory where two directories (named accel and unaccel) will be created to store L, beta, the IAT, its error, </span>
 <span class="sd">        the ensemble averaged susceptibility, its error, the simulation time, and the acceptance rate (row wise).</span>
 <span class="sd">    slowdownplot_path: str (optional)</span>
 <span class="sd">        path to plot showing the power law scaling of the susceptibility IAT with the correlation length </span>
@@ -663,11 +663,11 @@
 <div class="viewcode-block" id="acceleration_mass_search"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.analysis.acceleration_mass_search">[docs]</a><span class="k">def</span> <span class="nf">acceleration_mass_search</span><span class="p">(</span><span class="n">num_traj</span><span class="p">,</span> <span class="n">burnin_frac</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">corlength</span><span class="p">,</span> <span class="n">masses</span><span class="p">,</span>
                             <span class="n">chain_dir</span><span class="o">=</span><span class="s1">&#39;data/acceleration_mass/&#39;</span><span class="p">,</span> <span class="n">data_path</span><span class="o">=</span><span class="s1">&#39;data/accelertion_mass.txt&#39;</span><span class="p">,</span> <span class="n">plot_path</span><span class="o">=</span><span class="s1">&#39;plots/acceleration_mass.pdf&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Performs a grid search of the mass acceleration parameter for the passed value pair of beta, L.</span>
+<span class="sd">    Performs a grid search of the mass acceleration parameter for the passed value pair of ``beta``, ``L``.</span>
 <span class="sd">    To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced</span>
-<span class="sd">    comparing the simulation cost agaist values of the acceleration mass. The plot is stored at &#39;plot_path&#39; and the associated </span>
-<span class="sd">    data is stored at &#39;data_path&#39;. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.</span>
-<span class="sd">    The susceptibility chain is stored in the directory &#39;chain_dir&#39; with the file being labeled by the value of beta and L.</span>
+<span class="sd">    comparing the simulation cost agaist values of the acceleration mass. The plot is stored at ``plot_path`` and the associated </span>
+<span class="sd">    data is stored at ``data_path``. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.</span>
+<span class="sd">    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the value of ``beta`` and ``L``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

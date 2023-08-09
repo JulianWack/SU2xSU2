@@ -11,7 +11,7 @@ Fourier Acceleration into the Hybrid Monte Carlo algorithm which leads to a
 significant reduction in the degree of critical slowing down.
 
 Check out the :doc:`usage` section for further information, including how to
-:ref:`install <installation>` the project and some :ref: `examples <examples>`.
+:ref:`install <installation>` the project and some :ref:`examples <examples>`.
 
 .. note::
    Currently the simulation is only supported for a two dimensional cubic lattice.

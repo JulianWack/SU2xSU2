@@ -15,7 +15,7 @@ def plot_chain(data_chain_path, ylabel, start_idx=0):
     Observables of particular interest are the susceptibility (as sufficient burn is needed for the critical slowing down analysis) and 
     the correlation function at a fixed separation (ideally chosen close to the correlation length as this is a slowly converging quantity
     and thus gives a lower bound for burn in).
-    If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by 'start_idx'. 
+    If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by ``start_idx``. 
 
     Parameters
     ----------
@@ -40,12 +40,12 @@ def plot_chain(data_chain_path, ylabel, start_idx=0):
 
 def correlation_func_plot(data_path, plot_path, fit_upper=None, show_plot=True, ybottom=None, xright=None):
     '''
-    Produces a plot (with a logarithmic y axis) of the correlation function data (stored at 'data_path') and the fitted, analytical expectation. 
-    The plot is saved at 'plot_path' with the fitting range and other plot parameters can be adjusted through the arguments.
+    Produces a plot (with a logarithmic y axis) of the correlation function data (stored at ``data_path``) and the fitted, analytical expectation. 
+    The plot is saved at ``plot_path`` with the fitting range and other plot parameters can be adjusted through the arguments.
 
     Allows manual adjustment of fitting the correlation length to the processed correlation function data (normalized and mirror averaged).
     A plot with the new fitting is produced and the inferred correlation length, its error and the associated chi2 are printed.
-    These can then be manually added to the data/corlen_data.txt file.
+    These can then be manually added to (for example) a data/corlen_data.txt file.
 
     Parameters
     ----------
@@ -56,14 +56,13 @@ def correlation_func_plot(data_path, plot_path, fit_upper=None, show_plot=True, 
         file path (including file extension) to store the plot at
     fit_upper: int (optional)
         largest separation (in units of the lattice spacing) to be included in the fit.
-        If left as 'None', only all non-zero values of the correlation function will be included in the fit
+        If left as ``None``, only all non-zero values of the correlation function will be included in the fit
     show_plot: bool (optional)
         shows produced plot before saving it
     ybottom: float (optional)
         lower limit for y axis
     xright: float (optional)
         upper limit for x axis
-
     '''
     def fit(d,xi):
         return (np.cosh((d-L_2)/xi) - 1) / (np.cosh(L_2/xi) - 1)
@@ -115,7 +114,7 @@ def correlation_func_plot(data_path, plot_path, fit_upper=None, show_plot=True, 
 
 def effective_mass_plot(data_path, xright=None, ytop=None, ybottom=None, show_plot=True, plot_path='plots/effective_mass.pdf'):
     '''
-    Produces an effective mass plot using the processed correlation function data stored at 'data_path'.
+    Produces an effective mass plot using the processed correlation function data stored at ``data_path``.
     The data is expected to contain the separation, the correlation function value and its error row wise.
     The effective mass will be computed based on the assumption that the correlation function follows the shape of
     a cosh as analytically expected due to periodic boundary conditions. 
@@ -190,5 +189,3 @@ def effective_mass_plot(data_path, xright=None, ytop=None, ybottom=None, show_pl
         os.makedirs(dir_path, exist_ok=True)
     fig.savefig(plot_path)
     plt.close()
-
-

@@ -38,9 +38,9 @@ def get_avg_error(data, get_IAT=False):
         ensemble average of data
     error: float or (N, )
         autocorrelation corrected SEM
-    IAT: float (if get_IAT==True)
+    IAT: float (if ``get_IAT==True``)
         integrated autocorrelation time (IAT)
-    IAT_err: float (if get_IAT==True)
+    IAT_err: float (if ``get_IAT==True``)
         error of IAT
     '''
     if len(data.shape) == 1:
@@ -71,7 +71,7 @@ def get_corlength(ww_cor, ww_cor_err, data_save_path):
     ''' 
     Infers the correlation length based on the ensemble averaged wall to wall correlation function and its error. 
     The correlation function data is processed by normalizing and averaging it about its symmetry axis at L/2 which will be saved
-    at 'data_save_path'.
+    at ``data_save_path``.
     
     Parameters
     ----------
@@ -127,13 +127,13 @@ def get_corlength(ww_cor, ww_cor_err, data_save_path):
 def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
                                 chaindata_pathbase='data/energy_density/', simdata_path='data/energy_density.txt', plot_path='plots/coupling_expansion.pdf'):
     '''
-    Computes and stores the internal energy per site for the passed value pairs of betas, Ls.
+    Computes and stores the internal energy per site for the passed value pairs of ``betas``, ``Ls``.
     As a density is computed, the value of the lattice size is not crucial and finite size effects are often negligible.
-    For each value pair, num_traj trajectories are simulated, with burnin_frac specifying the fraction of these rejected as burn in. 
+    For each value pair, ``num_traj`` trajectories are simulated, with ``burnin_frac`` specifying the fraction of these rejected as burn in. 
     By default the Fourier accelerated Hybrid Monte Carlo algorithm is used. For each simulation, the chain of internal energy measurements is
-    stored at 'chaindata_pathbase' and files are labeled by the used value of beta and L. 
-    The ensemble average values of the internal energy densities are stored at 'simdata_path' as a text file.
-    A plot, stored at 'plot_path', is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).
+    stored at ``chaindata_pathbase`` and files are labeled by the used value of beta and L. 
+    The ensemble average values of the internal energy densities are stored at ``simdata_path`` as a text file.
+    A plot, stored at ``plot_path``, is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).
     
     Parameters
     ----------
@@ -149,7 +149,7 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
     accel: bool (optional)
         using Fourier Acceleration by default
     chaindata_pathbase: str
-        path of the directory where the internal energy measurement chains for all value pairs of beta,L will be saved
+        path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved
     simdata_path: str (optional)
         path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the
         internal energy density and its error (with file extension)
@@ -236,17 +236,17 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
                 corlengthdata_path='data/corlength.txt', corfuncs_chain_dir='data/corfuncs/rawchains/', corfuncs_dir='data/corfuncs/',
                 corfuncs_plot_dir='plots/corfuncs/', plot_path='plots/asymptotic_scaling.pdf'):
     '''
-    Computes the mass over lambda parameter ratio for for the passed value pairs of betas, Ls (lattice size along one dimension).
+    Computes the mass over lambda parameter ratio for for the passed value pairs of ``betas``, ``Ls`` (lattice size along one dimension).
     The lattice size must be chosen sufficiently large (meaning a multiple of the correlation length) to avoid finite size effects.
     In general, the required lattice size increases quickly with beta.
 
-    Computing the mass over lambda ratio requires the correlation length for each beta,L value pair and will be stored in the text file at 'corlengthdata_path'.
-    For each of the considered beta,L value pairs, the raw measurement chain for the correlation function is saved in the directory 'corfuncs_chain_dir',
+    Computing the mass over lambda ratio requires the correlation length for each beta,L value pair and will be stored in the text file at ``corlengthdata_path``.
+    For each of the considered beta,L value pairs, the raw measurement chain for the correlation function is saved in the directory ``corfuncs_chain_dir``,
     while the the processed correlation function data (normalized as well as ensemble averaged and averaged across the symmetry axis at L/2) 
-    is stored at 'corfuncs_dir'. Plots of the correlation functions, with the fitted analytical expectation are stored at 'corfuncs_plot_dir'.
+    is stored at ``corfuncs_dir``. Plots of the correlation functions, with the fitted analytical expectation are stored at ``corfuncs_plot_dir``.
     In all cases the file names are given by considered values of beta,L.
 
-    A plot of mass over lambda ratio is produced and stored at 'plot_path', allowing to assess the convergence of the simulation data to the continuum mass 
+    A plot of mass over lambda ratio is produced and stored at ``plot_path``, allowing to assess the convergence of the simulation data to the continuum mass 
     gap prediction as beta gets large.
 
     Parameters
@@ -386,14 +386,14 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
                          chi_data_dir='data/slowdown/', slowdownplot_path='plots/slowdown.pdf', costfuncplot_path='plots/costfunc.pdf',
                          xticks=[2,5,10,20,50,100], yticks=[1,5,10,25]):
     '''
-    Computes the integrated autocorrelation time (IAT) of the susceptibility using beta,L form previous simulations where the correlation length was measured and stored.
-    For example, the data produced in 'mass_lambda' and stored at its argument 'corlengthdata_path' can be used. 
+    Computes the integrated autocorrelation time (IAT) of the susceptibility using beta, L form previous simulations where the correlation length was measured and stored.
+    For example, the data produced in :py:func:`SU2xSU2.analysis.mass_lambda` and stored at its argument ``corlengthdata_path`` can be used. 
     Its is assumed that the data has a row wise structure of Ls, betas, correlation length.
-    The computation is done for accelerated and unaccelerated dynamics, with the measurement chains being stored in directories accel, unaccel at 'chi_chain_dir'.
-    Files are labeled by the used value of beta and L. The ensemble average results are stored as text files at 'chi_data_dir' while the 
-    associated plot of IAT vs correlation length is stored at 'slowdownplot_path'. Power laws are fitted for either acceleration choice, 
-    allowing to quantify the degree of critical slowing down through the fitted value of the critical exponent z. 
-    A further plot, showing the simulation cost of either acceleration choice, is stored at 'costfuncplot_path'. 
+    The computation is done for accelerated and unaccelerated dynamics, with the measurement chains being stored in directories ``accel/``, ``unaccel/`` at ``chi_chain_dir``.
+    Files are labeled by the used value of beta and L. The ensemble average results are stored as text files at ``chi_data_dir`` while the 
+    associated plot of IAT vs correlation length is stored at ``slowdownplot_path``. Power laws are fitted for either acceleration choice, 
+    allowing to quantify the degree of critical slowing down through the fitted value of the critical exponent 'z'. 
+    A further plot, showing the simulation cost of either acceleration choice, is stored at ``costfuncplot_path``. 
      
     Parameters
     ----------
@@ -402,12 +402,12 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
     burnin_frac: float
         fraction of trajectories discarded as burn in
     corlengthdata_path: str (optional)
-        path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from 'mass_lambda' when its argument with 
-        the same name is also left as default
+        path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from :py:func:`SU2xSU2.analysis.mass_lambda`
+        when its argument with the same name is also left as default.
     chi_chain_dir: str (optional)
-        path of directory where two directories (accel and unaccel) will be created to store the measurement chains of the susceptibility.
+        path of directory where two directories (named accel and unaccel) will be created to store the measurement chains of the susceptibility.
     chi_data_dir: str (optional)
-        path of directory where two directories (accel and unaccel) will be created to store L, beta, the IAT, its error, 
+        path of directory where two directories (named accel and unaccel) will be created to store L, beta, the IAT, its error, 
         the ensemble averaged susceptibility, its error, the simulation time, and the acceptance rate (row wise).
     slowdownplot_path: str (optional)
         path to plot showing the power law scaling of the susceptibility IAT with the correlation length 
@@ -591,11 +591,11 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
 def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
                             chain_dir='data/acceleration_mass/', data_path='data/accelertion_mass.txt', plot_path='plots/acceleration_mass.pdf'):
     '''
-    Performs a grid search of the mass acceleration parameter for the passed value pair of beta, L.
+    Performs a grid search of the mass acceleration parameter for the passed value pair of ``beta``, ``L``.
     To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced
-    comparing the simulation cost agaist values of the acceleration mass. The plot is stored at 'plot_path' and the associated 
-    data is stored at 'data_path'. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.
-    The susceptibility chain is stored in the directory 'chain_dir' with the file being labeled by the value of beta and L.
+    comparing the simulation cost agaist values of the acceleration mass. The plot is stored at ``plot_path`` and the associated 
+    data is stored at ``data_path``. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.
+    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the value of ``beta`` and ``L``.
 
     Parameters
     ----------

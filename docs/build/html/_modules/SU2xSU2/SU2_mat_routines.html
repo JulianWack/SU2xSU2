@@ -87,7 +87,7 @@
 <span class="sd">    A lattice of SU(2) matrices may be defined through the exponential map with parameters alpha. </span>
 <span class="sd">    The exponential map can be explicitly evaluated, resulting in a linear combination of the Pauli matrices and unity:</span>
 <span class="sd">    U = exp(i alpha_i sigma_i) = a_0*1 + i*a_i sigma_i</span>
-<span class="sd">    This function finds the coefficients &#39;a&#39; based on &#39;alpha&#39;.    </span>
+<span class="sd">    This function finds the coefficients ``a`` based on ``alpha``.    </span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -114,7 +114,7 @@
 
 <div class="viewcode-block" id="make_mats"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.make_mats">[docs]</a><span class="k">def</span> <span class="nf">make_mats</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Constructs explicit matrices corresponding to parameter vector a.</span>
+<span class="sd">    Constructs explicit matrices corresponding to parameter vector ``a``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -200,7 +200,7 @@
 
 <div class="viewcode-block" id="norm2"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.norm2">[docs]</a><span class="k">def</span> <span class="nf">norm2</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Returns squared norm of the parameter vector a.</span>
+<span class="sd">    Returns squared norm of the parameter vector ``a``.</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -209,7 +209,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    norm_sq: (L,L) array containing the norm at each site</span>
+<span class="sd">    norm_sq: (L,L) array </span>
+<span class="sd">        containing the norm at each site</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">norm_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">norm_sq</span></div>
@@ -241,7 +242,7 @@
 <span class="c1">### ---------------------------- ###</span>
 <div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors a and b.</span>
+<span class="sd">    Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors ``a`` and ``b``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -266,12 +267,12 @@
 
 <div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2_mat_routines.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Computes the elementwise sum of two SU(2) valued lattices A and B with parameters a and b.</span>
+<span class="sd">    Computes the elementwise sum of two SU(2) valued lattices A and B with parameters ``a`` and ``b``.</span>
 <span class="sd">    Let C = A + B, i.e. c = a + b. </span>
-<span class="sd">    Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant k, meaning</span>
+<span class="sd">    Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant ``k``, meaning</span>
 <span class="sd">    D = C/k = 1/k (A + B) is in SU(2).</span>
-<span class="sd">    To only having to perform manipulations on SU(2) matrices, the parameters d of the SU(2) valued lattice D and the </span>
-<span class="sd">    constant k are returned such that their product gives the </span>
+<span class="sd">    To only having to perform manipulations on SU(2) matrices, the parameters ``d`` of the SU(2) valued lattice D and the </span>
+<span class="sd">    constant ``k`` are returned such that their product gives the </span>
 <span class="sd">    parameter vectors of C, the sum of lattice A and B.</span>
 
 <span class="sd">    Parameters</span>

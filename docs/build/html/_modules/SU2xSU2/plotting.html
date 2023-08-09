@@ -87,7 +87,7 @@
 <span class="sd">    Observables of particular interest are the susceptibility (as sufficient burn is needed for the critical slowing down analysis) and </span>
 <span class="sd">    the correlation function at a fixed separation (ideally chosen close to the correlation length as this is a slowly converging quantity</span>
 <span class="sd">    and thus gives a lower bound for burn in).</span>
-<span class="sd">    If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by &#39;start_idx&#39;. </span>
+<span class="sd">    If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by ``start_idx``. </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -112,12 +112,12 @@
 
 <div class="viewcode-block" id="correlation_func_plot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.plotting.correlation_func_plot">[docs]</a><span class="k">def</span> <span class="nf">correlation_func_plot</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">,</span> <span class="n">fit_upper</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ybottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xright</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Produces a plot (with a logarithmic y axis) of the correlation function data (stored at &#39;data_path&#39;) and the fitted, analytical expectation. </span>
-<span class="sd">    The plot is saved at &#39;plot_path&#39; with the fitting range and other plot parameters can be adjusted through the arguments.</span>
+<span class="sd">    Produces a plot (with a logarithmic y axis) of the correlation function data (stored at ``data_path``) and the fitted, analytical expectation. </span>
+<span class="sd">    The plot is saved at ``plot_path`` with the fitting range and other plot parameters can be adjusted through the arguments.</span>
 
 <span class="sd">    Allows manual adjustment of fitting the correlation length to the processed correlation function data (normalized and mirror averaged).</span>
 <span class="sd">    A plot with the new fitting is produced and the inferred correlation length, its error and the associated chi2 are printed.</span>
-<span class="sd">    These can then be manually added to the data/corlen_data.txt file.</span>
+<span class="sd">    These can then be manually added to (for example) a data/corlen_data.txt file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -128,14 +128,13 @@
 <span class="sd">        file path (including file extension) to store the plot at</span>
 <span class="sd">    fit_upper: int (optional)</span>
 <span class="sd">        largest separation (in units of the lattice spacing) to be included in the fit.</span>
-<span class="sd">        If left as &#39;None&#39;, only all non-zero values of the correlation function will be included in the fit</span>
+<span class="sd">        If left as ``None``, only all non-zero values of the correlation function will be included in the fit</span>
 <span class="sd">    show_plot: bool (optional)</span>
 <span class="sd">        shows produced plot before saving it</span>
 <span class="sd">    ybottom: float (optional)</span>
 <span class="sd">        lower limit for y axis</span>
 <span class="sd">    xright: float (optional)</span>
 <span class="sd">        upper limit for x axis</span>
-
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">xi</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">((</span><span class="n">d</span><span class="o">-</span><span class="n">L_2</span><span class="p">)</span><span class="o">/</span><span class="n">xi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">L_2</span><span class="o">/</span><span class="n">xi</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -187,7 +186,7 @@
 
 <div class="viewcode-block" id="effective_mass_plot"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.plotting.effective_mass_plot">[docs]</a><span class="k">def</span> <span class="nf">effective_mass_plot</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">xright</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ytop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ybottom</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_path</span><span class="o">=</span><span class="s1">&#39;plots/effective_mass.pdf&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Produces an effective mass plot using the processed correlation function data stored at &#39;data_path&#39;.</span>
+<span class="sd">    Produces an effective mass plot using the processed correlation function data stored at ``data_path``.</span>
 <span class="sd">    The data is expected to contain the separation, the correlation function value and its error row wise.</span>
 <span class="sd">    The effective mass will be computed based on the assumption that the correlation function follows the shape of</span>
 <span class="sd">    a cosh as analytically expected due to periodic boundary conditions. </span>
@@ -262,8 +261,6 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-
 </pre></div>
 
            </div>

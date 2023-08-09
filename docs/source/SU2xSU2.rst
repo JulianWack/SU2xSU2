@@ -1,8 +1,6 @@
 SU2xSU2 package
 ===============
 
-Submodules
-----------
 
 SU2xSU2.SU2\_mat\_routines module
 ---------------------------------
@@ -52,11 +50,3 @@ SU2xSU2.plotting module
    :members:
    :undoc-members:
    :show-inheritance:
-
-.. Module contents
-.. ---------------
-
-.. .. automodule:: SU2xSU2
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:

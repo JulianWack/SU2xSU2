@@ -4,23 +4,6 @@ This python package offers efficient simulation and data analysis routines for t
 
 Currently the simulation is only supported for a two dimensional cubic lattice.
 
-<!--
-## Example
-
-from SU2xSU2.SU2xSU2 import SU2xSU2
-
-# define model and lattice parameters 
-model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
-model = SU2xSU2(**model_paras)
-# define simulation parameters and measurements
-sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
-model.run_HMC(**sim_paras) 
-
-
-## Documentation
-Read the docs [here](insert URL)
--->
-
 ## Installation 
 To install ``SU2xSU2`` using ``pip`` run:
 
@@ -32,6 +15,25 @@ The dependencies of the package are detailed in 'requirements.txt'. To install t
 pip install -r requirements.txt
 ```
 Its is recommended to work in a virtual environment.
+
+
+## Documentation
+Read the docs [here](su2xsu2.readthedocs.io).
+
+
+## Example
+A basic example showing how to set up a simulation using Fourier accelerated HMC to measure the wall-to-wall correlation function.
+Further examples can be found [here](https://su2xsu2.readthedocs.io/en/latest/usage.html#examples).
+```python
+from SU2xSU2.SU2xSU2 import SU2xSU2
+
+# define model and lattice parameters 
+model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
+model = SU2xSU2(**model_paras)
+# define simulation parameters and measurements
+sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
+model.run_HMC(**sim_paras) 
+```
 
 <!--
 ## Attribution

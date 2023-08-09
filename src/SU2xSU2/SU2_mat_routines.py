@@ -15,7 +15,7 @@ def alpha_to_a(alpha):
     A lattice of SU(2) matrices may be defined through the exponential map with parameters alpha. 
     The exponential map can be explicitly evaluated, resulting in a linear combination of the Pauli matrices and unity:
     U = exp(i alpha_i sigma_i) = a_0*1 + i*a_i sigma_i
-    This function finds the coefficients 'a' based on 'alpha'.    
+    This function finds the coefficients ``a`` based on ``alpha``.    
     
     Parameters
     ----------
@@ -42,7 +42,7 @@ def alpha_to_a(alpha):
 
 def make_mats(a):
     '''
-    Constructs explicit matrices corresponding to parameter vector a.
+    Constructs explicit matrices corresponding to parameter vector ``a``.
 
     Parameters
     ----------
@@ -128,7 +128,7 @@ def det(a):
 
 def norm2(a):
     '''
-    Returns squared norm of the parameter vector a.
+    Returns squared norm of the parameter vector ``a``.
     
     Parameters
     ----------
@@ -137,7 +137,8 @@ def norm2(a):
 
     Returns
     -------
-    norm_sq: (L,L) array containing the norm at each site
+    norm_sq: (L,L) array 
+        containing the norm at each site
     '''
     norm_sq = np.sum(a**2, axis=2)
     return norm_sq
@@ -169,7 +170,7 @@ def renorm(a):
 ### ---------------------------- ###
 def dot(a, b):
     '''
-    Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors a and b.
+    Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors ``a`` and ``b``.
 
     Parameters
     ----------
@@ -194,12 +195,12 @@ def dot(a, b):
 
 def sum(a, b):
     '''
-    Computes the elementwise sum of two SU(2) valued lattices A and B with parameters a and b.
+    Computes the elementwise sum of two SU(2) valued lattices A and B with parameters ``a`` and ``b``.
     Let C = A + B, i.e. c = a + b. 
-    Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant k, meaning
+    Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant ``k``, meaning
     D = C/k = 1/k (A + B) is in SU(2).
-    To only having to perform manipulations on SU(2) matrices, the parameters d of the SU(2) valued lattice D and the 
-    constant k are returned such that their product gives the 
+    To only having to perform manipulations on SU(2) matrices, the parameters ``d`` of the SU(2) valued lattice D and the 
+    constant ``k`` are returned such that their product gives the 
     parameter vectors of C, the sum of lattice A and B.
 
     Parameters
