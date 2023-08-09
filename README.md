@@ -18,12 +18,12 @@ Its is recommended to work in a virtual environment.
 
 
 ## Documentation
-Read the docs [here](su2xsu2.readthedocs.io).
+Read the docs [here](https://su2xsu2.readthedocs.io/).
 
 
 ## Example
 A basic example showing how to set up a simulation using Fourier accelerated HMC to measure the wall-to-wall correlation function.
-Further examples can be found [here](https://su2xsu2.readthedocs.io/en/latest/usage.html#examples).
+Further examples can be found [here](https://su2xsu2.readthedocs.io/en/stable/usage.html#examples).
 ```python
 from SU2xSU2.SU2xSU2 import SU2xSU2
 
