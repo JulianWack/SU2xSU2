@@ -1,22 +1,11 @@
 import numpy as np
 from pickle import dump, load 
 import os
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-import matplotlib as mpl
-from cycler import cycler
 import time
 from datetime import timedelta
-from scipy.optimize import curve_fit
 
 import SU2_mat_routines as SU2
 from .correlations import *
-
-
-plt.style.use('science')
-plt.rcParams.update({'font.size': 20})
-# plt.rcParams.update({'text.usetex': False}) # faster rendering
-mpl.rcParams['axes.prop_cycle'] = cycler(color=['k', 'g', 'b', 'r'])
 
 
 class SU2xSU2():
