@@ -14,7 +14,7 @@ import sys
 sys.path.insert(0, os.path.join(os.getcwd(), 'src/SU2xSU2'))
 sys.path.insert(0, os.path.abspath('../../src'))
 
-autodoc_mock_imports = ['SU2_mat_routines']
+autodoc_mock_imports = ['SU2_mat_routines', 'matplotlib']
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information

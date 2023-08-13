@@ -5,7 +5,7 @@ import time
 from datetime import timedelta
 
 import SU2_mat_routines as SU2
-from .correlations import *
+from .correlations import correlator
 
 
 class SU2xSU2():
@@ -588,7 +588,7 @@ class SU2xSU2():
         ww_cor = np.zeros(self.L)
         Phi = np.sum(phi, axis=0) # (L,4)
         for k in range(4):
-            cf, _ = correlations.correlator(Phi[:,k], Phi[:,k])
+            cf, _ = correlator(Phi[:,k], Phi[:,k])
             ww_cor += cf
         ww_cor *= 4/self.L**2
 

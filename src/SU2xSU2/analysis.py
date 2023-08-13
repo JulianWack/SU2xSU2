@@ -13,8 +13,8 @@ from matplotlib.ticker import ScalarFormatter
 
 from .SU2xSU2 import SU2xSU2
 from .calibrate_paras import calibrate
-from .correlations import *
-from .plotting import *
+from .correlations import autocorrelator
+from .plotting import correlation_func_plot
 
 
 
@@ -54,7 +54,7 @@ def get_avg_error(data, get_IAT=False):
     # correct error through IAT
     IAT, IAT_err = np.zeros((2,N))
     for i in range(N):
-        ts, ACF, ACF_err, IAT[i], IAT_err[i], comp_time = correlations.autocorrelator(data[:,i])
+        ts, ACF, ACF_err, IAT[i], IAT_err[i], comp_time = autocorrelator(data[:,i])
         error[i] *= np.sqrt(IAT[i])
 
     # to return floats if data points were floats
@@ -316,7 +316,7 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         xi[i], xi_err[i], reduced_chi2[i] = get_corlength(cor, cor_err, corfunc_path)
         # plot correlation function
         corfunc_plot_path = corfuncs_plot_dir + file
-        plotting.correlation_func_plot(corfunc_path, corfunc_plot_path)
+        correlation_func_plot(corfunc_path, corfunc_plot_path)
 
         des_str = 'correlation lengths inferred from %d measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.'%model.M
         np.savetxt(corlengthdata_path, np.row_stack((Ls, betas, xi, xi_err, reduced_chi2)), header=des_str)
