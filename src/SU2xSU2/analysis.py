@@ -3,6 +3,7 @@ import os
 import time
 from datetime import timedelta
 import numpy as np
+from scipy.integrate import quad
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -247,7 +248,8 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
     In all cases the file names are given by considered values of beta,L.
 
     A plot of mass over lambda ratio is produced and stored at ``plot_path``, allowing to assess the convergence of the simulation data to the continuum mass 
-    gap prediction as beta gets large.
+    gap prediction as beta gets large. The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda
+    is evaluated numerically.
 
     Parameters
     ----------
@@ -327,40 +329,41 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
     data = np.loadtxt(corlengthdata_path)
     _, betas, xi, xi_err, _ = data
 
-    def Lambda(betas, loops=3):
-        '''
-        Computes the lattice spacing a times the Lambda parameter at 2 or 3 loop accuracy in the lattice scheme.
+    # beta function coefficients
+    N = 2
+    b0 = N / (8*np.pi)
+    b1 = N**2 / (128*np.pi**2)
+    G1 = 0.04616363
+    b2 = 1/(2*np.pi)**3 * (N**3)/128 * ( 1 + np.pi*(N**2 - 2)/(2*N**2) - np.pi**2*((2*N**4-13*N**2+18)/(6*N**4) + 4*G1) ) 
 
+    # Lambda times the lattice spacing a is denoted by the variable F
+    pre_factor = (2*np.pi*betas)**(1/2) * np.exp(-2*np.pi*betas)
+
+    # numerical integration 
+    def integrand(x):
+        '''integrand in expression for the renormalisation scale using the beta function at 3 loop accuracy.
+        
         Parameters
         ----------
-        betas: (n,) array
-            values of the model parameter beta for which the Lambda parameter will be computed
-        loops: {2,3} int (optional)
-            specifies to use the beta function accurate to 2 or 3 loops
+        x: float
+            value of the coupling constant squared i.e. x=g^2
 
         Returns
         -------
-        res: float
-            Lambda parameter times the lattice spacing
+        inte: float
+            the integrand
         '''
-        N = 2 # SU(N) group order
-        b0 = N / (8*np.pi)
-        b1 = N**2 / (128*np.pi**2) 
+        beta_3l = -b0*x**2 - b1*x**3 - b2*x**4  
+        inte = 1/beta_3l + 1/(b0*x**2) - b1/(b0**2*x)
+        return inte
+    
+    F = np.zeros_like(betas)
 
-        # 2 loop result
-        res = (2*np.pi*betas)**(1/2) * np.exp(-2*np.pi*betas)
-        if loops == 2:
-            return res
+    for i,beta in enumerate(betas):
+        res, err = quad(integrand, 0, 4/(N*beta))
+        F[i] = pre_factor[i] * np.exp(-res)
 
-        # 3 loop correction
-        G1 = 0.04616363
-        b2 = 1/(2*np.pi)**3 * (N**3)/128 * ( 1 + np.pi*(N**2 - 2)/(2*N**2) - np.pi**2*((2*N**4-13*N**2+18)/(6*N**4) + 4*G1) )
-        correction =  (b1**2 - b0*b2)/(N*b0**3)*4/betas
-        res = res * (1 + correction)
-
-        return res
-
-    mass_lambda = 1/xi * 1/Lambda(betas)
+    mass_lambda = 1/xi * 1/F
     mass_lambda_err = mass_lambda / xi * xi_err
 
     cts_prediction = 32 * np.exp(np.pi/4) / np.sqrt(np.pi*np.e)
