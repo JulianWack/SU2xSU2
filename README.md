@@ -10,10 +10,6 @@ To install ``SU2xSU2`` using ``pip`` run:
 ```bash
 pip install SU2xSU2
 ```
-The dependencies of the package are detailed in 'requirements.txt'. To install these download the file and run
-```bash
-pip install -r requirements.txt
-```
 Its is recommended to work in a virtual environment.
 
 
@@ -38,7 +34,7 @@ model.run_HMC(**sim_paras)
 <!--
 ## Attribution
 
-Please cite the following papers if you found this code useful in your research:
+Please cite the following paper if you found this code useful in your research:
 ```bash
     @article{}
 ```
@@ -49,12 +45,14 @@ Please cite the following papers if you found this code useful in your research:
 ``SU2xSU2`` is free software made available under the MIT License. For details see the `LICENSE` file.
 
 ## To DO
-- change name of function that integrates the beta function (state that 1/beta expansion of integrand is used)
-- add tests
+- add and test setup.py (update version number)
+- check that imports in package work, i.e. test examples
 - once package is published and can be installed
     - check if example in README works
     - check if example.py works
     - data storage: Check that paths are relative to the to current working directory
+- change name of function that integrates the beta function (state that 1/beta expansion of integrand is used)
+- add tests
 - plotting
     - get latex error when plotting within analysis.py
     - no apparent option to add errorbar format '.' in style sheet 

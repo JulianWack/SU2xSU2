@@ -11,12 +11,6 @@ To install ``SU2xSU2`` using ``pip`` run
 
     (.venv) $ pip install SU2xSU2
 
-The dependencies of the package are detailed in ``requirements.txt``. To install these download the file and run
-
-.. code-block:: bash
-
-    pip install -r requirements.txt
-
 Its is recommended to work in a virtual environment.
 
 .. _examples:
