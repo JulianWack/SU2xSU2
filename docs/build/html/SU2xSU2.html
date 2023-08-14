@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SU2xSU2 package &mdash; SU2xSU2 1.0 documentation</title>
+  <title>SU2xSU2 package &mdash; SU2xSU2 1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -614,7 +614,7 @@ the latter using FFTs.</p>
 To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced
 comparing the simulation cost agaist values of the acceleration mass. The plot is stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code> and the associated
 data is stored at <code class="docutils literal notranslate"><span class="pre">data_path</span></code>. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.
-The susceptibility chain is stored in the directory <code class="docutils literal notranslate"><span class="pre">chain_dir</span></code> with the file being labeled by the value of <code class="docutils literal notranslate"><span class="pre">beta</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>.</p>
+The susceptibility chain is stored in the directory <code class="docutils literal notranslate"><span class="pre">chain_dir</span></code> with the file being labeled by the values of <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">L</span></code> and the considered value of the mass.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -756,12 +756,13 @@ while the the processed correlation function data (normalized as well as ensembl
 is stored at <code class="docutils literal notranslate"><span class="pre">corfuncs_dir</span></code>. Plots of the correlation functions, with the fitted analytical expectation are stored at <code class="docutils literal notranslate"><span class="pre">corfuncs_plot_dir</span></code>.
 In all cases the file names are given by considered values of beta,L.</p>
 <p>A plot of mass over lambda ratio is produced and stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>, allowing to assess the convergence of the simulation data to the continuum mass
-gap prediction as beta gets large.</p>
+gap prediction as beta gets large. The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda
+is evaluated numerically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>betas</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em>) – values of the model parameter beta for which simulations are performed in ascending order</p></li>
-<li><p><strong>Ls</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em>) – size of the lattice along one dimension for each simulation at different beta. Must be even.</p></li>
+<li><p><strong>Ls</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em><em> or </em><em>list</em>) – size of the lattice along one dimension for each simulation at different beta. Must be even integers.</p></li>
 <li><p><strong>num_traj</strong> (<em>int</em>) – number of trajectories in each simulation</p></li>
 <li><p><strong>burnin_frac</strong> (<em>float</em>) – fraction of trajectories discarded as burn in</p></li>
 <li><p><strong>accel</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – using Fourier Acceleration by default</p></li>

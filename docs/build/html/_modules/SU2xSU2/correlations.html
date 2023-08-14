@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SU2xSU2.correlations &mdash; SU2xSU2 1.0 documentation</title>
+  <title>SU2xSU2.correlations &mdash; SU2xSU2 1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -134,6 +134,7 @@
     <span class="n">acf</span> <span class="o">/=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">n</span>
     <span class="c1"># normalize to get autocorrelation rather than autocovariance</span>
     <span class="n">acf</span> <span class="o">/=</span> <span class="n">acf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># acf = np.divide(acf, acf[0], out=np.zeros_like(acf), where=acf[0]!=0) # avoids division by 0 but creates negative acf, yielding negative IAT  </span>
 
     <span class="k">return</span> <span class="n">acf</span></div>
 

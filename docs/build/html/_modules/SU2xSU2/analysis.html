@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SU2xSU2.analysis &mdash; SU2xSU2 1.0 documentation</title>
+  <title>SU2xSU2.analysis &mdash; SU2xSU2 1.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -75,6 +75,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
@@ -84,8 +85,8 @@
 
 <span class="kn">from</span> <span class="nn">.SU2xSU2</span> <span class="kn">import</span> <span class="n">SU2xSU2</span>
 <span class="kn">from</span> <span class="nn">.calibrate_paras</span> <span class="kn">import</span> <span class="n">calibrate</span>
-<span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.plotting</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="n">autocorrelator</span>
+<span class="kn">from</span> <span class="nn">.plotting</span> <span class="kn">import</span> <span class="n">correlation_func_plot</span>
 
 
 
@@ -125,7 +126,7 @@
     <span class="c1"># correct error through IAT</span>
     <span class="n">IAT</span><span class="p">,</span> <span class="n">IAT_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">N</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="n">ts</span><span class="p">,</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">ACF_err</span><span class="p">,</span> <span class="n">IAT</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">IAT_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">comp_time</span> <span class="o">=</span> <span class="n">correlations</span><span class="o">.</span><span class="n">autocorrelator</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ts</span><span class="p">,</span> <span class="n">ACF</span><span class="p">,</span> <span class="n">ACF_err</span><span class="p">,</span> <span class="n">IAT</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">IAT_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">comp_time</span> <span class="o">=</span> <span class="n">autocorrelator</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="n">i</span><span class="p">])</span>
         <span class="n">error</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">IAT</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
     <span class="c1"># to return floats if data points were floats</span>
@@ -319,14 +320,15 @@
 <span class="sd">    In all cases the file names are given by considered values of beta,L.</span>
 
 <span class="sd">    A plot of mass over lambda ratio is produced and stored at ``plot_path``, allowing to assess the convergence of the simulation data to the continuum mass </span>
-<span class="sd">    gap prediction as beta gets large.</span>
+<span class="sd">    gap prediction as beta gets large. The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda</span>
+<span class="sd">    is evaluated numerically.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    betas: (n,) array</span>
 <span class="sd">        values of the model parameter beta for which simulations are performed in ascending order </span>
-<span class="sd">    Ls: (n,) array</span>
-<span class="sd">        size of the lattice along one dimension for each simulation at different beta. Must be even. </span>
+<span class="sd">    Ls: (n,) array or list</span>
+<span class="sd">        size of the lattice along one dimension for each simulation at different beta. Must be even integers. </span>
 <span class="sd">    num_traj: int</span>
 <span class="sd">        number of trajectories in each simulation</span>
 <span class="sd">    burnin_frac: float</span>
@@ -385,8 +387,8 @@
         <span class="n">corfunc_path</span> <span class="o">=</span> <span class="n">corfuncs_dir</span> <span class="o">+</span> <span class="n">file</span>
         <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xi_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reduced_chi2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_corlength</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span><span class="p">,</span> <span class="n">corfunc_path</span><span class="p">)</span>
         <span class="c1"># plot correlation function</span>
-        <span class="n">corfunc_plot_path</span> <span class="o">=</span> <span class="n">corfuncs_plot_dir</span> <span class="o">+</span> <span class="n">file</span>
-        <span class="n">plotting</span><span class="o">.</span><span class="n">correlation_func_plot</span><span class="p">(</span><span class="n">corfunc_path</span><span class="p">,</span> <span class="n">corfunc_plot_path</span><span class="p">)</span>
+        <span class="n">corfunc_plot_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">corfuncs_plot_dir</span> <span class="o">+</span> <span class="n">file</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.pdf&#39;</span>
+        <span class="n">correlation_func_plot</span><span class="p">(</span><span class="n">corfunc_path</span><span class="p">,</span> <span class="n">corfunc_plot_path</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">des_str</span> <span class="o">=</span> <span class="s1">&#39;correlation lengths inferred from </span><span class="si">%d</span><span class="s1"> measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.&#39;</span><span class="o">%</span><span class="n">model</span><span class="o">.</span><span class="n">M</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">row_stack</span><span class="p">((</span><span class="n">Ls</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">xi_err</span><span class="p">,</span> <span class="n">reduced_chi2</span><span class="p">)),</span> <span class="n">header</span><span class="o">=</span><span class="n">des_str</span><span class="p">)</span>
@@ -399,40 +401,41 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">xi_err</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span>
 
-    <span class="k">def</span> <span class="nf">Lambda</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Computes the lattice spacing a times the Lambda parameter at 2 or 3 loop accuracy in the lattice scheme.</span>
+    <span class="c1"># beta function coefficients</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">b0</span> <span class="o">=</span> <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+    <span class="n">b1</span> <span class="o">=</span> <span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">128</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">G1</span> <span class="o">=</span> <span class="mf">0.04616363</span>
+    <span class="n">b2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">128</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="o">-</span><span class="mi">13</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">18</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">G1</span><span class="p">)</span> <span class="p">)</span> 
 
+    <span class="c1"># Lambda times the lattice spacing a is denoted by the variable F</span>
+    <span class="n">pre_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span>
+
+    <span class="c1"># numerical integration </span>
+    <span class="k">def</span> <span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;integrand in expression for the renormalisation scale using the beta function at 3 loop accuracy.</span>
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        betas: (n,) array</span>
-<span class="sd">            values of the model parameter beta for which the Lambda parameter will be computed</span>
-<span class="sd">        loops: {2,3} int (optional)</span>
-<span class="sd">            specifies to use the beta function accurate to 2 or 3 loops</span>
+<span class="sd">        x: float</span>
+<span class="sd">            value of the coupling constant squared i.e. x=g^2</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        res: float</span>
-<span class="sd">            Lambda parameter times the lattice spacing</span>
+<span class="sd">        inte: float</span>
+<span class="sd">            the integrand</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># SU(N) group order</span>
-        <span class="n">b0</span> <span class="o">=</span> <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-        <span class="n">b1</span> <span class="o">=</span> <span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">128</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> 
+        <span class="n">beta_3l</span> <span class="o">=</span> <span class="o">-</span><span class="n">b0</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">b1</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">b2</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">4</span>  
+        <span class="n">inte</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">beta_3l</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">b0</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">b1</span><span class="o">/</span><span class="p">(</span><span class="n">b0</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inte</span>
+    
+    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">betas</span><span class="p">)</span>
 
-        <span class="c1"># 2 loop result</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">loops</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">res</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">beta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">betas</span><span class="p">):</span>
+        <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="n">beta</span><span class="p">))</span>
+        <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre_factor</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">res</span><span class="p">)</span>
 
-        <span class="c1"># 3 loop correction</span>
-        <span class="n">G1</span> <span class="o">=</span> <span class="mf">0.04616363</span>
-        <span class="n">b2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">128</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="o">-</span><span class="mi">13</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">18</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">G1</span><span class="p">)</span> <span class="p">)</span>
-        <span class="n">correction</span> <span class="o">=</span>  <span class="p">(</span><span class="n">b1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">b0</span><span class="o">*</span><span class="n">b2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="n">b0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">4</span><span class="o">/</span><span class="n">betas</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">correction</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">res</span>
-
-    <span class="n">mass_lambda</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">xi</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="n">Lambda</span><span class="p">(</span><span class="n">betas</span><span class="p">)</span>
+    <span class="n">mass_lambda</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">xi</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="n">F</span>
     <span class="n">mass_lambda_err</span> <span class="o">=</span> <span class="n">mass_lambda</span> <span class="o">/</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">xi_err</span>
 
     <span class="n">cts_prediction</span> <span class="o">=</span> <span class="mi">32</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">)</span>
@@ -634,11 +637,11 @@
     <span class="n">ratio</span> <span class="o">=</span> <span class="n">cost_funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">ratio_err</span> <span class="o">=</span> <span class="n">cost_funcs_err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cost_funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">cost_funcs_err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">log_ratio_err</span> <span class="o">=</span> <span class="n">ratio_err</span> <span class="o">/</span> <span class="n">ratio</span>
-    <span class="c1"># popt, _ = curve_fit(linear_func, np.log(xis), np.log(ratio), sigma=log_ratio_err)</span>
-    <span class="c1"># fit_ratio = np.exp( linear_func(np.log(xis), *popt) )</span>
+    <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">linear_func</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xis</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ratio</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="n">log_ratio_err</span><span class="p">)</span>
+    <span class="n">fit_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="n">linear_func</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xis</span><span class="p">),</span> <span class="o">*</span><span class="n">popt</span><span class="p">)</span> <span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">ratio_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-    <span class="c1"># plt.plot(xis, fit_ratio, c=&#39;r&#39;, label=r&#39;fitted power law $\sim \xi^{%.3f}$&#39;%popt[0])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">fit_ratio</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;fitted power law $\sim \xi^{</span><span class="si">%.3f</span><span class="s1">}$&#39;</span><span class="o">%</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;correlation length $\xi$ [$a$]&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;cost function ratio HMC/FA HMC&#39;</span><span class="p">)</span>
     <span class="c1"># set x ticks manually</span>
@@ -667,7 +670,7 @@
 <span class="sd">    To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced</span>
 <span class="sd">    comparing the simulation cost agaist values of the acceleration mass. The plot is stored at ``plot_path`` and the associated </span>
 <span class="sd">    data is stored at ``data_path``. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.</span>
-<span class="sd">    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the value of ``beta`` and ``L``.</span>
+<span class="sd">    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the values of ``beta``, ``L`` and the considered value of the mass.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -701,7 +704,8 @@
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">mass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">masses</span><span class="p">):</span>
         <span class="n">L_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
         <span class="n">beta_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;beta</span><span class="si">%s</span><span class="s1">L</span><span class="si">%s</span><span class="s1">.npy&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">beta_str</span><span class="p">,</span> <span class="n">L_str</span><span class="p">)</span> <span class="c1"># file name and extension for measurement chain</span>
+        <span class="n">mass_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">mass</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="s1">&#39;beta</span><span class="si">%s</span><span class="s1">L</span><span class="si">%s</span><span class="s1">m</span><span class="si">%s</span><span class="s1">.npy&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">beta_str</span><span class="p">,</span> <span class="n">L_str</span><span class="p">,</span> <span class="n">mass_str</span><span class="p">)</span> <span class="c1"># file name and extension for measurement chain</span>
         <span class="c1"># calibrate ell, eps</span>
         <span class="n">model_paras</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;L&#39;</span><span class="p">:</span><span class="n">L</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;ell&#39;</span><span class="p">:</span><span class="n">prev_ell</span><span class="p">,</span> <span class="s1">&#39;eps&#39;</span><span class="p">:</span><span class="n">prev_eps</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span><span class="n">beta</span><span class="p">,</span> <span class="s1">&#39;mass&#39;</span><span class="p">:</span><span class="n">mass</span><span class="p">}</span>
         <span class="n">paras_calibrated</span> <span class="o">=</span> <span class="n">calibrate</span><span class="p">(</span><span class="n">model_paras</span><span class="p">,</span> <span class="n">accel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

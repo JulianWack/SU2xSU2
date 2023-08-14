@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage &mdash; SU2xSU2 1.0 documentation</title>
+  <title>Usage &mdash; SU2xSU2 1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -84,10 +84,6 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>.venv<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>SU2xSU2
 </pre></div>
 </div>
-<p>The dependencies of the package are detailed in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>. To install these download the file and run</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-</pre></div>
-</div>
 <p>Its is recommended to work in a virtual environment.</p>
 </section>
 <section id="examples">
@@ -95,8 +91,8 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">SU2xSU2.SU2xSU2</span> <span class="kn">import</span> <span class="n">SU2xSU2</span>
 <span class="kn">from</span> <span class="nn">SU2xSU2.calibrate_paras</span> <span class="kn">import</span> <span class="n">calibrate</span>
-<span class="kn">import</span> <span class="nn">analysis</span>
-<span class="kn">import</span> <span class="nn">plotting</span>
+<span class="kn">import</span> <span class="nn">SU2xSU2.analysis</span> <span class="k">as</span> <span class="nn">analysis</span>
+<span class="kn">import</span> <span class="nn">SU2xSU2.plotting</span> <span class="k">as</span> <span class="nn">plotting</span>
 
 <span class="c1">### basic model creation and simulation call signature ###</span>
 <span class="c1"># measuring and plotting the correlation function is used in this example but the structure is identical for other observables</span>
@@ -135,7 +131,7 @@
 <span class="c1"># value pairs which largely avoid finite size effects</span>
 <span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">700</span><span class="p">]</span>
 <span class="n">betas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6667</span><span class="p">,</span> <span class="mf">0.7333</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8667</span><span class="p">,</span> <span class="mf">0.9333</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0667</span><span class="p">,</span> <span class="mf">1.1333</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2667</span><span class="p">,</span> <span class="mf">1.3333</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">])</span>
-<span class="n">analysis</span><span class="o">.</span><span class="n">mass_lamdba</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
+<span class="n">analysis</span><span class="o">.</span><span class="n">mass_lambda</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">)</span>
 
 
 <span class="c1">### acceleration mass grid search ###</span>
@@ -145,7 +141,7 @@
 
 
 <span class="c1">### critical slowing down ###</span>
-<span class="c1"># assuming the data produced in &#39;analysis.mass_lamdba&#39; was stored at the default locations</span>
+<span class="c1"># assuming the data produced in &#39;analysis.mass_lambda&#39; was stored at the default locations</span>
 <span class="n">analysis</span><span class="o">.</span><span class="n">critical_slowingdown</span><span class="p">(</span><span class="mf">1e5</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
 </pre></div>
 </div>

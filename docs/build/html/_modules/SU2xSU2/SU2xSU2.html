@@ -76,8 +76,8 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 
-<span class="kn">import</span> <span class="nn">SU2_mat_routines</span> <span class="k">as</span> <span class="nn">SU2</span>
-<span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">SU2_mat_routines</span> <span class="k">as</span> <span class="n">SU2</span>
+<span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="n">correlator</span>
 
 
 <div class="viewcode-block" id="SU2xSU2"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.SU2xSU2.SU2xSU2">[docs]</a><span class="k">class</span> <span class="nc">SU2xSU2</span><span class="p">():</span>
@@ -566,7 +566,7 @@
         <span class="c1"># construct chain and take measurements</span>
         <span class="n">n_acc</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># number of accepted candidates</span>
         <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># counter for position in chain of measurements</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">)):</span>
             <span class="c1"># phi is most recent accepted sample, phi_new is a candidate sample.</span>
             <span class="c1"># if candidate gets accepted: phi -&gt; phi_new, otherwise phi -&gt; phi</span>
             <span class="k">if</span> <span class="n">renorm_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -660,7 +660,7 @@
         <span class="n">ww_cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">)</span>
         <span class="n">Phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># (L,4)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-            <span class="n">cf</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">correlations</span><span class="o">.</span><span class="n">correlator</span><span class="p">(</span><span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">],</span> <span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">cf</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">correlator</span><span class="p">(</span><span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">],</span> <span class="n">Phi</span><span class="p">[:,</span><span class="n">k</span><span class="p">])</span>
             <span class="n">ww_cor</span> <span class="o">+=</span> <span class="n">cf</span>
         <span class="n">ww_cor</span> <span class="o">*=</span> <span class="mi">4</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="o">**</span><span class="mi">2</span>
 
