@@ -4,7 +4,7 @@ import os
 import time
 from datetime import timedelta
 
-import SU2_mat_routines as SU2
+from . import SU2_mat_routines as SU2
 from .correlations import correlator
 
 
@@ -494,7 +494,7 @@ class SU2xSU2():
         # construct chain and take measurements
         n_acc = 0 # number of accepted candidates
         j = 0 # counter for position in chain of measurements
-        for i in range(M):
+        for i in range(int(M)):
             # phi is most recent accepted sample, phi_new is a candidate sample.
             # if candidate gets accepted: phi -> phi_new, otherwise phi -> phi
             if renorm_freq is not None:

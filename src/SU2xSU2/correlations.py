@@ -62,6 +62,7 @@ def autocorr_func_1d(x):
     acf /= 4 * n
     # normalize to get autocorrelation rather than autocovariance
     acf /= acf[0]
+    # acf = np.divide(acf, acf[0], out=np.zeros_like(acf), where=acf[0]!=0) # avoids division by 0 but creates negative acf, yielding negative IAT  
 
     return acf
 

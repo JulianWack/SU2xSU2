@@ -22,8 +22,8 @@ Examples
     import numpy as np
     from SU2xSU2.SU2xSU2 import SU2xSU2
     from SU2xSU2.calibrate_paras import calibrate
-    import analysis
-    import plotting
+    import SU2xSU2.analysis as analysis
+    import SU2xSU2.plotting as plotting
 
     ### basic model creation and simulation call signature ###
     # measuring and plotting the correlation function is used in this example but the structure is identical for other observables  
@@ -62,7 +62,7 @@ Examples
     # value pairs which largely avoid finite size effects
     Ls = [40, 40, 64, 64, 64, 96, 96, 160, 160, 224, 400, 512, 700]
     betas = np.array([0.6, 0.6667, 0.7333, 0.8, 0.8667, 0.9333, 1.0, 1.0667, 1.1333, 1.2, 1.2667, 1.3333, 1.4])
-    analysis.mass_lamdba(betas, Ls, 1e5, 0.02)
+    analysis.mass_lambda(betas, Ls, 1e5, 0.02)
 
 
     ### acceleration mass grid search ###
@@ -72,5 +72,5 @@ Examples
 
 
     ### critical slowing down ###
-    # assuming the data produced in 'analysis.mass_lamdba' was stored at the default locations
+    # assuming the data produced in 'analysis.mass_lambda' was stored at the default locations
     analysis.critical_slowingdown(1e5, 0.05)

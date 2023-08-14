@@ -45,13 +45,10 @@ Please cite the following paper if you found this code useful in your research:
 ``SU2xSU2`` is free software made available under the MIT License. For details see the `LICENSE` file.
 
 ## To DO
-- add and test setup.py (update version number)
-- check that imports in package work, i.e. test examples
-- once package is published and can be installed
-    - check if example in README works
-    - check if example.py works
-    - data storage: Check that paths are relative to the to current working directory
-- change name of function that integrates the beta function (state that 1/beta expansion of integrand is used)
+- add stylesheet to distribution and uncomment its use in files
+- change name of function that integrates the beta function (state that 1/beta expansion of integrand is used) and use numerical integration instead of expanding the integrand
+- Runtime warning in correlations l.64
+- consider restructuring: analysis module only contains simulation code and plots are made using routines in plotting module. Would allow to make plots without running simulations again  
 - add tests
 - plotting
     - get latex error when plotting within analysis.py

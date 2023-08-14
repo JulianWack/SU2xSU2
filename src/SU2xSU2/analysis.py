@@ -255,8 +255,8 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
     ----------
     betas: (n,) array
         values of the model parameter beta for which simulations are performed in ascending order 
-    Ls: (n,) array
-        size of the lattice along one dimension for each simulation at different beta. Must be even. 
+    Ls: (n,) array or list
+        size of the lattice along one dimension for each simulation at different beta. Must be even integers. 
     num_traj: int
         number of trajectories in each simulation
     burnin_frac: float
@@ -315,8 +315,8 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         corfunc_path = corfuncs_dir + file
         xi[i], xi_err[i], reduced_chi2[i] = get_corlength(cor, cor_err, corfunc_path)
         # plot correlation function
-        corfunc_plot_path = corfuncs_plot_dir + file
-        correlation_func_plot(corfunc_path, corfunc_plot_path)
+        corfunc_plot_path = (corfuncs_plot_dir + file)[:-4] + '.pdf'
+        correlation_func_plot(corfunc_path, corfunc_plot_path, show_plot=False)
 
         des_str = 'correlation lengths inferred from %d measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.'%model.M
         np.savetxt(corlengthdata_path, np.row_stack((Ls, betas, xi, xi_err, reduced_chi2)), header=des_str)
@@ -565,11 +565,11 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
     ratio = cost_funcs[0]/cost_funcs[1]
     ratio_err = cost_funcs_err[0]/cost_funcs[1] + cost_funcs[0]/cost_funcs[1]**2 * cost_funcs_err[1]
     log_ratio_err = ratio_err / ratio
-    # popt, _ = curve_fit(linear_func, np.log(xis), np.log(ratio), sigma=log_ratio_err)
-    # fit_ratio = np.exp( linear_func(np.log(xis), *popt) )
+    popt, _ = curve_fit(linear_func, np.log(xis), np.log(ratio), sigma=log_ratio_err)
+    fit_ratio = np.exp( linear_func(np.log(xis), *popt) )
 
     plt.errorbar(xis, ratio, yerr=ratio_err, fmt='.')
-    # plt.plot(xis, fit_ratio, c='r', label=r'fitted power law $\sim \xi^{%.3f}$'%popt[0])
+    plt.plot(xis, fit_ratio, c='r', label=r'fitted power law $\sim \xi^{%.3f}$'%popt[0])
     plt.xlabel(r'correlation length $\xi$ [$a$]')
     plt.ylabel(r'cost function ratio HMC/FA HMC')
     # set x ticks manually
@@ -598,7 +598,7 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
     To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced
     comparing the simulation cost agaist values of the acceleration mass. The plot is stored at ``plot_path`` and the associated 
     data is stored at ``data_path``. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.
-    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the value of ``beta`` and ``L``.
+    The susceptibility chain is stored in the directory ``chain_dir`` with the file being labeled by the values of ``beta``, ``L`` and the considered value of the mass.
 
     Parameters
     ----------
@@ -632,7 +632,8 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
     for i,mass in enumerate(masses):
         L_str = str(L)
         beta_str = str(np.round(beta, 4)).replace('.', '_')
-        file = 'beta%sL%s.npy'%(beta_str, L_str) # file name and extension for measurement chain
+        mass_str = str(np.round(mass, 4)).replace('.', '_')
+        file = 'beta%sL%sm%s.npy'%(beta_str, L_str, mass_str) # file name and extension for measurement chain
         # calibrate ell, eps
         model_paras = {'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta, 'mass':mass}
         paras_calibrated = calibrate(model_paras, accel=True)
