@@ -75,10 +75,8 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">ScalarFormatter</span>
 
 <span class="c1"># plt.style.use(&#39;scientific.mplstyle&#39;)</span>
 <span class="c1"># plt.rcParams.update({&#39;text.usetex&#39;: True}) # uncomment when latex is installed</span>
@@ -86,8 +84,7 @@
 <span class="kn">from</span> <span class="nn">.SU2xSU2</span> <span class="kn">import</span> <span class="n">SU2xSU2</span>
 <span class="kn">from</span> <span class="nn">.calibrate_paras</span> <span class="kn">import</span> <span class="n">calibrate</span>
 <span class="kn">from</span> <span class="nn">.correlations</span> <span class="kn">import</span> <span class="n">autocorrelator</span>
-<span class="kn">from</span> <span class="nn">.plotting</span> <span class="kn">import</span> <span class="n">correlation_func_plot</span>
-
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">plotting</span>
 
 
 <div class="viewcode-block" id="get_avg_error"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.analysis.get_avg_error">[docs]</a><span class="k">def</span> <span class="nf">get_avg_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">get_IAT</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -225,7 +222,7 @@
 <span class="sd">        path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved</span>
 <span class="sd">    simdata_path: str (optional)</span>
 <span class="sd">        path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the</span>
-<span class="sd">        internal energy density and its error (with file extension)</span>
+<span class="sd">        internal energy density and its error (with file extension) as well as ``betas`` row-wise</span>
 <span class="sd">    plot_path: str</span>
 <span class="sd">        path of final plot file (with file extension)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -276,32 +273,8 @@
     <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Total simulation time: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))))</span>
 
-
-    <span class="c1"># make strong and weak coupling expansion plot</span>
-    <span class="n">b_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">strong</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">b_s</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">b_s</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="o">*</span><span class="n">b_s</span><span class="o">**</span><span class="mi">5</span>
-
-    <span class="n">Q1</span> <span class="o">=</span> <span class="mf">0.0958876</span>
-    <span class="n">Q2</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.0670</span>
-    <span class="n">b_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">weak</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">3</span><span class="o">/</span><span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">b_w</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">16</span><span class="o">*</span><span class="n">b_w</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">64</span> <span class="o">+</span> <span class="mi">3</span><span class="o">/</span><span class="mi">16</span><span class="o">*</span><span class="n">Q1</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="mi">8</span><span class="o">*</span><span class="n">Q2</span><span class="p">)</span><span class="o">/</span><span class="n">b_w</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">e_avg</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">e_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;FA HMC&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b_s</span><span class="p">,</span> <span class="n">strong</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;strong coupling&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">b_w</span><span class="p">,</span> <span class="n">weak</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;weak coupling&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\beta$&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;internal energy density $e$&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
-
-    <span class="c1"># check if path contains any directories and create those if they don&#39;t exist already</span>
-    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
+    <span class="c1"># make plot</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">internal_energy_density_plot</span><span class="p">(</span><span class="n">simdata_path</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> </div>
 
 
@@ -388,7 +361,7 @@
         <span class="n">xi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xi_err</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">reduced_chi2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_corlength</span><span class="p">(</span><span class="n">cor</span><span class="p">,</span> <span class="n">cor_err</span><span class="p">,</span> <span class="n">corfunc_path</span><span class="p">)</span>
         <span class="c1"># plot correlation function</span>
         <span class="n">corfunc_plot_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">corfuncs_plot_dir</span> <span class="o">+</span> <span class="n">file</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.pdf&#39;</span>
-        <span class="n">correlation_func_plot</span><span class="p">(</span><span class="n">corfunc_path</span><span class="p">,</span> <span class="n">corfunc_plot_path</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">plotting</span><span class="o">.</span><span class="n">correlation_func_plot</span><span class="p">(</span><span class="n">corfunc_path</span><span class="p">,</span> <span class="n">corfunc_plot_path</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">des_str</span> <span class="o">=</span> <span class="s1">&#39;correlation lengths inferred from </span><span class="si">%d</span><span class="s1"> measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.&#39;</span><span class="o">%</span><span class="n">model</span><span class="o">.</span><span class="n">M</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">row_stack</span><span class="p">((</span><span class="n">Ls</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">xi_err</span><span class="p">,</span> <span class="n">reduced_chi2</span><span class="p">)),</span> <span class="n">header</span><span class="o">=</span><span class="n">des_str</span><span class="p">)</span>
@@ -397,63 +370,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">32</span><span class="p">)</span>
 
     <span class="c1"># make mass over lambda plot</span>
-    <span class="c1"># load data from disk rather than memory as a precaution </span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">betas</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">xi_err</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span>
-
-    <span class="c1"># beta function coefficients</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">b0</span> <span class="o">=</span> <span class="n">N</span> <span class="o">/</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
-    <span class="n">b1</span> <span class="o">=</span> <span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">128</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">G1</span> <span class="o">=</span> <span class="mf">0.04616363</span>
-    <span class="n">b2</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">128</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="o">-</span><span class="mi">13</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">18</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">N</span><span class="o">**</span><span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">G1</span><span class="p">)</span> <span class="p">)</span> 
-
-    <span class="c1"># Lambda times the lattice spacing a is denoted by the variable F</span>
-    <span class="n">pre_factor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">betas</span><span class="p">)</span>
-
-    <span class="c1"># numerical integration </span>
-    <span class="k">def</span> <span class="nf">integrand</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;integrand in expression for the renormalisation scale using the beta function at 3 loop accuracy.</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        x: float</span>
-<span class="sd">            value of the coupling constant squared i.e. x=g^2</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        inte: float</span>
-<span class="sd">            the integrand</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">beta_3l</span> <span class="o">=</span> <span class="o">-</span><span class="n">b0</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">b1</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">b2</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">4</span>  
-        <span class="n">inte</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">beta_3l</span> <span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">b0</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">b1</span><span class="o">/</span><span class="p">(</span><span class="n">b0</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">inte</span>
-    
-    <span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">betas</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">beta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">betas</span><span class="p">):</span>
-        <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">integrand</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="o">/</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="n">beta</span><span class="p">))</span>
-        <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre_factor</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">res</span><span class="p">)</span>
-
-    <span class="n">mass_lambda</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">xi</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="n">F</span>
-    <span class="n">mass_lambda_err</span> <span class="o">=</span> <span class="n">mass_lambda</span> <span class="o">/</span> <span class="n">xi</span> <span class="o">*</span> <span class="n">xi_err</span>
-
-    <span class="n">cts_prediction</span> <span class="o">=</span> <span class="mi">32</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">)</span>
-
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">betas</span><span class="p">,</span> <span class="n">mass_lambda</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">mass_lambda_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;FA HMC&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">cts_prediction</span><span class="p">,</span> <span class="n">betas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">betas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">linestyles</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;continuum prediction&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\beta$&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$m / \Lambda_</span><span class="si">{L}</span><span class="s1">$&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
-
-    <span class="c1"># check if path contains any directories and create those if they don&#39;t exist already</span>
-    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plot_path</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
+    <span class="n">plotting</span><span class="o">.</span><span class="n">mass_lambda_plot</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">,</span> <span class="n">plot_path</span><span class="p">)</span>
     <span class="k">return</span></div>
 
 
@@ -543,124 +460,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">32</span><span class="p">)</span>
 
 
-    <span class="c1">### make plots ###</span>
-    <span class="k">def</span> <span class="nf">power_law</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">c</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="n">z</span>
-
-    <span class="k">def</span> <span class="nf">linear_func</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">z</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span> 
-
-    <span class="k">def</span> <span class="nf">fit_IAT</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">IAT</span><span class="p">,</span> <span class="n">IAT_err</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Fits power law for integrated autocorrelation time (IAT) as function of the correlation length xi.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        xi: (n,) array</span>
-<span class="sd">            values of the correlation length for different values of beta</span>
-<span class="sd">        IAT: (n,) array</span>
-<span class="sd">            values of the susceptibility IAT for different values of beta</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        popt: list length 2</span>
-<span class="sd">            fitted parameters of the power law</span>
-<span class="sd">        z: float</span>
-<span class="sd">            the critical dynamical exponent of xi quantifying the degree of critical slowing down</span>
-<span class="sd">        z_err: float</span>
-<span class="sd">            error of the found dynamical exponent </span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">log_IAT</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">IAT</span><span class="p">)</span>
-        <span class="n">log_IAT_err</span> <span class="o">=</span> <span class="n">IAT_err</span> <span class="o">/</span> <span class="n">IAT</span>
-        <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">linear_func</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xi</span><span class="p">),</span> <span class="n">log_IAT</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">log_IAT_err</span><span class="p">,</span> <span class="n">absolute_sigma</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">z_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pcov</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">popt</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z_err</span>
-
-
-    <span class="c1"># load data from disk rather than memory as a precaution</span>
-    <span class="n">IATs</span><span class="p">,</span> <span class="n">IATs_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
-    <span class="n">chis</span><span class="p">,</span> <span class="n">chis_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
-    <span class="n">times</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">n</span><span class="p">))</span>
-
-    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span>  <span class="n">IATs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">IATs_err</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chis_err</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">acc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">IATs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">IATs_err</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">chis</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">chis_err</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">acc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">file_path</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">xis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">corlengthdata_path</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-
-
-    <span class="c1"># make IAT vs correlation length plot #</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="n">cut</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># change to numerical value to define the range of fitting (exclusive)</span>
-
-    <span class="c1"># get critical exponent</span>
-    <span class="n">fits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">xis</span><span class="p">[:</span><span class="n">cut</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-    <span class="n">zs</span><span class="p">,</span> <span class="n">zs_err</span><span class="p">,</span> <span class="n">red_chi2s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> 
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-        <span class="n">popt</span><span class="p">,</span> <span class="n">zs</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">zs_err</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit_IAT</span><span class="p">(</span><span class="n">xis</span><span class="p">[:</span><span class="n">cut</span><span class="p">],</span> <span class="n">IATs</span><span class="p">[</span><span class="n">k</span><span class="p">][:</span><span class="n">cut</span><span class="p">],</span> <span class="n">IATs_err</span><span class="p">[</span><span class="n">k</span><span class="p">][:</span><span class="n">cut</span><span class="p">])</span>
-        <span class="n">fits</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_law</span><span class="p">(</span><span class="n">xis</span><span class="p">[:</span><span class="n">cut</span><span class="p">],</span> <span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">IATs</span><span class="p">[</span><span class="n">k</span><span class="p">][:</span><span class="n">cut</span><span class="p">]</span> <span class="o">-</span> <span class="n">fits</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="n">red_chi2s</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">r</span><span class="o">/</span><span class="n">IATs</span><span class="p">[</span><span class="n">k</span><span class="p">][:</span><span class="n">cut</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fits</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># dof = number of observations - number of fitted parameters</span>
-
-    <span class="c1"># critical slowing down plot</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">IATs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">IATs_err</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;HMC $z = </span><span class="si">%.3f</span><span class="s1"> \pm </span><span class="si">%.3f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">zs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">zs_err</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-    <span class="c1"># plt.errorbar(xis, IATs[0], yerr=IATs_err[0], c=&#39;b&#39;, fmt=&#39;x&#39;, markersize=4, label=&#39;HMC $z = %.3f \pm %.3f$\n $\chi^2/DoF = %.3f$&#39;%(zs[0],zs_err[0], red_chi2s[0]))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xis</span><span class="p">[:</span><span class="n">cut</span><span class="p">],</span> <span class="n">fits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">IATs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="n">IATs_err</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;FA HMC $z = </span><span class="si">%.3f</span><span class="s1"> \pm </span><span class="si">%.3f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">zs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">zs_err</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-    <span class="c1"># plt.errorbar(xis, IATs[1], yerr=IATs_err[1], c=&#39;r&#39;, fmt=&#39;.&#39;, label=&#39;FA HMC $z = %.3f \pm %.3f$\n $\chi^2/DoF = %.3f$&#39;%(zs[1],zs_err[1], red_chi2s[1]))</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xis</span><span class="p">[:</span><span class="n">cut</span><span class="p">],</span> <span class="n">fits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="c1"># set x ticks manually</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">())</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;correlation length $\xi$ [$a$]&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;integrated autocorrelation time $\tau_{\chi}$&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    
-    <span class="c1"># check if path contains directory. If it does, the directory is created should it not exist already</span>
-    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">slowdownplot_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">slowdownplot_path</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># for memory purpose</span>
-
-
-    <span class="c1"># make cost function vs correlation length plot #</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-    <span class="c1"># uncomment below to fit a power law to the ratio of cost functions</span>
-    <span class="n">cost_funcs</span> <span class="o">=</span> <span class="n">times</span><span class="o">/</span><span class="n">acc</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">IATs</span><span class="p">)</span>
-    <span class="n">cost_funcs_err</span> <span class="o">=</span> <span class="n">cost_funcs</span> <span class="o">*</span> <span class="n">IATs_err</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">IATs</span><span class="p">)</span>
-    <span class="n">ratio</span> <span class="o">=</span> <span class="n">cost_funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">ratio_err</span> <span class="o">=</span> <span class="n">cost_funcs_err</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">cost_funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">cost_funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">cost_funcs_err</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">log_ratio_err</span> <span class="o">=</span> <span class="n">ratio_err</span> <span class="o">/</span> <span class="n">ratio</span>
-    <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">linear_func</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xis</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">ratio</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="n">log_ratio_err</span><span class="p">)</span>
-    <span class="n">fit_ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="n">linear_func</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xis</span><span class="p">),</span> <span class="o">*</span><span class="n">popt</span><span class="p">)</span> <span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">ratio</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">ratio_err</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xis</span><span class="p">,</span> <span class="n">fit_ratio</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;fitted power law $\sim \xi^{</span><span class="si">%.3f</span><span class="s1">}$&#39;</span><span class="o">%</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;correlation length $\xi$ [$a$]&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;cost function ratio HMC/FA HMC&#39;</span><span class="p">)</span>
-    <span class="c1"># set x ticks manually</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">())</span>
-    <span class="c1"># set y ticks manually</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yticks</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="n">ScalarFormatter</span><span class="p">())</span>
-    <span class="c1"># plt.legend()</span>
-
-    <span class="c1"># check if path contains directory. If it does, the directory is created should it not exist already</span>
-    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">costfuncplot_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dir_path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">costfuncplot_path</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="c1"># for memory purpose</span></div>
+    <span class="c1">### make plots ### accel_data_path, unaccel_data_path, corlengthdata_path, xticks, plot_path, show_plot=True</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">critical_slowing_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_path</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">corlengthdata_path</span><span class="p">,</span> <span class="n">xticks</span><span class="p">,</span> <span class="n">slowdownplot_path</span><span class="p">)</span>
+    <span class="n">plotting</span><span class="o">.</span><span class="n">cost_function_ratio_plot</span><span class="p">(</span><span class="n">file_path</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">file_path</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">corlengthdata_path</span><span class="p">,</span> <span class="n">xticks</span><span class="p">,</span> <span class="n">yticks</span><span class="p">,</span> <span class="n">costfuncplot_path</span><span class="p">)</span>
+    <span class="k">return</span></div>
 
 
 <div class="viewcode-block" id="acceleration_mass_search"><a class="viewcode-back" href="../../SU2xSU2.html#SU2xSU2.analysis.acceleration_mass_search">[docs]</a><span class="k">def</span> <span class="nf">acceleration_mass_search</span><span class="p">(</span><span class="n">num_traj</span><span class="p">,</span> <span class="n">burnin_frac</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">corlength</span><span class="p">,</span> <span class="n">masses</span><span class="p">,</span>

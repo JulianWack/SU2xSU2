@@ -1,4 +1,4 @@
-![logo](logo.png)
+![logo](https://github.com/JulianWack/SU2xSU2/raw/master/logo.png)
 
 [![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
 [![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
@@ -48,11 +48,9 @@ Please cite the following paper if you found this code useful in your research:
 
 ``SU2xSU2`` is free software made available under the MIT License. For details see the `LICENSE` file.
 
-## To DO
+## To Do
 - add stylesheet to distribution and uncomment its use in files
-- change name of function that integrates the beta function (state that 1/beta expansion of integrand is used) and use numerical integration instead of expanding the integrand
 - Runtime warning in correlations l.64
-- consider restructuring: analysis module only contains simulation code and plots are made using routines in plotting module. Would allow to make plots without running simulations again  
 - add tests
 - plotting
     - get latex error when plotting within analysis.py

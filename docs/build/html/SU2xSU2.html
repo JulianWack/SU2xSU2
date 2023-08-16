@@ -87,7 +87,11 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-SU2xSU2.plotting">SU2xSU2.plotting module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.correlation_func_plot"><code class="docutils literal notranslate"><span class="pre">correlation_func_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.cost_function_ratio_plot"><code class="docutils literal notranslate"><span class="pre">cost_function_ratio_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.critical_slowing_plot"><code class="docutils literal notranslate"><span class="pre">critical_slowing_plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.effective_mass_plot"><code class="docutils literal notranslate"><span class="pre">effective_mass_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.internal_energy_density_plot"><code class="docutils literal notranslate"><span class="pre">internal_energy_density_plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.mass_lambda_plot"><code class="docutils literal notranslate"><span class="pre">mass_lambda_plot()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SU2xSU2.plotting.plot_chain"><code class="docutils literal notranslate"><span class="pre">plot_chain()</span></code></a></li>
 </ul>
 </li>
@@ -737,7 +741,7 @@ When an integer is passed, the size will be assumed for all values of beta.</p><
 <li><p><strong>accel</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – using Fourier Acceleration by default</p></li>
 <li><p><strong>chaindata_pathbase</strong> (<em>str</em>) – path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved</p></li>
 <li><p><strong>simdata_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the
-internal energy density and its error (with file extension)</p></li>
+internal energy density and its error (with file extension) as well as <code class="docutils literal notranslate"><span class="pre">betas</span></code> row-wise</p></li>
 <li><p><strong>plot_path</strong> (<em>str</em>) – path of final plot file (with file extension)</p></li>
 </ul>
 </dd>
@@ -976,6 +980,54 @@ If left as <code class="docutils literal notranslate"><span class="pre">None</sp
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.cost_function_ratio_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">cost_function_ratio_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unaccel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#cost_function_ratio_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.cost_function_ratio_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the ratio of the const functions for unaccelerated and accelerated simulations. A power law is fitted to the ratio and superimposed in the plot.
+The paths <code class="docutils literal notranslate"><span class="pre">unaccel_data_path</span></code> and <code class="docutils literal notranslate"><span class="pre">accel_data_path</span></code> contain the simulation data collected in <a class="reference internal" href="#SU2xSU2.analysis.critical_slowingdown" title="SU2xSU2.analysis.critical_slowingdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.critical_slowingdown()</span></code></a>, specifically
+the simulation time and acceptance rate as well as the integrated autocorrelation time (IAT) of some observable ‘O’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unaccel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using standard (unaccelerated) HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>accel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using accelerated HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>corlengthdata_path</strong> (<em>str</em>) – path to .txt file containing the correlation length associated to the simulations at beta as its third row.
+Usually, this corresponds to <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code> of <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a></p></li>
+<li><p><strong>xticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the correlation length</p></li>
+<li><p><strong>yticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the cost function ratio</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.critical_slowing_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">critical_slowing_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unaccel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#critical_slowing_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.critical_slowing_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the integrated autocorrelation time (IAT) of an observable (O) against correlation length for standard and accelerated simulations.
+The data has been previously computed via <a class="reference internal" href="#SU2xSU2.analysis.critical_slowingdown" title="SU2xSU2.analysis.critical_slowingdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.critical_slowingdown()</span></code></a> and is stored at <code class="docutils literal notranslate"><span class="pre">unaccel_data_path</span></code> and <code class="docutils literal notranslate"><span class="pre">accel_data_path</span></code> respectively.
+Fitted power laws are superimposed on the data, allowing to quantify the degree of critical slowing down through the fitted value
+of the critical exponent ‘z’. The plot is stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unaccel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using standard (unaccelerated) HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>accel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using accelerated HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>corlengthdata_path</strong> (<em>str</em>) – path to .txt file containing the correlation length associated to the simulations at beta as its third row.
+Usually, this corresponds to <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code> of <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a></p></li>
+<li><p><strong>xticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the correlation length</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="SU2xSU2.plotting.effective_mass_plot">
 <span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">effective_mass_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xright</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ytop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ybottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/effective_mass.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#effective_mass_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.effective_mass_plot" title="Permalink to this definition"></a></dt>
 <dd><p>Produces an effective mass plot using the processed correlation function data stored at <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.
@@ -990,6 +1042,39 @@ As the effective mass becomes noisy for large separations, the plot range can be
 <li><p><strong>xright</strong> (<em>float</em>) – upper limit of the separation shown in the plot</p></li>
 <li><p><strong>ytop</strong> (<em>float</em>) – upper limit for the effective mass</p></li>
 <li><p><strong>ybottom</strong> (<em>float</em>) – lower limit for the effective mass</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.internal_energy_density_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">internal_energy_density_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#internal_energy_density_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.internal_energy_density_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Produces a plot comparing the numerically found internal energy density, stored at <code class="docutils literal notranslate"><span class="pre">simdata_path</span></code>,
+with the weak and strong coupling expansions (w.c. and s.c.). The plot is saved at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simdata_path</strong> (<em>str</em>) – path to .txt file (including extension) containing beta, internal energy density and its error stored as rows</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.mass_lambda_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">mass_lambda_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#mass_lambda_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.mass_lambda_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the mass over lambda ratio against beta, based on the correlation length data stored at <code class="docutils literal notranslate"><span class="pre">simdata_path</span></code>.
+The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda
+is evaluated numerically. To assess the convergence of the simulation data to the continuum mass gap prediction, the latter is added to the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simdata_path</strong> (<em>str</em>) – path to .txt file (including extension) containing L, beta, correlation length, its error and the reduced chi-squared stored as rows</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
 </ul>
 </dd>
 </dl>

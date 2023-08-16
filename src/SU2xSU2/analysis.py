@@ -3,10 +3,8 @@ import os
 import time
 from datetime import timedelta
 import numpy as np
-from scipy.integrate import quad
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-from matplotlib.ticker import ScalarFormatter
 
 # plt.style.use('scientific.mplstyle')
 # plt.rcParams.update({'text.usetex': True}) # uncomment when latex is installed
@@ -14,8 +12,7 @@ from matplotlib.ticker import ScalarFormatter
 from .SU2xSU2 import SU2xSU2
 from .calibrate_paras import calibrate
 from .correlations import autocorrelator
-from .plotting import correlation_func_plot
-
+from . import plotting
 
 
 def get_avg_error(data, get_IAT=False):
@@ -153,7 +150,7 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
         path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved
     simdata_path: str (optional)
         path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the
-        internal energy density and its error (with file extension)
+        internal energy density and its error (with file extension) as well as ``betas`` row-wise
     plot_path: str
         path of final plot file (with file extension)
     '''
@@ -204,32 +201,8 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
     t2 = time.time()
     print('Total simulation time: %s'%(str(timedelta(seconds=t2-t1))))
 
-
-    # make strong and weak coupling expansion plot
-    b_s = np.linspace(0,1)
-    strong = 1/2*b_s + 1/6*b_s**3 + 1/6*b_s**5
-
-    Q1 = 0.0958876
-    Q2 = -0.0670
-    b_w = np.linspace(0.6, 4)
-    weak = 1 - 3/(8*b_w) * (1 + 1/(16*b_w) + (1/64 + 3/16*Q1 + 1/8*Q2)/b_w**2)
-
-    fig = plt.figure()
-
-    plt.errorbar(betas, e_avg, yerr=e_err, fmt='.', label='FA HMC')
-    plt.plot(b_s, strong, c='b', label='strong coupling')
-    plt.plot(b_w, weak, c='r', label='weak coupling')
-    plt.xlabel(r'$\beta$')
-    plt.ylabel(r'internal energy density $e$')
-    plt.legend(loc='lower right')
-
-    # check if path contains any directories and create those if they don't exist already
-    dir_path = os.path.dirname(plot_path)
-    if dir_path != '':
-        os.makedirs(dir_path, exist_ok=True)
-    fig.savefig(plot_path)
-    plt.close()
-
+    # make plot
+    plotting.internal_energy_density_plot(simdata_path, plot_path, show_plot=False)
     return 
 
 
@@ -316,7 +289,7 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         xi[i], xi_err[i], reduced_chi2[i] = get_corlength(cor, cor_err, corfunc_path)
         # plot correlation function
         corfunc_plot_path = (corfuncs_plot_dir + file)[:-4] + '.pdf'
-        correlation_func_plot(corfunc_path, corfunc_plot_path, show_plot=False)
+        plotting.correlation_func_plot(corfunc_path, corfunc_plot_path, show_plot=False)
 
         des_str = 'correlation lengths inferred from %d measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.'%model.M
         np.savetxt(corlengthdata_path, np.row_stack((Ls, betas, xi, xi_err, reduced_chi2)), header=des_str)
@@ -325,63 +298,7 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         print('-'*32)
 
     # make mass over lambda plot
-    # load data from disk rather than memory as a precaution 
-    data = np.loadtxt(corlengthdata_path)
-    _, betas, xi, xi_err, _ = data
-
-    # beta function coefficients
-    N = 2
-    b0 = N / (8*np.pi)
-    b1 = N**2 / (128*np.pi**2)
-    G1 = 0.04616363
-    b2 = 1/(2*np.pi)**3 * (N**3)/128 * ( 1 + np.pi*(N**2 - 2)/(2*N**2) - np.pi**2*((2*N**4-13*N**2+18)/(6*N**4) + 4*G1) ) 
-
-    # Lambda times the lattice spacing a is denoted by the variable F
-    pre_factor = (2*np.pi*betas)**(1/2) * np.exp(-2*np.pi*betas)
-
-    # numerical integration 
-    def integrand(x):
-        '''integrand in expression for the renormalisation scale using the beta function at 3 loop accuracy.
-        
-        Parameters
-        ----------
-        x: float
-            value of the coupling constant squared i.e. x=g^2
-
-        Returns
-        -------
-        inte: float
-            the integrand
-        '''
-        beta_3l = -b0*x**2 - b1*x**3 - b2*x**4  
-        inte = 1/beta_3l + 1/(b0*x**2) - b1/(b0**2*x)
-        return inte
-    
-    F = np.zeros_like(betas)
-
-    for i,beta in enumerate(betas):
-        res, err = quad(integrand, 0, 4/(N*beta))
-        F[i] = pre_factor[i] * np.exp(-res)
-
-    mass_lambda = 1/xi * 1/F
-    mass_lambda_err = mass_lambda / xi * xi_err
-
-    cts_prediction = 32 * np.exp(np.pi/4) / np.sqrt(np.pi*np.e)
-
-    fig = plt.figure()
-    plt.errorbar(betas, mass_lambda, yerr=mass_lambda_err, fmt='.', label='FA HMC')
-    plt.hlines(cts_prediction, betas[0], betas[-1], linestyles=(0, (5,10)), color='k', label='continuum prediction')
-    plt.xlabel(r'$\beta$')
-    plt.ylabel(r'$m / \Lambda_{L}$')
-    plt.legend(loc='lower right')
-
-    # check if path contains any directories and create those if they don't exist already
-    dir_path = os.path.dirname(plot_path)
-    if dir_path != '':
-        os.makedirs(dir_path, exist_ok=True)
-    fig.savefig(plot_path)
-    plt.close()
-
+    plotting.mass_lambda_plot(corlengthdata_path, plot_path)
     return
 
 
@@ -471,124 +388,10 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
         print('-'*32)
 
 
-    ### make plots ###
-    def power_law(x, z, c):
-        return c*x**z
-
-    def linear_func(x, z, b):
-        return z*x + b 
-
-    def fit_IAT(xi, IAT, IAT_err):
-        '''
-        Fits power law for integrated autocorrelation time (IAT) as function of the correlation length xi.
-
-        Parameters
-        ----------
-        xi: (n,) array
-            values of the correlation length for different values of beta
-        IAT: (n,) array
-            values of the susceptibility IAT for different values of beta
-
-        Returns
-        -------
-        popt: list length 2
-            fitted parameters of the power law
-        z: float
-            the critical dynamical exponent of xi quantifying the degree of critical slowing down
-        z_err: float
-            error of the found dynamical exponent 
-        '''
-        log_IAT = np.log(IAT)
-        log_IAT_err = IAT_err / IAT
-        popt, pcov = curve_fit(linear_func, np.log(xi), log_IAT, sigma=log_IAT_err, absolute_sigma=True)
-        z = popt[0]
-        z_err = np.sqrt(pcov[0][0])
-
-        return popt, z, z_err
-
-
-    # load data from disk rather than memory as a precaution
-    IATs, IATs_err = np.zeros((2,n)), np.zeros((2,n))
-    chis, chis_err = np.zeros((2,n)), np.zeros((2,n))
-    times, acc = np.zeros((2,n)), np.zeros((2,n))
-
-    _, _,  IATs[0], IATs_err[0], chis[0], chis_err[0], times[0], acc[0] = np.loadtxt(file_path[0])
-    _, _, IATs[1], IATs_err[1], chis[1], chis_err[1], times[1], acc[1] = np.loadtxt(file_path[1])
-    xis = np.loadtxt(corlengthdata_path)[2]
-
-
-    # make IAT vs correlation length plot #
-    fig = plt.figure()
-    cut = None # change to numerical value to define the range of fitting (exclusive)
-
-    # get critical exponent
-    fits = np.zeros((2,xis[:cut].shape[0]))
-    zs, zs_err, red_chi2s = np.zeros((3,2)) 
-    for k in range(2):
-        popt, zs[k], zs_err[k] = fit_IAT(xis[:cut], IATs[k][:cut], IATs_err[k][:cut])
-        fits[k] = power_law(xis[:cut], popt[0], np.exp(popt[1]))
-        r = IATs[k][:cut] - fits[k]
-        red_chi2s[k] = np.sum((r/IATs[k][:cut])**2) / (fits[k].size - 2) # dof = number of observations - number of fitted parameters
-
-    # critical slowing down plot
-    plt.errorbar(xis, IATs[0], yerr=IATs_err[0], c='b', fmt='x', markersize=4, label='HMC $z = %.3f \pm %.3f$'%(zs[0],zs_err[0]))
-    # plt.errorbar(xis, IATs[0], yerr=IATs_err[0], c='b', fmt='x', markersize=4, label='HMC $z = %.3f \pm %.3f$\n $\chi^2/DoF = %.3f$'%(zs[0],zs_err[0], red_chi2s[0]))
-    plt.plot(xis[:cut], fits[0], c='b')
-    plt.errorbar(xis, IATs[1], yerr=IATs_err[1], c='r', fmt='.', label='FA HMC $z = %.3f \pm %.3f$'%(zs[1],zs_err[1]))
-    # plt.errorbar(xis, IATs[1], yerr=IATs_err[1], c='r', fmt='.', label='FA HMC $z = %.3f \pm %.3f$\n $\chi^2/DoF = %.3f$'%(zs[1],zs_err[1], red_chi2s[1]))
-    plt.plot(xis[:cut], fits[1], c='r')
-
-    plt.xscale('log')
-    # set x ticks manually
-    ax = plt.gca()
-    ax.set_xscale('log')
-    ax.set_xticks(xticks)
-    ax.get_xaxis().set_major_formatter(ScalarFormatter())
-    plt.yscale('log')
-    plt.xlabel(r'correlation length $\xi$ [$a$]')
-    plt.ylabel(r'integrated autocorrelation time $\tau_{\chi}$')
-    plt.legend()
-    
-    # check if path contains directory. If it does, the directory is created should it not exist already
-    dir_path = os.path.dirname(slowdownplot_path)
-    if dir_path != '':
-        os.makedirs(dir_path, exist_ok=True)
-    fig.savefig(slowdownplot_path)
-    plt.close() # for memory purpose
-
-
-    # make cost function vs correlation length plot #
-    fig = plt.figure()
-    # uncomment below to fit a power law to the ratio of cost functions
-    cost_funcs = times/acc * np.sqrt(IATs)
-    cost_funcs_err = cost_funcs * IATs_err/(2*IATs)
-    ratio = cost_funcs[0]/cost_funcs[1]
-    ratio_err = cost_funcs_err[0]/cost_funcs[1] + cost_funcs[0]/cost_funcs[1]**2 * cost_funcs_err[1]
-    log_ratio_err = ratio_err / ratio
-    popt, _ = curve_fit(linear_func, np.log(xis), np.log(ratio), sigma=log_ratio_err)
-    fit_ratio = np.exp( linear_func(np.log(xis), *popt) )
-
-    plt.errorbar(xis, ratio, yerr=ratio_err, fmt='.')
-    plt.plot(xis, fit_ratio, c='r', label=r'fitted power law $\sim \xi^{%.3f}$'%popt[0])
-    plt.xlabel(r'correlation length $\xi$ [$a$]')
-    plt.ylabel(r'cost function ratio HMC/FA HMC')
-    # set x ticks manually
-    ax = plt.gca()
-    ax.set_xscale('log')
-    ax.set_xticks(xticks, minor=False)
-    ax.get_xaxis().set_major_formatter(ScalarFormatter())
-    # set y ticks manually
-    ax.set_yscale('log')
-    ax.set_yticks(yticks, minor=False)
-    ax.get_yaxis().set_major_formatter(ScalarFormatter())
-    # plt.legend()
-
-    # check if path contains directory. If it does, the directory is created should it not exist already
-    dir_path = os.path.dirname(costfuncplot_path)
-    if dir_path != '':
-        os.makedirs(dir_path, exist_ok=True)
-    fig.savefig(costfuncplot_path)
-    plt.close() # for memory purpose
+    ### make plots ### accel_data_path, unaccel_data_path, corlengthdata_path, xticks, plot_path, show_plot=True
+    plotting.critical_slowing_plot(file_path[0], file_path[1], corlengthdata_path, xticks, slowdownplot_path)
+    plotting.cost_function_ratio_plot(file_path[0], file_path[1], corlengthdata_path, xticks, yticks, costfuncplot_path)
+    return
 
 
 def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
@@ -669,7 +472,7 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
 
     fig = plt.figure()
     plt.errorbar(masses[:-1], cost_func[:-1], yerr=cost_func_err[:-1], fmt='.')
-    plt.errorbar(masses[-1], cost_func[-1], yerr=cost_func_err[-1], c='r', fmt='.', label=r'$M=1/\xi$')
+    plt.errorbar(masses[-1], cost_func[-1], yerr=cost_func_err[-1], c='r', fmt='x', markersize=4, label=r'$M=1/\xi$')
     plt.xlabel(r'acceleration mass $M$')
     plt.ylabel(r'cost function normalised to $M=1/\xi$')
     plt.legend()
