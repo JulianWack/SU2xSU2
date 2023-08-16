@@ -1,1 +1,1 @@
-include LICENSE README.md requirements.txt
+include requirements.txt src/SU2xSU2/scientific.mplstyle

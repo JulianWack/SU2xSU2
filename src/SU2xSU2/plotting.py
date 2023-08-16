@@ -6,7 +6,7 @@ from scipy.integrate import quad
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator, ScalarFormatter
 
-# plt.style.use('scientific.mplstyle')
+plt.style.use('scientific')
 # plt.rcParams.update({'text.usetex': True}) # uncomment when latex is installed
 
 

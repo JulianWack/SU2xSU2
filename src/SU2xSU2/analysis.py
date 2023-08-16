@@ -6,7 +6,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-# plt.style.use('scientific.mplstyle')
+plt.style.use('scientific')
 # plt.rcParams.update({'text.usetex': True}) # uncomment when latex is installed
 
 from .SU2xSU2 import SU2xSU2
