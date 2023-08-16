@@ -1,12 +1,12 @@
 ![logo](logo.png)
 
+[![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
+[![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
+[![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=stable)](https://su2xsu2.readthedocs.io/en/stable/?badge=stable)
+
 This python package offers efficient simulation and data analysis routines for the SU(2) x SU(2) Principal Chiral model. The key feature offered is the integration of Fourier Acceleration into the Hybrid Monte Carlo algorithm which leads to a significant reduction in the degree of critical slowing down.
 
 Currently the simulation is only supported for a two dimensional cubic lattice.
-
-[![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
-[![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=stable)](https://su2xsu2.readthedocs.io/en/stable/?badge=stable)
-[![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
 
 ## Installation 
 To install ``SU2xSU2`` using ``pip`` run:

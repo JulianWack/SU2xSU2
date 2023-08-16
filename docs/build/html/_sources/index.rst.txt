@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: ../../logo.png
+
 Welcome to SU2xSU2's documentation!
 ===================================
 This python package offers efficient simulation and data analysis routines for the
