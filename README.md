@@ -51,5 +51,4 @@ Please cite the following paper if you found this code useful in your research:
 
 ## To Do
 - Runtime warning in correlations l.64
-- add tests
 - generalize simulation and data analysis to d-dimensional cubic lattice 
