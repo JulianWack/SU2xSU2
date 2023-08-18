@@ -380,7 +380,7 @@ class SU2xSU2():
         return pi
 
 
-    def run_HMC(self, M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], 
+    def run_HMC(self, M, burnin_frac, thin_freq=1, accel=True, measurements=[], ext_measurement_shape=[], chain_paths=[], 
                 saving_bool=True, partial_save=5000, starting_config_path='', RNG_state_path='',
                 chain_state_dir='data/chain_state/', renorm_freq=10000):
         '''
@@ -398,17 +398,25 @@ class SU2xSU2():
         ----------
         M: int
             number of HMC trajectories and thus total number of generated samples
-        thin_freq: int
-            frequency at which measurements will be taken
         burin_frac: float
             fraction of total HMC samples which are rejected as burn in  
+        thin_freq: int (optional)
+            frequency at which measurements will be taken
         accel: bool (optional)
             By default True, indicating to use Fourier Acceleration
         measurements: list of callables (optional)
-            can select from: internal_energy_density, susceptibility, ww_correlation_func to measure the 
-            internal energy density, susceptibility, and wall-to-wall correlation respectively
+            upon defining an instance of the SU2xSU2 class called 'model', can select from: model.internal_energy_density, model.susceptibility, model.ww_correlation_func 
+            (measuring the internal energy density, susceptibility, and wall-to-wall correlation respectively) or pass an externally defined function in which case
+            ``external_measurement_structure`` must be specified. 
+            Externally defined functions are required to expected to only have two arguments: the field and momentum configuration respectively. 
+        ext_measurement_shape: list of tuples (optional)
+            Only required if at least one of the callables in ``measurements`` is externally defined.
+            Gives the data shape of a single measurement made by an externally defined function, matching their sequence of occurrence in ``measurements``.
+            If a scalar quantity is measured, enter ``()``. For a 1D array of length 'A' enter ``(A,)``, for a 2D array enter ``(A,B)`` etc. 
+            The data shape for SU2xSU2 class methods should not be specified. 
         chain_paths: list of str (optional)
             Only required if ``saving_bool=True``, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements. 
+            The path must match their sequence of occurrence in ``measurements``.
             The data will always be saved as a .npy file, allowing to omit the file extension.
         saving_bool: bool (optional)
             save measurement data
@@ -465,12 +473,18 @@ class SU2xSU2():
 
         # initialize arrays to store chain of measurements 
         data = []
-        if self.internal_energy_density in measurements:
-            data.append(np.zeros(self.M))
-        if self.susceptibility in measurements:
-            data.append(np.zeros(self.M))
-        if self.ww_correlation_func in measurements:
-            data.append(np.zeros((self.M, self.L))) # unprocessed (not normalized, on range [0,L)) wall to wall correlation function for each sample
+        ext_count = 0 # counter to keep track of externally defined measurement functions
+        for measurement in measurements:
+            if measurement in [self.internal_energy_density, self.susceptibility]:
+                data.append(np.zeros(self.M))
+            elif measurement in [self.ww_correlation_func]:
+                data.append(np.zeros((self.M, self.L))) # unprocessed (not normalized, on range [0,L)) wall to wall correlation function for each sample
+            else:
+                if ext_measurement_shape == []:
+                    raise Exception('Please supply the data shape for the externally defined measurement: %s.'%(measurement.__name__))
+                shape = (self.M,) + ext_measurement_shape[ext_count]
+                data.append(np.zeros(shape))
+                ext_count += 1
 
 
         t1 = time.time()
@@ -525,7 +539,12 @@ class SU2xSU2():
             # take measurements after burin and every thin_freq-th step in chain
             if (i > start_id) and (i-(start_id+1))%thin_freq == 0:
                 for k, func in enumerate(measurements):
-                    data[k][j] = func(phi)
+                    # when measurement is SU2xSU2 class method, only the field configuration is required
+                    # for maximal flexibility of externally defined functions, pass the field and momentum configuration 
+                    if func in [self.internal_energy_density, self.ww_correlation_func, self.susceptibility]:
+                        data[k][j] = func(phi)
+                    else:
+                        data[k][j] = func(phi, pi_new)
                 j += 1
 
             # store partial results of measurements and current state of chain

@@ -180,7 +180,7 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
 
         # set simulation and data storage parameters. Execute production simulation
         file_path = chaindata_pathbase + 'beta%sL%s.npy'%(beta_str, L_str)
-        sim_paras = {'M':num_traj, 'thin_freq':1, 'burnin_frac':burnin_frac, 'accel':accel, 'measurements':[model.internal_energy_density], 'chain_paths':[file_path]}
+        sim_paras = {'M':num_traj, 'burnin_frac':burnin_frac, 'accel':accel, 'measurements':[model.internal_energy_density], 'chain_paths':[file_path]}
         model.run_HMC(**sim_paras) 
 
         # get ensemble average
@@ -278,7 +278,7 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
 
         # set simulation and data storage parameters. Execute production simulation
         corfunc_chain_path = corfuncs_chain_dir + file
-        sim_paras = {'M':num_traj, 'thin_freq':1, 'burnin_frac':burnin_frac, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':[corfunc_chain_path]}
+        sim_paras = {'M':num_traj, 'burnin_frac':burnin_frac, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':[corfunc_chain_path]}
         model.run_HMC(**sim_paras) 
         
         # get ensemble average correlation function. Further processing occurs in get_corlength.
@@ -374,7 +374,7 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
         
             # production simulation and saving raw chain of susceptibility measurements
             chain_path = chain_dir[k] + file 
-            sim_paras = {'M':num_traj, 'thin_freq':1, 'burnin_frac':burnin_frac, 'accel':accel, 'measurements':[model.susceptibility], 'chain_paths':[chain_path]}
+            sim_paras = {'M':num_traj, 'burnin_frac':burnin_frac, 'accel':accel, 'measurements':[model.susceptibility], 'chain_paths':[chain_path]}
             model.run_HMC(**sim_paras) 
 
             # get ensemble average and IAT of susceptibility
@@ -445,7 +445,7 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
 
         # production simulation and saving raw chain of susceptibility measurements
         chain_path = chain_dir + file 
-        sim_paras = {'M':num_traj, 'thin_freq':1, 'burnin_frac':burnin_frac, 'accel':True, 'measurements':[model.susceptibility], 'chain_paths':[chain_path]}
+        sim_paras = {'M':num_traj, 'burnin_frac':burnin_frac, 'accel':True, 'measurements':[model.susceptibility], 'chain_paths':[chain_path]}
         model.run_HMC(**sim_paras) 
 
         # compute cost function 

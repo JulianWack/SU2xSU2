@@ -14,9 +14,19 @@ paras_calibrated = calibrate(model_paras, accel=True)
 model = SU2xSU2(**paras_calibrated)
 
 # define the simulation parameters, what observables should be measures and where the chain is stored
-sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 
-            'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_test'],
+# shows how own measurement functions can be passed
+def func(phi, pi):
+    '''
+    Example measurement function which must take the field and momentum configuration as its arguments.
+    '''
+    L = phi.shape[0]
+    O = np.sum(phi) / L**2 # observable O with no physical meaning
+    return O
+
+sim_paras = {'M':500, 'burnin_frac':0.5, 'accel':True, 
+            'measurements':[model.ww_correlation_func, func], 'ext_measurement_shape':[()], 'chain_paths':['corfunc_test', 'new_observable'],
             'chain_state_dir':'corfunc_test/chain_state/'}
+
 # run simulation
 model.run_HMC(**sim_paras) 
 
@@ -26,7 +36,7 @@ analysis.get_corlength(avg, err, 'corfunc_processed')
 plotting.correlation_func_plot('corfunc_processed.npy', 'plots/corfunc.pdf')
 
 # optionally can continue the previous chain
-sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.0, 'accel':True, 
+sim_paras = {'M':500, 'burnin_frac':0.0, 'accel':True, 
             'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_test_continue'],
             'starting_config_path':'corfunc_test/chain_state/config.npy', 'RNG_state_path':'corfunc_test/chain_state/RNG_state.obj',
             'chain_state_dir':'corfunc_test/chain_state/'}

@@ -23,7 +23,7 @@ def calibrate(model_paras, accel=False, sim_paras=None):
     accel: bool, optional
         use Fourier Acceleration or not
     sim_paras: dict, optional
-        ``{M, thin_freq, burnin_frac, accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}``
+        ``{M, burnin_frac, thin_freq=1 accel=True, measurements=[], chain_paths=[], saving_bool=True, partial_save=5000, starting_config=None, RGN_state=None, renorm_freq=10000}``
         Specifying the simulation parameters for the calibration run by calling :py:meth:`SU2xSU2.SU2xSU2.run_HMC`. 
         Consider the associated docstring for definitions of these parameters.
 
@@ -37,7 +37,7 @@ def calibrate(model_paras, accel=False, sim_paras=None):
 
     if sim_paras is None:
         # default for fast calibration
-        sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':accel, 'saving_bool':False}
+        sim_paras = {'M':500, 'burnin_frac':0.5, 'accel':accel, 'saving_bool':False}
     
     good_acc_rate = False
     count = 0 
