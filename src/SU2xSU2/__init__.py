@@ -7,5 +7,4 @@ style_path = SU2xSU2.__path__[0]
 stylesheet = plt.style.core.read_style_directory(style_path)
 # Update dictionary of styles
 plt.style.core.update_nested_dict(plt.style.library, stylesheet)
-#plt.style.core.available[:] = sorted(plt.style.library.keys())
-plt.style.core.reload_library()
+plt.style.core.available = sorted(plt.style.library.keys())

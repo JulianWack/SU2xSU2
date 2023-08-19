@@ -32,7 +32,7 @@ from SU2xSU2.SU2xSU2 import SU2xSU2
 model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
 model = SU2xSU2(**model_paras)
 # define simulation parameters and measurements
-sim_paras = {'M':500, 'thin_freq':1, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
+sim_paras = {'M':500, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
 model.run_HMC(**sim_paras) 
 ```
 
