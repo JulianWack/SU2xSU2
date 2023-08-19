@@ -22,7 +22,7 @@ autodoc_mock_imports = ['matplotlib']
 project = 'SU2xSU2'
 copyright = '2023, Julian Wack'
 author = 'Julian Wack'
-release = '1.2'
+release = '1.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -41,5 +41,5 @@ pygments_style = 'sphinx'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']

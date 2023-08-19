@@ -1,138 +1,1467 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SU2xSU2 package &mdash; SU2xSU2 1.2 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>SU2xSU2 package &#8212; SU2xSU2 1.3 documentation</title>
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-    <script src="_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'SU2xSU2';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="SU2xSU2" href="modules.html" /> 
-</head>
+    <link rel="prev" title="SU2xSU2" href="modules.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
-          
-          
-          <a href="index.html" class="icon icon-home">
-            SU2xSU2
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">SU2xSU2</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SU2xSU2 package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-su2-mat-routines-module">SU2xSU2.SU2_mat_routines module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-su2xsu2-module">SU2xSU2.SU2xSU2 module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-analysis-module">SU2xSU2.analysis module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-calibrate-paras-module">SU2xSU2.calibrate_paras module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-correlations-module">SU2xSU2.correlations module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#su2xsu2-plotting-module">SU2xSU2.plotting module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">SU2xSU2 1.3 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="usage.html">
+                        Usage
+                      </a>
+                    </li>
+                
 
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">SU2xSU2</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">SU2xSU2</a></li>
-      <li class="breadcrumb-item active">SU2xSU2 package</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/SU2xSU2.rst.txt" rel="nofollow"> View page source</a>
-      </li>
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        SU2xSU2
+                      </a>
+                    </li>
+                
   </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="su2xsu2-package">
-<h1>SU2xSU2 package<a class="headerlink" href="#su2xsu2-package" title="Permalink to this heading"></a></h1>
-<section id="su2xsu2-su2-mat-routines-module">
-<h2>SU2xSU2.SU2_mat_routines module<a class="headerlink" href="#su2xsu2-su2-mat-routines-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="su2xsu2-su2xsu2-module">
-<h2>SU2xSU2.SU2xSU2 module<a class="headerlink" href="#su2xsu2-su2xsu2-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="su2xsu2-analysis-module">
-<h2>SU2xSU2.analysis module<a class="headerlink" href="#su2xsu2-analysis-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="su2xsu2-calibrate-paras-module">
-<h2>SU2xSU2.calibrate_paras module<a class="headerlink" href="#su2xsu2-calibrate-paras-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="su2xsu2-correlations-module">
-<h2>SU2xSU2.correlations module<a class="headerlink" href="#su2xsu2-correlations-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="su2xsu2-plotting-module">
-<h2>SU2xSU2.plotting module<a class="headerlink" href="#su2xsu2-plotting-module" title="Permalink to this heading"></a></h2>
-</section>
-</section>
-
-
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-left" title="SU2xSU2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+</nav></div>
+      
     </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2023, Julian Wack.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
-      </div>
-    </section>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
 
-</body>
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="usage.html">
+                        Usage
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        SU2xSU2
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">SU2xSU2 package</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">SU2xSU2</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">SU2xSU2 package</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="su2xsu2-package">
+<h1>SU2xSU2 package<a class="headerlink" href="#su2xsu2-package" title="Permalink to this heading">#</a></h1>
+<section id="module-SU2xSU2.SU2_mat_routines">
+<span id="su2xsu2-su2-mat-routines-module"></span><h2>SU2xSU2.SU2_mat_routines module<a class="headerlink" href="#module-SU2xSU2.SU2_mat_routines" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.alpha_to_a">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">alpha_to_a</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#alpha_to_a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.alpha_to_a" title="Permalink to this definition">#</a></dt>
+<dd><p>A lattice of SU(2) matrices may be defined through the exponential map with parameters alpha.
+The exponential map can be explicitly evaluated, resulting in a linear combination of the Pauli matrices and unity:
+U = exp(i alpha_i sigma_i) = a_0*1 + i*a_i sigma_i
+This function finds the coefficients <code class="docutils literal notranslate"><span class="pre">a</span></code> based on <code class="docutils literal notranslate"><span class="pre">alpha</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>3</em><em>) </em><em>array</em>) – parameters when representing a SU(2) group element via the exponential map at every lattice site</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>a</strong> – parameters of matrices at each lattice site when explicitly evaluating the exponential map</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,4) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.det">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">det</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#det"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.det" title="Permalink to this definition">#</a></dt>
+<dd><p>The determinant of an SU(2) matrix is given by the squared length of the parameter vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>determinant</strong> – determinants of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.dot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.dot" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the elementwise matrix product between two lattices of SU(2) matrices with parameter vectors <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of first SU(2) valued lattice</p></li>
+<li><p><strong>b</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of second SU(2) valued lattice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>c</strong> – parameters of SU(2) valued lattice resulting from the elementwise matrix products</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,4) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.hc">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">hc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#hc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.hc" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the parameter vector of the hermitian conjugate at each lattice site.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>a_hc</strong> – parameters of hermitian conjugate SU(2) valued lattice</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,4) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.make_mats">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">make_mats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#make_mats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.make_mats" title="Permalink to this definition">#</a></dt>
+<dd><p>Constructs explicit matrices corresponding to parameter vector <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mats</strong> – np.matrix instance at every site</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L) object array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.norm2">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">norm2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#norm2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.norm2" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns squared norm of the parameter vector <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>norm_sq</strong> – containing the norm at each site</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.renorm">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">renorm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#renorm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.renorm" title="Permalink to this definition">#</a></dt>
+<dd><p>Renormalises matrix to have det = 1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>renormed</strong> – renormalised parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,4) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.sum">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.sum" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the elementwise sum of two SU(2) valued lattices A and B with parameters <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.
+Let C = A + B, i.e. c = a + b.
+Note that the sum of two SU(2) matrices is proportional to an SU(2) matrix with proportionality constant <code class="docutils literal notranslate"><span class="pre">k</span></code>, meaning
+D = C/k = 1/k (A + B) is in SU(2).
+To only having to perform manipulations on SU(2) matrices, the parameters <code class="docutils literal notranslate"><span class="pre">d</span></code> of the SU(2) valued lattice D and the
+constant <code class="docutils literal notranslate"><span class="pre">k</span></code> are returned such that their product gives the
+parameter vectors of C, the sum of lattice A and B.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of first SU(2) valued lattice</p></li>
+<li><p><strong>b</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of second SU(2) valued lattice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>d</strong> (<em>(L,L,4) array</em>) – parameters of SU(2) valued lattice proportional to a+b</p></li>
+<li><p><strong>k</strong> (<em>(L,L,1) array</em>) – proportionality constant between d and a+b</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.SU2_mat_routines.tr">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2_mat_routines.</span></span><span class="sig-name descname"><span class="pre">tr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2_mat_routines.html#tr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2_mat_routines.tr" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the trace of the matrices at each lattice site.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>trace</strong> – trace at each site of the SU(2) valued lattice</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-SU2xSU2.SU2xSU2">
+<span id="su2xsu2-su2xsu2-module"></span><h2>SU2xSU2.SU2xSU2 module<a class="headerlink" href="#module-SU2xSU2.SU2xSU2" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SU2xSU2.SU2xSU2.</span></span><span class="sig-name descname"><span class="pre">SU2xSU2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Each instance describes a realization of the SU(2)xSU(2) model on a square lattice whose dynamics can be simulated using the
+Fourier Accelerated Hybrid Monte Carlo algorithm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.Ham">
+<span class="sig-name descname"><span class="pre">Ham</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.Ham"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the Hamiltonian for a lattice configuration <code class="docutils literal notranslate"><span class="pre">phi</span></code> and momentum configuration <code class="docutils literal notranslate"><span class="pre">pi</span></code>.
+The kinetic term is chosen such that the momenta follow a standard Gaussian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued field</p></li>
+<li><p><strong>pi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>3</em><em>) </em><em>array</em>) – parameter values of the conjugate momenta at each lattice site</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>H</strong> – the Hamiltonian as the sum of the action and the kinetic term</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.Ham_FA">
+<span class="sig-name descname"><span class="pre">Ham_FA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.Ham_FA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham_FA" title="Permalink to this definition">#</a></dt>
+<dd><p>Analogous to <a class="reference internal" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham" title="SU2xSU2.SU2xSU2.SU2xSU2.Ham"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.SU2xSU2.Ham()</span></code></a> but computes the modified Hamiltonian used to accelerate the dynamics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued field</p></li>
+<li><p><strong>pi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>3</em><em>) </em><em>array</em>) – parameter values of the conjugate momenta at each lattice site</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>H</strong> – the modified Hamiltonian as the sum of the action and the modified kinetic term</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham" title="SU2xSU2.SU2xSU2.SU2xSU2.Ham"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SU2xSU2.SU2xSU2.Ham</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.__init__" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>int</em>) – Number of lattice sites along one dimension. Must be even for implementation of Fourier acceleration to work properly</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – Lattice spacing</p></li>
+<li><p><strong>ell</strong> (<em>int</em>) – Number of steps to integrate Hamilton’s equation, each of size eps</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – Step size for integrating Hamilton’s equations</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – Model parameter defined in terms of the nearest neighbor coupling parameter g via beta = 1/(2g^2)</p></li>
+<li><p><strong>mass</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – Mass parameter used in Fourier Acceleration. The physics is independent of the parameter value which only effects the simulation performance.
+The most efficient choice depends on beta.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.action">
+<span class="sig-name descname"><span class="pre">action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.action" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the action for lattice configuration <code class="docutils literal notranslate"><span class="pre">phi</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued field at each lattice site</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>S</strong> – the action</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.exp_update">
+<span class="sig-name descname"><span class="pre">exp_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pi_dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.exp_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.exp_update" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the update matrix of the field for the transition t -&gt; t + dt.
+The update matrix is given by the exponential of the conjugate momenta pi times i dt.
+As the momentum field is a linear combination of the SU(2) generators, the update matrix is itself an SU(2) element, described by
+the parameter vector of pi scaled by dt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pi_dt</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the momenta times the integration step size</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>update</strong> – parameters of the update matrices</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,4) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.internal_energy_density">
+<span class="sig-name descname"><span class="pre">internal_energy_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.internal_energy_density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.internal_energy_density" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the internal energy (action) per site of a lattice configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – lattice configuration to perform computation on</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>e</strong> – action per site</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.kernel_inv_F">
+<span class="sig-name descname"><span class="pre">kernel_inv_F</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.kernel_inv_F"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.kernel_inv_F" title="Permalink to this definition">#</a></dt>
+<dd><p>Finds inverse of the action kernel computed in the Fourier space, here referred to as <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – inverse action kernel in Fourier space</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(L,L) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.leapfrog">
+<span class="sig-name descname"><span class="pre">leapfrog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi_old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.leapfrog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs the leapfrog integration of Hamilton’s equations for <code class="docutils literal notranslate"><span class="pre">self.ell</span></code> steps, each of size <code class="docutils literal notranslate"><span class="pre">self.eps</span></code>. The passed arguments define the initial conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>phi_old</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – last accepted sample in the chain of the SU(2) valued field</p></li>
+<li><p><strong>pi_old</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>3</em><em>) </em><em>array</em>) – parameters of conjugate momenta associated with phi_old</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>phi_cur</strong> (<em>(L,L,4) array</em>) – SU(2) matrix parameters after simulating dynamics</p></li>
+<li><p><strong>pi_cur</strong> (<em>(L,L,3) array</em>) – momenta parameters after simulating dynamics</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.leapfrog_FA">
+<span class="sig-name descname"><span class="pre">leapfrog_FA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pi_old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.leapfrog_FA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog_FA" title="Permalink to this definition">#</a></dt>
+<dd><p>Leapfrog integrator analogous to <a class="reference internal" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog" title="SU2xSU2.SU2xSU2.SU2xSU2.leapfrog"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.SU2xSU2.leapfrog()</span></code></a> but using the modified EoMs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog" title="SU2xSU2.SU2xSU2.SU2xSU2.leapfrog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SU2xSU2.SU2xSU2.leapfrog</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.make_NN_mask">
+<span class="sig-name descname"><span class="pre">make_NN_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.make_NN_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.make_NN_mask" title="Permalink to this definition">#</a></dt>
+<dd><p>Makes mask to apply to SU(2) valued field phi or momentum field pi which then gives the matrix parameter values of the nearest neighbors (NN) for each lattice site.
+Hence <code class="docutils literal notranslate"><span class="pre">phi[self.NN_mask]</span></code> is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NN_mask</strong> – tuple of two (L,L,4,1) arrays, each giving the row and column coordinate for all nearest neighbors</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.pi_dot">
+<span class="sig-name descname"><span class="pre">pi_dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.pi_dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.pi_dot" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the derivative of <code class="docutils literal notranslate"><span class="pre">pi</span></code> with respect to the Hamiltonian time. From Hamilton’s equations, this is given as i times the derivative of the action wrt. <code class="docutils literal notranslate"><span class="pre">phi</span></code>.
+<code class="docutils literal notranslate"><span class="pre">pi</span></code> and its time derivative are linear combinations of the Pauli matrices and hence described by 3 real parameters alpha.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – parameters of the SU(2) valued field</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pi_t</strong> – parameters of the time derivative of the conjugate momenta</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,3) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.pi_samples">
+<span class="sig-name descname"><span class="pre">pi_samples</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.pi_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.pi_samples" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.
+The sampling is easiest done in Fourier space and in terms of a real and hermitian object <code class="docutils literal notranslate"><span class="pre">PI</span></code> from which the momentum samples can be reconstructed (both in Fourier space)
+The size of the lattice along one dimension L is assumed to be even.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pi</strong> – parameters for the sample of the conjugate momenta in real space</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>(L,L,3) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.prod_A_pi">
+<span class="sig-name descname"><span class="pre">prod_A_pi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pi_F</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.prod_A_pi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.prod_A_pi" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the elementwise product of the inverse action kernel in Fourier space (denoted as ‘A’) and the momenta in Fourier space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pi_F</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>3</em><em>) </em><em>array</em>) – parameter vector of momenta in Fourier space</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>prod</strong> – parameter vector of momenta in Fourier space, each site being weighted by the inverse Fourier space kernel</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,L,3)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.run_HMC">
+<span class="sig-name descname"><span class="pre">run_HMC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burnin_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext_measurement_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saving_bool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial_save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RNG_state_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_state_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/chain_state/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renorm_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.run_HMC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.run_HMC" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs the Hybrid Monte Carlo simulation, by default with Fourier Acceleration.</p>
+<p>A total of <code class="docutils literal notranslate"><span class="pre">M</span></code> trajectories will be simulated and measurements are taken every <code class="docutils literal notranslate"><span class="pre">thin_freq</span></code> steps after the
+thermalisation period defined as the first <code class="docutils literal notranslate"><span class="pre">M*burnin_frac</span></code> samples.
+Due to accumulating rounding errors, the molecular dynamics cause field to leave the group manifold slowly. This is counteracted by enforcing the unitarity constraint
+of the matrix parameters every <code class="docutils literal notranslate"><span class="pre">renorm_freq</span></code>-th step.
+The Monte Carlo chain is fully defined (and thus reproducible) by the model and simulation parameters as well as the initial configuration of the chain and
+the state of the random number generator (RNG). By using the last configuration of a previous chain and the associated RNG state,
+one can continue the chain seamlessly in a new simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>M</strong> (<em>int</em>) – number of HMC trajectories and thus total number of generated samples</p></li>
+<li><p><strong>burin_frac</strong> (<em>float</em>) – fraction of total HMC samples which are rejected as burn in</p></li>
+<li><p><strong>thin_freq</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – frequency at which measurements will be taken</p></li>
+<li><p><strong>accel</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – By default True, indicating to use Fourier Acceleration</p></li>
+<li><p><strong>measurements</strong> (<em>list</em><em> of </em><em>callables</em><em> (</em><em>optional</em><em>)</em>) – upon defining an instance of the SU2xSU2 class called ‘model’, can select from: model.internal_energy_density, model.susceptibility, model.ww_correlation_func
+(measuring the internal energy density, susceptibility, and wall-to-wall correlation respectively) or pass an externally defined function in which case
+<code class="docutils literal notranslate"><span class="pre">external_measurement_structure</span></code> must be specified.
+Externally defined functions are required to expected to only have two arguments: the field and momentum configuration respectively.</p></li>
+<li><p><strong>ext_measurement_shape</strong> (<em>list</em><em> of </em><em>tuples</em><em> (</em><em>optional</em><em>)</em>) – Only required if at least one of the callables in <code class="docutils literal notranslate"><span class="pre">measurements</span></code> is externally defined.
+Gives the data shape of a single measurement made by an externally defined function, matching their sequence of occurrence in <code class="docutils literal notranslate"><span class="pre">measurements</span></code>.
+If a scalar quantity is measured, enter <code class="docutils literal notranslate"><span class="pre">()</span></code>. For a 1D array of length ‘A’ enter <code class="docutils literal notranslate"><span class="pre">(A,)</span></code>, for a 2D array enter <code class="docutils literal notranslate"><span class="pre">(A,B)</span></code> etc.
+The data shape for SU2xSU2 class methods should not be specified.</p></li>
+<li><p><strong>chain_paths</strong> (<em>list</em><em> of </em><em>str</em><em> (</em><em>optional</em><em>)</em>) – Only required if <code class="docutils literal notranslate"><span class="pre">saving_bool=True</span></code>, otherwise can be left empty. Listing the file paths relative to current working directory to store the measurements.
+The path must match their sequence of occurrence in <code class="docutils literal notranslate"><span class="pre">measurements</span></code>.
+The data will always be saved as a .npy file, allowing to omit the file extension.</p></li>
+<li><p><strong>saving_bool</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – save measurement data</p></li>
+<li><p><strong>partial_save</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – after how many steps preliminary measurements and chain state is saved to disk. Requires <code class="docutils literal notranslate"><span class="pre">saving_bool=True</span></code>.</p></li>
+<li><p><strong>starting_config_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to configuration to initialize the chain (.npy file). If not passed a disordered (i.e hot) start will be used.</p></li>
+<li><p><strong>RNG_state_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – relative path to a .obj file containing the internal state of the random number generator from a previous run.
+When using the final configuration and the associated RNG state of a previous run as the starting configuration for a new one, the chain is seamlessly continued.</p></li>
+<li><p><strong>chain_state_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to directory in which the RNG state and the last configuration will be saved</p></li>
+<li><p><strong>renorm_freq</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – after how many trajectories the SU(2) valued fields are projected back to the group manifold. Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to never renormalize</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.susceptibility">
+<span class="sig-name descname"><span class="pre">susceptibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.susceptibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.susceptibility" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the susceptibility (the average point to point correlation) for the configuration <code class="docutils literal notranslate"><span class="pre">phi</span></code> which can be obtained by summing up the correlation function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – configuration to perform computation on</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>chi</strong> – susceptibility of phi</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SU2xSU2.SU2xSU2.SU2xSU2.ww_correlation_func">
+<span class="sig-name descname"><span class="pre">ww_correlation_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/SU2xSU2.html#SU2xSU2.ww_correlation_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.SU2xSU2.SU2xSU2.ww_correlation_func" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the <strong>non</strong>-normalized wall to wall correlation function for the lattice configuration <code class="docutils literal notranslate"><span class="pre">phi</span></code>.
+Observing that the correlation of two variables can be written as a convolution, one can apply the cross correlation theorem to efficiently compute
+the latter using FFTs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phi</strong> (<em>(</em><em>L</em><em>,</em><em>L</em><em>,</em><em>4</em><em>) </em><em>array</em>) – configuration to perform computation on</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ww_cor</strong> – wall to wall correlation evaluated for wall separation in interval [0, L), <strong>not</strong> normalized to value at zero separation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(L,) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-SU2xSU2.analysis">
+<span id="su2xsu2-analysis-module"></span><h2>SU2xSU2.analysis module<a class="headerlink" href="#module-SU2xSU2.analysis" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.acceleration_mass_search">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">acceleration_mass_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burnin_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/acceleration_mass/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/accelertion_mass.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/acceleration_mass.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#acceleration_mass_search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.acceleration_mass_search" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs a grid search of the mass acceleration parameter for the passed value pair of <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">L</span></code>.
+To assess the quality of the canonical choice of M=1/correlation length against other values of the parameter, a plot is produced
+comparing the simulation cost agaist values of the acceleration mass. The plot is stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code> and the associated
+data is stored at <code class="docutils literal notranslate"><span class="pre">data_path</span></code>. Computing the cost function requires measurming the susceptibility integrated autocorrelation time.
+The susceptibility chain is stored in the directory <code class="docutils literal notranslate"><span class="pre">chain_dir</span></code> with the file being labeled by the values of <code class="docutils literal notranslate"><span class="pre">beta</span></code>, <code class="docutils literal notranslate"><span class="pre">L</span></code> and the considered value of the mass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_traj</strong> (<em>int</em>) – number of trajectories in each simulation using a different acceleration mass</p></li>
+<li><p><strong>burnin_frac</strong> (<em>float</em>) – fraction of trajectories discarded as burn in</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – model parameter beta for which the simulations are performed</p></li>
+<li><p><strong>L</strong> (<em>int</em>) – lattice size along one direction. Must be even.</p></li>
+<li><p><strong>corlength</strong> (<em>float</em>) – correlation length infered for simulations at beta</p></li>
+<li><p><strong>masses</strong> (<em>array</em>) – values of the acceleration parameter to include in the grid search</p></li>
+<li><p><strong>chain_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to directory containing susceptibility measurement chain.</p></li>
+<li><p><strong>data_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path at which the collected data will be stored: masses, cost function and its error, simulation time, acceptance rate, susceptbility IAT and its error.
+Must be a text file.</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path at which the plot of the cost fucntion vs the acceleration mass is stored</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.critical_slowingdown">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">critical_slowingdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burnin_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/corlength.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_chain_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/slowdown/rawchains/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_data_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/slowdown/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slowdownplot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/slowdown.pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">costfuncplot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/costfunc.pdf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xticks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[2,</span> <span class="pre">5,</span> <span class="pre">10,</span> <span class="pre">20,</span> <span class="pre">50,</span> <span class="pre">100]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yticks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">5,</span> <span class="pre">10,</span> <span class="pre">25]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#critical_slowingdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.critical_slowingdown" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the integrated autocorrelation time (IAT) of the susceptibility using beta, L form previous simulations where the correlation length was measured and stored.
+For example, the data produced in <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-func docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a> and stored at its argument <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code> can be used.
+Its is assumed that the data has a row wise structure of Ls, betas, correlation length.
+The computation is done for accelerated and unaccelerated dynamics, with the measurement chains being stored in directories <code class="docutils literal notranslate"><span class="pre">accel/</span></code>, <code class="docutils literal notranslate"><span class="pre">unaccel/</span></code> at <code class="docutils literal notranslate"><span class="pre">chi_chain_dir</span></code>.
+Files are labeled by the used value of beta and L. The ensemble average results are stored as text files at <code class="docutils literal notranslate"><span class="pre">chi_data_dir</span></code> while the
+associated plot of IAT vs correlation length is stored at <code class="docutils literal notranslate"><span class="pre">slowdownplot_path</span></code>. Power laws are fitted for either acceleration choice,
+allowing to quantify the degree of critical slowing down through the fitted value of the critical exponent ‘z’.
+A further plot, showing the simulation cost of either acceleration choice, is stored at <code class="docutils literal notranslate"><span class="pre">costfuncplot_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_traj</strong> (<em>int</em>) – number of trajectories in each simulation</p></li>
+<li><p><strong>burnin_frac</strong> (<em>float</em>) – fraction of trajectories discarded as burn in</p></li>
+<li><p><strong>corlengthdata_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-func docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a>
+when its argument with the same name is also left as default.</p></li>
+<li><p><strong>chi_chain_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of directory where two directories (named accel and unaccel) will be created to store the measurement chains of the susceptibility.</p></li>
+<li><p><strong>chi_data_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of directory where two directories (named accel and unaccel) will be created to store L, beta, the IAT, its error,
+the ensemble averaged susceptibility, its error, the simulation time, and the acceptance rate (row wise).</p></li>
+<li><p><strong>slowdownplot_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to plot showing the power law scaling of the susceptibility IAT with the correlation length</p></li>
+<li><p><strong>costfuncplot_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path to save the simulation cost function plot at</p></li>
+<li><p><strong>xticks</strong> (<em>list</em><em> (</em><em>optional</em><em>)</em>) – list of ints or floats specifying the tick labels for the correlation length in the two plots</p></li>
+<li><p><strong>yticks</strong> (<em>list</em><em> (</em><em>optional</em><em>)</em>) – list of ints or floats specifying the tick labels for the ratio unaccel cost function / accel cost function in the cost function plot</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.get_avg_error">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">get_avg_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_IAT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#get_avg_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.get_avg_error" title="Permalink to this definition">#</a></dt>
+<dd><p>Performs the ensemble average based on a sequence of measurements of a single observable and estimates its error
+as the standard error on the mean (SEM), corrected by the square root of the observable’s integrated autocorrelation time.
+Optionally also returns integrated autocorrelation time and its error.
+Each element of data is refereed to as a data point and can either be a float or a 1D array of length N.
+The returned average and error will be of the same shape as the data point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>(</em><em>M</em><em>,</em><em>) or </em><em>(</em><em>M</em><em>,</em><em>N</em><em>) </em><em>array</em>) – set of measurements made during the chain</p></li>
+<li><p><strong>get_IAT</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – False by default. Set to True to return IAT and its error</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>avg</strong> (<em>float or (N, )</em>) – ensemble average of data</p></li>
+<li><p><strong>error</strong> (<em>float or (N, )</em>) – autocorrelation corrected SEM</p></li>
+<li><p><strong>IAT</strong> (float (if <code class="docutils literal notranslate"><span class="pre">get_IAT==True</span></code>)) – integrated autocorrelation time (IAT)</p></li>
+<li><p><strong>IAT_err</strong> (float (if <code class="docutils literal notranslate"><span class="pre">get_IAT==True</span></code>)) – error of IAT</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.get_corlength">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">get_corlength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ww_cor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ww_cor_err</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_save_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#get_corlength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.get_corlength" title="Permalink to this definition">#</a></dt>
+<dd><p>Infers the correlation length based on the ensemble averaged wall to wall correlation function and its error.
+The correlation function data is processed by normalizing and averaging it about its symmetry axis at L/2 which will be saved
+at <code class="docutils literal notranslate"><span class="pre">data_save_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ww_cor</strong> (<em>(</em><em>L</em><em>,</em><em>) </em><em>array</em>) – ensemble average of correlation function on a lattice of length L</p></li>
+<li><p><strong>ww_cor_err</strong> (<em>(</em><em>L</em><em>,</em><em>) </em><em>array</em>) – associated error for all possible wall separations</p></li>
+<li><p><strong>data_save_path</strong> (<em>str</em>) – relative path to cwd at which the wall separations, the processed correlation function and its error will be stored
+row wise as an .npy file (extension not needed in path)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>cor_length</strong> (<em>float</em>) – fitted correlation length in units of the lattice spacing</p></li>
+<li><p><strong>cor_length_err</strong> (<em>float</em>) – error in the fitted correlation length</p></li>
+<li><p><strong>reduced_chi2</strong> (<em>float</em>) – chi-square per degree of freedom as a goodness of fit proxy</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.internal_energy_coupling_exp">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">internal_energy_coupling_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burnin_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chaindata_pathbase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/energy_density/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simdata_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/energy_density.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/coupling_expansion.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#internal_energy_coupling_exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.internal_energy_coupling_exp" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes and stores the internal energy per site for the passed value pairs of <code class="docutils literal notranslate"><span class="pre">betas</span></code>, <code class="docutils literal notranslate"><span class="pre">Ls</span></code>.
+As a density is computed, the value of the lattice size is not crucial and finite size effects are often negligible.
+For each value pair, <code class="docutils literal notranslate"><span class="pre">num_traj</span></code> trajectories are simulated, with <code class="docutils literal notranslate"><span class="pre">burnin_frac</span></code> specifying the fraction of these rejected as burn in.
+By default the Fourier accelerated Hybrid Monte Carlo algorithm is used. For each simulation, the chain of internal energy measurements is
+stored at <code class="docutils literal notranslate"><span class="pre">chaindata_pathbase</span></code> and files are labeled by the used value of beta and L.
+The ensemble average values of the internal energy densities are stored at <code class="docutils literal notranslate"><span class="pre">simdata_path</span></code> as a text file.
+A plot, stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>, is produced comparing the simulation result with the weak and strong coupling expansions (w.c. and s.c.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>betas</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em>) – values of the model parameter beta for which simulations are performed in ascending order</p></li>
+<li><p><strong>Ls</strong> (<em>int</em><em> or </em><em>(</em><em>n</em><em>,</em><em>) </em><em>array</em>) – size of the lattice along one dimension for each simulation at different beta.
+When an integer is passed, the size will be assumed for all values of beta.</p></li>
+<li><p><strong>num_traj</strong> (<em>int</em>) – number of trajectories in each simulation</p></li>
+<li><p><strong>burnin_frac</strong> (<em>float</em>) – fraction of trajectories discarded as burn in</p></li>
+<li><p><strong>accel</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – using Fourier Acceleration by default</p></li>
+<li><p><strong>chaindata_pathbase</strong> (<em>str</em>) – path of the directory where the internal energy measurement chains for all value pairs of beta, L will be saved</p></li>
+<li><p><strong>simdata_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of .txt file (relative to the current working directory) to store the ensemble averaged simulation results for the
+internal energy density and its error (with file extension) as well as <code class="docutils literal notranslate"><span class="pre">betas</span></code> row-wise</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of final plot file (with file extension)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.analysis.mass_lambda">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.analysis.</span></span><span class="sig-name descname"><span class="pre">mass_lambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burnin_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/corlength.txt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corfuncs_chain_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/corfuncs/rawchains/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corfuncs_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/corfuncs/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corfuncs_plot_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/corfuncs/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/asymptotic_scaling.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/analysis.html#mass_lambda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.analysis.mass_lambda" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the mass over lambda parameter ratio for for the passed value pairs of <code class="docutils literal notranslate"><span class="pre">betas</span></code>, <code class="docutils literal notranslate"><span class="pre">Ls</span></code> (lattice size along one dimension).
+The lattice size must be chosen sufficiently large (meaning a multiple of the correlation length) to avoid finite size effects.
+In general, the required lattice size increases quickly with beta.</p>
+<p>Computing the mass over lambda ratio requires the correlation length for each beta,L value pair and will be stored in the text file at <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code>.
+For each of the considered beta,L value pairs, the raw measurement chain for the correlation function is saved in the directory <code class="docutils literal notranslate"><span class="pre">corfuncs_chain_dir</span></code>,
+while the the processed correlation function data (normalized as well as ensemble averaged and averaged across the symmetry axis at L/2)
+is stored at <code class="docutils literal notranslate"><span class="pre">corfuncs_dir</span></code>. Plots of the correlation functions, with the fitted analytical expectation are stored at <code class="docutils literal notranslate"><span class="pre">corfuncs_plot_dir</span></code>.
+In all cases the file names are given by considered values of beta,L.</p>
+<p>A plot of mass over lambda ratio is produced and stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>, allowing to assess the convergence of the simulation data to the continuum mass
+gap prediction as beta gets large. The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda
+is evaluated numerically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>betas</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em>) – values of the model parameter beta for which simulations are performed in ascending order</p></li>
+<li><p><strong>Ls</strong> (<em>(</em><em>n</em><em>,</em><em>) </em><em>array</em><em> or </em><em>list</em>) – size of the lattice along one dimension for each simulation at different beta. Must be even integers.</p></li>
+<li><p><strong>num_traj</strong> (<em>int</em>) – number of trajectories in each simulation</p></li>
+<li><p><strong>burnin_frac</strong> (<em>float</em>) – fraction of trajectories discarded as burn in</p></li>
+<li><p><strong>accel</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – using Fourier Acceleration by default</p></li>
+<li><p><strong>couplingdata_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of .txt file (relative to the current working directory and with file extension) to store the correlation length, its error and the associated chi-squared
+value for all betas,Ls.</p></li>
+<li><p><strong>chaindata_pathbase</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of the directory where the correlation function measurement chains for all value pairs of beta,L will be saved</p></li>
+<li><p><strong>corfuncs_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of the directory where the processed correlation function data for all value pairs of beta,L will be saved</p></li>
+<li><p><strong>corfuncs_plot_dir</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path of the directory where the plots of the processed correlation function for all value pairs of beta,L will be saved</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em><em> (</em><em>optional</em><em>)</em>) – path (with file extension) of the plot showing the numerical mass over lambda ratio against beta.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-SU2xSU2.calibrate_paras">
+<span id="su2xsu2-calibrate-paras-module"></span><h2>SU2xSU2.calibrate_paras module<a class="headerlink" href="#module-SU2xSU2.calibrate_paras" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.calibrate_paras.calibrate">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.calibrate_paras.</span></span><span class="sig-name descname"><span class="pre">calibrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_paras</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_paras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/calibrate_paras.html#calibrate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.calibrate_paras.calibrate" title="Permalink to this definition">#</a></dt>
+<dd><p>For a model, specified by the dictionary <code class="docutils literal notranslate"><span class="pre">model_paras</span></code>, this function calibrates the number of leapfrog integration steps and their size
+under the constraint that the trajectory length is 1 and that the acceptance rate is with in desireable range between 60 and 75%.</p>
+<p>The calibration is done by performing short simulation runs (500 trajectories with 50% burn in unless overridden by passing <code class="docutils literal notranslate"><span class="pre">sim_paras</span></code>), extracting the acceptance rate
+and, if the acceptance rate is outside this range, adjusting the number of steps according to the difference to the ideal acceptance rate of 65% for the next run. The
+number of steps is inferred from constraining the trajectory length to unity.
+It is not guaranteed that the calibration is successful for all possible model specification given the fixed trajectory length. Hence the calibration is limited to 10
+iterations. An indicator that longer trajectories are required is when the calibration algorithm tries to reduce the number of steps below one.</p>
+<p>Recommended to use the returned calibrated <code class="docutils literal notranslate"><span class="pre">model_paras</span></code> to define the model for the production run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_paras</strong> (<em>dict</em>) – <code class="docutils literal notranslate"><span class="pre">{L,</span> <span class="pre">a,</span> <span class="pre">ell,</span> <span class="pre">eps,</span> <span class="pre">beta}</span></code> denoting lattice size, lattice spacing, number of integration steps, integration step size and the SU(2)xSU(2) model parameter beta respectively
+The values of ell, eps are used as guesses to start the calibration and their product must be 1.</p></li>
+<li><p><strong>accel</strong> (<em>bool</em><em>, </em><em>optional</em>) – use Fourier Acceleration or not</p></li>
+<li><p><strong>sim_paras</strong> (<em>dict</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">{M,</span> <span class="pre">burnin_frac,</span> <span class="pre">thin_freq=1</span> <span class="pre">accel=True,</span> <span class="pre">measurements=[],</span> <span class="pre">chain_paths=[],</span> <span class="pre">saving_bool=True,</span> <span class="pre">partial_save=5000,</span> <span class="pre">starting_config=None,</span> <span class="pre">RGN_state=None,</span> <span class="pre">renorm_freq=10000}</span></code>
+Specifying the simulation parameters for the calibration run by calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.SU2xSU2.run_HMC()</span></code>.
+Consider the associated docstring for definitions of these parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>model_paras</strong> – calibrated model parameters and of the same form as model_paras</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-SU2xSU2.correlations">
+<span id="su2xsu2-correlations-module"></span><h2>SU2xSU2.correlations module<a class="headerlink" href="#module-SU2xSU2.correlations" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.auto_window">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">auto_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">IATs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#auto_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.auto_window" title="Permalink to this definition">#</a></dt>
+<dd><p>Windowing procedure of Caracciolo and Sokal, <em>Dynamic critical exponent of some Monte Carlo algorithms for the self-avoiding walk</em>, <a class="reference external" href="https://doi.org/10.1088/0305-4470/19/13/008">J. Phys. A: Math. Gen. 19
+(1986) 797</a> to truncate the sum for the IAT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IATs</strong> (<em>array</em>) – integrated autocorrelation time with increasingly late termination of the sum</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – defines the window width. For correlations that decay exponentially, a value of 4 or 5 is conventional</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>idx</strong> – index for array IATs, representing the IAT estimate from the windowing procedure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.autocorr_func_1d">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">autocorr_func_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#autocorr_func_1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.autocorr_func_1d" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the autocorrelation of a 1D array <code class="docutils literal notranslate"><span class="pre">x</span></code> using FFT and the <a class="reference external" href="https://mathworld.wolfram.com/Cross-CorrelationTheorem.html">cross correlation theorem</a>.
+As FFTs yield circular convolutions and work most efficiently when the number of elements is a power of 2, pad the data with zeros to the next power of 2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>(</em><em>N</em><em>,</em><em>) </em><em>array</em>) – 1 dimensional data series of N elements to find the autocorrelation function for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>acf</strong> – the autocorrelation function</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(N,) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.autocorrelator">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">autocorrelator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#autocorrelator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.autocorrelator" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#SU2xSU2.correlations.autocorrelator_repeats" title="SU2xSU2.correlations.autocorrelator_repeats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.correlations.autocorrelator_repeats()</span></code></a> when the data has been observed only once, meaning data is of shape (M,).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">correlations.autocorrelator_repeats</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.autocorrelator_repeats">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">autocorrelator_repeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#autocorrelator_repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.autocorrelator_repeats" title="Permalink to this definition">#</a></dt>
+<dd><p>Based on the implementation in <a class="reference external" href="https://emcee.readthedocs.io/en/stable/tutorials/autocorr/">emcee</a>.
+Computes the autocorrelation function and integrated autocorrelation time (IAT) for passed <code class="docutils literal notranslate"><span class="pre">data</span></code> which is a 2D array such that each row represents a sample of observations.
+The correlations are computed between rows of the data by finding the 1D autocorrelation function for each column of the data. The overall ACF between rows is estimated
+as the average of correlations across columns. This also allows to get an estimate of the error of the ACF.
+An alternative is to average along rows first and to estimate the ACF as the autocorrelation of the final column (<a class="reference external" href="https://msp.org/camcos/2010/5-1/p04.xhtml">Goodman, Weare 2010</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>(</em><em>M</em><em>,</em><em>L</em><em>) </em><em>array</em>) – each row contains L samples of the same observable while different rows correspond to different positions in the chain of M observations.
+The correlation is computed across axis 1 i.e. gives the AFC for samples from different positions in the chain.</p></li>
+<li><p><strong>c</strong> (<em>float</em><em>, </em><em>optional</em>) – parameter used in determining when to truncate the sum for the IAT</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ts</strong> (<em>(M,) array</em>) – array of considered separations between two samples</p></li>
+<li><p><strong>ACF</strong> (<em>(M,) array</em>) – autocorrelation function</p></li>
+<li><p><strong>ACF_err</strong> (<em>(M,) array</em>) – error of the autocorrelation function</p></li>
+<li><p><strong>IAT</strong> (<em>float</em>) – integrated autocorrelation time, showing how many rows in the data lie between uncorrelated samples</p></li>
+<li><p><strong>IAT_err</strong> (<em>float</em>) – error of the autocorrelation time</p></li>
+<li><p><strong>delta_t</strong> (<em>float</em>) – time needed to compute the ACF and the IAT</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.corr_func_1D">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">corr_func_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#corr_func_1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.corr_func_1D" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the correlation between the equal length 1D arrays <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> using the cross correlation theorem.
+FFTs yield circular convolutions, such that <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are assumed to have periodic boundary conditions.
+When the data is not circular, need to pad it with zeros as done in <a class="reference internal" href="#SU2xSU2.correlations.autocorr_func_1d" title="SU2xSU2.correlations.autocorr_func_1d"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.correlations.autocorr_func_1d()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>(</em><em>N</em><em>,</em><em>) </em><em>array</em>) – first data series to correlate</p></li>
+<li><p><strong>y</strong> (<em>(</em><em>N</em><em>,</em><em>) </em><em>array</em>) – second data series to correlate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>cf</strong> – correlation function between the data in x and y and of the same length as either array</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(N,) array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.correlator">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">correlator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#correlator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.correlator" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#SU2xSU2.correlations.correlator_repeats" title="SU2xSU2.correlations.correlator_repeats"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.correlations.correlator_repeats()</span></code></a> when the <code class="docutils literal notranslate"><span class="pre">xs</span></code> and <code class="docutils literal notranslate"><span class="pre">ys</span></code> have been observed only once, i.e. are both of shape (L,)
+This implies that the error of the correlation function cannot be estimated.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">correlations.correlator_repeats</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.correlations.correlator_repeats">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.correlations.</span></span><span class="sig-name descname"><span class="pre">correlator_repeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/correlations.html#correlator_repeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.correlations.correlator_repeats" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the correlation function (CF) using FFTs between two equally sized 1D arrays for which several measurements exists.
+Each column presents a new observation and correlations are computed along axis 0. The final CF is the average along axis 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xs</strong> (<em>(</em><em>L</em><em>,</em><em>M</em><em>) </em><em>array</em>) – M measurements of first data vector of length L</p></li>
+<li><p><strong>ys</strong> (<em>(</em><em>L</em><em>,</em><em>M</em><em>) </em><em>array</em>) – M measurements of second data vector of length L</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>CF</strong> (<em>(L,) array</em>) – average correlation function based on the M measurements</p></li>
+<li><p><strong>CF_err</strong> (<em>(L,) array</em>) – uncertainty in the CF, estimated as the standard error on the mean corrected by the square root of the integrated autocorrelation time</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-SU2xSU2.plotting">
+<span id="su2xsu2-plotting-module"></span><h2>SU2xSU2.plotting module<a class="headerlink" href="#module-SU2xSU2.plotting" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.correlation_func_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">correlation_func_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_upper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ybottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xright</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#correlation_func_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.correlation_func_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Produces a plot (with a logarithmic y axis) of the correlation function data (stored at <code class="docutils literal notranslate"><span class="pre">data_path</span></code>) and the fitted, analytical expectation.
+The plot is saved at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code> with the fitting range and other plot parameters can be adjusted through the arguments.</p>
+<p>Allows manual adjustment of fitting the correlation length to the processed correlation function data (normalized and mirror averaged).
+A plot with the new fitting is produced and the inferred correlation length, its error and the associated chi2 are printed.
+These can then be manually added to (for example) a data/corlen_data.txt file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – file path to the correlation function data that will be plotted. The file is assumed to be .npy and
+contain the rows separation [0,L/2], correlation function, correlation function error respectively</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – file path (including file extension) to store the plot at</p></li>
+<li><p><strong>fit_upper</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – largest separation (in units of the lattice spacing) to be included in the fit.
+If left as <code class="docutils literal notranslate"><span class="pre">None</span></code>, only all non-zero values of the correlation function will be included in the fit</p></li>
+<li><p><strong>show_plot</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – shows produced plot before saving it</p></li>
+<li><p><strong>ybottom</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – lower limit for y axis</p></li>
+<li><p><strong>xright</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – upper limit for x axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.cost_function_ratio_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">cost_function_ratio_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unaccel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#cost_function_ratio_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.cost_function_ratio_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Plots the ratio of the const functions for unaccelerated and accelerated simulations. A power law is fitted to the ratio and superimposed in the plot.
+The paths <code class="docutils literal notranslate"><span class="pre">unaccel_data_path</span></code> and <code class="docutils literal notranslate"><span class="pre">accel_data_path</span></code> contain the simulation data collected in <a class="reference internal" href="#SU2xSU2.analysis.critical_slowingdown" title="SU2xSU2.analysis.critical_slowingdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.critical_slowingdown()</span></code></a>, specifically
+the simulation time and acceptance rate as well as the integrated autocorrelation time (IAT) of some observable ‘O’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unaccel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using standard (unaccelerated) HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>accel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using accelerated HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>corlengthdata_path</strong> (<em>str</em>) – path to .txt file containing the correlation length associated to the simulations at beta as its third row.
+Usually, this corresponds to <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code> of <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a></p></li>
+<li><p><strong>xticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the correlation length</p></li>
+<li><p><strong>yticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the cost function ratio</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.critical_slowing_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">critical_slowing_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unaccel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accel_data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corlengthdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xticks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#critical_slowing_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.critical_slowing_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Plots the integrated autocorrelation time (IAT) of an observable (O) against correlation length for standard and accelerated simulations.
+The data has been previously computed via <a class="reference internal" href="#SU2xSU2.analysis.critical_slowingdown" title="SU2xSU2.analysis.critical_slowingdown"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.critical_slowingdown()</span></code></a> and is stored at <code class="docutils literal notranslate"><span class="pre">unaccel_data_path</span></code> and <code class="docutils literal notranslate"><span class="pre">accel_data_path</span></code> respectively.
+Fitted power laws are superimposed on the data, allowing to quantify the degree of critical slowing down through the fitted value
+of the critical exponent ‘z’. The plot is stored at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unaccel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using standard (unaccelerated) HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>accel_data_path</strong> (<em>str</em>) – path to .txt file (including extension) using accelerated HMC.
+The following row structure is assumed: Ls, betas, IATs, IAT error, O, O error, simulation time, acceptance rate</p></li>
+<li><p><strong>corlengthdata_path</strong> (<em>str</em>) – path to .txt file containing the correlation length associated to the simulations at beta as its third row.
+Usually, this corresponds to <code class="docutils literal notranslate"><span class="pre">corlengthdata_path</span></code> of <a class="reference internal" href="#SU2xSU2.analysis.mass_lambda" title="SU2xSU2.analysis.mass_lambda"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SU2xSU2.analysis.mass_lambda()</span></code></a></p></li>
+<li><p><strong>xticks</strong> (<em>list</em>) – list of int or floats containing location of major ticks for the axis plotting the correlation length</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.effective_mass_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">effective_mass_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xright</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ytop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ybottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'plots/effective_mass.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#effective_mass_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.effective_mass_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Produces an effective mass plot using the processed correlation function data stored at <code class="docutils literal notranslate"><span class="pre">data_path</span></code>.
+The data is expected to contain the separation, the correlation function value and its error row wise.
+The effective mass will be computed based on the assumption that the correlation function follows the shape of
+a cosh as analytically expected due to periodic boundary conditions.
+As the effective mass becomes noisy for large separations, the plot range can be adjusted using the remaining keywords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>str</em>) – path to .npy file containing the averaged (ensemble and across the symmetry axis at L/2) and normalized correlation function</p></li>
+<li><p><strong>xright</strong> (<em>float</em>) – upper limit of the separation shown in the plot</p></li>
+<li><p><strong>ytop</strong> (<em>float</em>) – upper limit for the effective mass</p></li>
+<li><p><strong>ybottom</strong> (<em>float</em>) – lower limit for the effective mass</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.internal_energy_density_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">internal_energy_density_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#internal_energy_density_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.internal_energy_density_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Produces a plot comparing the numerically found internal energy density, stored at <code class="docutils literal notranslate"><span class="pre">simdata_path</span></code>,
+with the weak and strong coupling expansions (w.c. and s.c.). The plot is saved at <code class="docutils literal notranslate"><span class="pre">plot_path</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simdata_path</strong> (<em>str</em>) – path to .txt file (including extension) containing beta, internal energy density and its error stored as rows</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.mass_lambda_plot">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">mass_lambda_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simdata_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#mass_lambda_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.mass_lambda_plot" title="Permalink to this definition">#</a></dt>
+<dd><p>Plots the mass over lambda ratio against beta, based on the correlation length data stored at <code class="docutils literal notranslate"><span class="pre">simdata_path</span></code>.
+The beta function is used at 3 loop accuracy and the integral occurring in the definition of the renormalization scale Lambda
+is evaluated numerically. To assess the convergence of the simulation data to the continuum mass gap prediction, the latter is added to the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simdata_path</strong> (<em>str</em>) – path to .txt file (including extension) containing L, beta, correlation length, its error and the reduced chi-squared stored as rows</p></li>
+<li><p><strong>plot_path</strong> (<em>str</em>) – path of plot file (with file extension)</p></li>
+<li><p><strong>show_path</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – if True (default), the plot will be shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="SU2xSU2.plotting.plot_chain">
+<span class="sig-prename descclassname"><span class="pre">SU2xSU2.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_chain_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/SU2xSU2/plotting.html#plot_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#SU2xSU2.plotting.plot_chain" title="Permalink to this definition">#</a></dt>
+<dd><p>Plots raw measurement chain against computer time to gauge when convergence has been achieved.
+Observables of particular interest are the susceptibility (as sufficient burn is needed for the critical slowing down analysis) and
+the correlation function at a fixed separation (ideally chosen close to the correlation length as this is a slowly converging quantity
+and thus gives a lower bound for burn in).
+If the stored chain has already had some burn in removed, the starting value of the computer time can be adjusted by <code class="docutils literal notranslate"><span class="pre">start_idx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_chain_path</strong> (<em>str</em>) – path to measurement chain file (must be .npy)</p></li>
+<li><p><strong>ylabel</strong> (<em>str</em>) – label for the plotted measurement. When Latex commands are contained, pass as raw string i.e. r’$chi$’</p></li>
+<li><p><strong>start_idx</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – amount of burn in already removed from the measurement chain</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="modules.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">SU2xSU2</p>
+      </div>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.SU2_mat_routines">SU2xSU2.SU2_mat_routines module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.alpha_to_a"><code class="docutils literal notranslate"><span class="pre">alpha_to_a()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.det"><code class="docutils literal notranslate"><span class="pre">det()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.dot"><code class="docutils literal notranslate"><span class="pre">dot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.hc"><code class="docutils literal notranslate"><span class="pre">hc()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.make_mats"><code class="docutils literal notranslate"><span class="pre">make_mats()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.norm2"><code class="docutils literal notranslate"><span class="pre">norm2()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.renorm"><code class="docutils literal notranslate"><span class="pre">renorm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.sum"><code class="docutils literal notranslate"><span class="pre">sum()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2_mat_routines.tr"><code class="docutils literal notranslate"><span class="pre">tr()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.SU2xSU2">SU2xSU2.SU2xSU2 module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2"><code class="docutils literal notranslate"><span class="pre">SU2xSU2</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.Ham()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.Ham_FA"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.Ham_FA()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.__init__"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.__init__()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.action"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.action()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.exp_update"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.exp_update()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.internal_energy_density"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.internal_energy_density()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.kernel_inv_F"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.kernel_inv_F()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.leapfrog()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.leapfrog_FA"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.leapfrog_FA()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.make_NN_mask"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.make_NN_mask()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.pi_dot"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.pi_dot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.pi_samples"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.pi_samples()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.prod_A_pi"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.prod_A_pi()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.run_HMC"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.run_HMC()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.susceptibility"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.susceptibility()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.SU2xSU2.SU2xSU2.ww_correlation_func"><code class="docutils literal notranslate"><span class="pre">SU2xSU2.ww_correlation_func()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.analysis">SU2xSU2.analysis module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.acceleration_mass_search"><code class="docutils literal notranslate"><span class="pre">acceleration_mass_search()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.critical_slowingdown"><code class="docutils literal notranslate"><span class="pre">critical_slowingdown()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.get_avg_error"><code class="docutils literal notranslate"><span class="pre">get_avg_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.get_corlength"><code class="docutils literal notranslate"><span class="pre">get_corlength()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.internal_energy_coupling_exp"><code class="docutils literal notranslate"><span class="pre">internal_energy_coupling_exp()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.analysis.mass_lambda"><code class="docutils literal notranslate"><span class="pre">mass_lambda()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.calibrate_paras">SU2xSU2.calibrate_paras module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.calibrate_paras.calibrate"><code class="docutils literal notranslate"><span class="pre">calibrate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.correlations">SU2xSU2.correlations module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.auto_window"><code class="docutils literal notranslate"><span class="pre">auto_window()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.autocorr_func_1d"><code class="docutils literal notranslate"><span class="pre">autocorr_func_1d()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.autocorrelator"><code class="docutils literal notranslate"><span class="pre">autocorrelator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.autocorrelator_repeats"><code class="docutils literal notranslate"><span class="pre">autocorrelator_repeats()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.corr_func_1D"><code class="docutils literal notranslate"><span class="pre">corr_func_1D()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.correlator"><code class="docutils literal notranslate"><span class="pre">correlator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.correlations.correlator_repeats"><code class="docutils literal notranslate"><span class="pre">correlator_repeats()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-SU2xSU2.plotting">SU2xSU2.plotting module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.correlation_func_plot"><code class="docutils literal notranslate"><span class="pre">correlation_func_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.cost_function_ratio_plot"><code class="docutils literal notranslate"><span class="pre">cost_function_ratio_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.critical_slowing_plot"><code class="docutils literal notranslate"><span class="pre">critical_slowing_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.effective_mass_plot"><code class="docutils literal notranslate"><span class="pre">effective_mass_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.internal_energy_density_plot"><code class="docutils literal notranslate"><span class="pre">internal_energy_density_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.mass_lambda_plot"><code class="docutils literal notranslate"><span class="pre">mass_lambda_plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SU2xSU2.plotting.plot_chain"><code class="docutils literal notranslate"><span class="pre">plot_chain()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="_sources/SU2xSU2.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Julian Wack.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

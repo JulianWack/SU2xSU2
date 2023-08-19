@@ -5,8 +5,6 @@
 
 .. image:: ../../logo.png
 
-Welcome to SU2xSU2's documentation!
-===================================
 This python package offers efficient simulation and data analysis routines for the
 SU(2) x SU(2) Principal Chiral model. The key feature offered is the integration of 
 Fourier Acceleration into the Hybrid Monte Carlo algorithm which leads to a 
