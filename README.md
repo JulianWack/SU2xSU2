@@ -2,8 +2,10 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
 [![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
-[![PyPI version](https://badge.fury.io/py/SU2xSU2.svg)](https://badge.fury.io/py/SU2xSU2)
+[![ArXiv](https://img.shields.io/badge/arXiv-2308.14628-%23B31B1B?logo=arxiv)](https://arxiv.org/abs/2308.14628)
 [![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=stable)](https://su2xsu2.readthedocs.io/en/stable/?badge=stable)
+[![PyPI version](https://badge.fury.io/py/SU2xSU2.svg)](https://badge.fury.io/py/SU2xSU2)
+[![Downloads](https://static.pepy.tech/badge/SU2xSU2)](https://pepy.tech/project/SU2xSU2)
 
 This python package offers efficient simulation and data analysis routines for the $SU(2) \times SU(2)$ Principal Chiral model. The key feature offered is the integration of Fourier Acceleration into the Hybrid Monte Carlo algorithm which leads to a significant reduction in the degree of critical slowing down.
 
@@ -36,14 +38,21 @@ sim_paras = {'M':500, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_
 model.run_HMC(**sim_paras) 
 ```
 
-<!--
+
 ## Attribution
 
 Please cite the following paper if you found this code useful in your research:
 ```bash
-    @article{}
+@misc{wack2023FAHMC,
+    title={Hybrid Monte Carlo Simulation with Fourier Acceleration of the $N=2$ Principal Chiral Model in two Dimensions}, 
+    author={Horsley, Roger and Pendleton, Brian and Wack, Julian},
+    year={2023},
+    eprint={2308.14628},
+    archivePrefix={arXiv},
+    primaryClass={hep-lat}
+}
 ```
--->
+
 
 ## Licence
 
