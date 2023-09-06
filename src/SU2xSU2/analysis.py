@@ -122,10 +122,10 @@ def get_corlength(ww_cor, ww_cor_err, data_save_path):
     return cor_length, cor_length_err, reduced_chi2
 
 
-def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
+def internal_energy_coupling_exp(betas, D, Ls, num_traj, burnin_frac, accel=True,
                                 chaindata_pathbase='data/energy_density/', simdata_path='data/energy_density.txt', plot_path='plots/coupling_expansion.pdf'):
     '''
-    Computes and stores the internal energy per site for the passed value pairs of ``betas``, ``Ls``.
+    Computes and stores the internal energy per site for the passed value pairs of ``betas``, ``Ls`` for a D-dimensional lattice.
     As a density is computed, the value of the lattice size is not crucial and finite size effects are often negligible.
     For each value pair, ``num_traj`` trajectories are simulated, with ``burnin_frac`` specifying the fraction of these rejected as burn in. 
     By default the Fourier accelerated Hybrid Monte Carlo algorithm is used. For each simulation, the chain of internal energy measurements is
@@ -137,6 +137,8 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
     ----------
     betas: (n,) array
         values of the model parameter beta for which simulations are performed in ascending order 
+    D: int
+        dimension of the lattice
     Ls: int or (n,) array
         size of the lattice along one dimension for each simulation at different beta. 
         When an integer is passed, the size will be assumed for all values of beta.
@@ -173,7 +175,7 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
         beta_str = str(np.round(beta, 4)).replace('.', '_')
 
         # calibrate ell, eps
-        model_paras = {'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta}
+        model_paras = {'D':D, 'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta}
         paras_calibrated = calibrate(model_paras, accel=accel)
         prev_ell, prev_eps = paras_calibrated['ell'], paras_calibrated['eps'] # update calibration guesses for next largest beta
         model = SU2xSU2(**paras_calibrated) # model for production run
@@ -206,11 +208,11 @@ def internal_energy_coupling_exp(betas, Ls, num_traj, burnin_frac, accel=True,
     return 
 
 
-def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
+def mass_lambda(betas, D, Ls, num_traj, burnin_frac, accel=True,
                 corlengthdata_path='data/corlength.txt', corfuncs_chain_dir='data/corfuncs/rawchains/', corfuncs_dir='data/corfuncs/',
                 corfuncs_plot_dir='plots/corfuncs/', plot_path='plots/asymptotic_scaling.pdf'):
     '''
-    Computes the mass over lambda parameter ratio for for the passed value pairs of ``betas``, ``Ls`` (lattice size along one dimension).
+    Computes the mass over lambda parameter ratio for for the passed value pairs of ``betas``, ``Ls`` (lattice size along one dimension) on a D-dimensional lattice.
     The lattice size must be chosen sufficiently large (meaning a multiple of the correlation length) to avoid finite size effects.
     In general, the required lattice size increases quickly with beta.
 
@@ -228,6 +230,8 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
     ----------
     betas: (n,) array
         values of the model parameter beta for which simulations are performed in ascending order 
+    D: int
+        dimension of the lattice
     Ls: (n,) array or list
         size of the lattice along one dimension for each simulation at different beta. Must be even integers. 
     num_traj: int
@@ -271,7 +275,7 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         file = 'beta%sL%s.npy'%(beta_str, L_str) # file name and extension for data and plots
 
         # calibrate ell, eps
-        model_paras = {'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta}
+        model_paras = {'D':D, 'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta}
         paras_calibrated = calibrate(model_paras, accel=accel)
         prev_ell, prev_eps = paras_calibrated['ell'], paras_calibrated['eps'] # update calibration guesses for next largest beta
         model = SU2xSU2(**paras_calibrated) # model for production run
@@ -291,8 +295,8 @@ def mass_lambda(betas, Ls, num_traj, burnin_frac, accel=True,
         corfunc_plot_path = (corfuncs_plot_dir + file)[:-4] + '.pdf'
         plotting.correlation_func_plot(corfunc_path, corfunc_plot_path, show_plot=False)
 
-        des_str = 'correlation lengths inferred from %d measurements of the correlation function for different L and beta pairs: L, beta, xi, xi_err, chi-square per degree of freedom.'%model.M
-        np.savetxt(corlengthdata_path, np.row_stack((Ls, betas, xi, xi_err, reduced_chi2)), header=des_str)
+        des_str = 'correlation lengths inferred from %d measurements of the correlation function for different L and beta pairs: D, L, beta, xi, xi_err, chi-square per degree of freedom.'%model.M
+        np.savetxt(corlengthdata_path, np.row_stack((np.repeat(D,len(Ls)), Ls, betas, xi, xi_err, reduced_chi2)), header=des_str)
         print('-'*32)
         print('Completed %d / %d: beta=%.3f, L=%d'%(i+1, len(betas), beta, L))
         print('-'*32)
@@ -322,7 +326,7 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
     burnin_frac: float
         fraction of trajectories discarded as burn in
     corlengthdata_path: str (optional)
-        path to the Ls, betas, correlation length data (must be .txt). The default causes to use the result from :py:func:`SU2xSU2.analysis.mass_lambda`
+        path to the Ds, Ls, betas, correlation length data (must be .txt). The default causes to use the result from :py:func:`SU2xSU2.analysis.mass_lambda`
         when its argument with the same name is also left as default.
     chi_chain_dir: str (optional)
         path of directory where two directories (named accel and unaccel) will be created to store the measurement chains of the susceptibility.
@@ -339,7 +343,7 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
         list of ints or floats specifying the tick labels for the ratio unaccel cost function / accel cost function in the cost function plot
     '''
     data = np.loadtxt(corlengthdata_path)
-    Ls, betas, xis = data[:3]
+    Ds, Ls, betas, xis = data[:4]
   
     accel_bool = [False, True]
     n = len(betas)
@@ -361,13 +365,14 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
 
     prev_ell, prev_eps = [4,4], [1/4, 1/4] 
     for i,beta in enumerate(betas):
+        D = int(Ds[i])
         L = int(Ls[i])
         L_str = str(L)
         beta_str = str(np.round(beta, 4)).replace('.', '_')
         file = 'beta%sL%s.npy'%(beta_str, L_str) # file name and extension for data 
         for k, accel in enumerate(accel_bool):
             # calibrate ell, eps
-            model_paras = {'L':L, 'a':1, 'ell':prev_ell[k], 'eps':prev_eps[k], 'beta':beta, 'mass':1/xis[i]}
+            model_paras = {'D':D, 'L':L, 'a':1, 'ell':prev_ell[k], 'eps':prev_eps[k], 'beta':beta, 'mass':1/xis[i]}
             paras_calibrated = calibrate(model_paras, accel=accel)
             prev_ell[k], prev_eps[k] = paras_calibrated['ell'], paras_calibrated['eps']
             model = SU2xSU2(**paras_calibrated)
@@ -394,7 +399,7 @@ def critical_slowingdown(num_traj, burnin_frac, corlengthdata_path='data/corleng
     return
 
 
-def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
+def acceleration_mass_search(num_traj, burnin_frac, beta, D, L, corlength, masses,
                             chain_dir='data/acceleration_mass/', data_path='data/accelertion_mass.txt', plot_path='plots/acceleration_mass.pdf'):
     '''
     Performs a grid search of the mass acceleration parameter for the passed value pair of ``beta``, ``L``.
@@ -411,6 +416,8 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
         fraction of trajectories discarded as burn in
     beta: float
         model parameter beta for which the simulations are performed
+    D: int
+        dimension of the lattice
     L: int
         lattice size along one direction. Must be even.
     corlength: float
@@ -438,7 +445,7 @@ def acceleration_mass_search(num_traj, burnin_frac, beta, L, corlength, masses,
         mass_str = str(np.round(mass, 4)).replace('.', '_')
         file = 'beta%sL%sm%s.npy'%(beta_str, L_str, mass_str) # file name and extension for measurement chain
         # calibrate ell, eps
-        model_paras = {'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta, 'mass':mass}
+        model_paras = {'D':D, 'L':L, 'a':1, 'ell':prev_ell, 'eps':prev_eps, 'beta':beta, 'mass':mass}
         paras_calibrated = calibrate(model_paras, accel=True)
         prev_ell, prev_eps = paras_calibrated['ell'], paras_calibrated['eps'] # update calibration guesses
         model = SU2xSU2(**paras_calibrated) # model for production run

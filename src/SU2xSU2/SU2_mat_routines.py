@@ -5,6 +5,7 @@
 # [-a2 + i*a1, a0 - i*a3]]
 #
 # The operations are designed to act on entire SU(2) valued lattices.
+# The lattice is assumed to be square but can be of arbitrary dimension and size.
 
 
 import numpy as np
@@ -19,23 +20,23 @@ def alpha_to_a(alpha):
     
     Parameters
     ----------
-    alpha: (L,L,3) array
+    alpha: (lattice shape,3) array
         parameters when representing a SU(2) group element via the exponential map at every lattice site
 
     Returns
     -------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of matrices at each lattice site when explicitly evaluating the exponential map
     '''
-    L = alpha.shape[0]
-    a = np.empty((L,L,4))
-    norm = np.sqrt(np.sum(alpha**2, axis=2)) # (L,L)
-    # to do arithmetic with other (L,L,3) array need to broadcast to include axis 2
-    alpha_norm = norm.reshape((L,L,1))
+    lattice_shape = alpha.shape[:-1] # gives tuple (L,...,L)
+    a = np.empty(lattice_shape+(4,))
+    norm = np.sqrt(np.sum(alpha**2, axis=-1)) # (L,...,L)
+    # to do arithmetic with another (L,...,L,3) array need to broadcast to include axis 2
+    alpha_norm = norm.reshape(lattice_shape+(1,))
     # To avoid division by zero: if alpha_norm is 0, then alpha must be zero, such that the normalized alpha must be zero too
     alpha_unit = np.divide(alpha, alpha_norm, out=np.zeros_like(alpha), where=alpha_norm!=0)
-    a[:,:,0] = np.cos(norm)
-    a[:,:,1:] = alpha_unit * np.sin(alpha_norm)
+    a[...,0] = np.cos(norm)
+    a[...,1:] = alpha_unit * np.sin(alpha_norm)
 
     return a
 
@@ -46,23 +47,29 @@ def make_mats(a):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    mats: (L,L) object array
+    mats: (lattice shape) object array
         np.matrix instance at every site
     '''
-    L = a.shape[0]
-    mats = np.empty((L,L), dtype=object)
+    lattice_shape = a.shape[:-1] # gives tuple (L,...,L)
+    D = len(lattice_shape)
+    L = lattice_shape[0]
+    # make 2D array where each row gives the coordinates of a lattice site to later easily loop over all lattice sites with their coordinates
+    grid = np.indices(lattice_shape) 
+    lattice_coords = np.reshape( np.moveaxis(grid, 0, -1), (L**D, D))
+    # array containing np.matrix objects
+    mats = np.empty(lattice_shape, dtype=object)
 
-    for i in range(L):
-        for j in range(L):
-            paras = a[i,j,:]
-            mat = [[paras[0]+1j*paras[3], paras[2]+1j*paras[1]], 
+    for coord in lattice_coords:
+        mask = tuple(coord)
+        paras = a[mask] # (4,) returns parameter vector at lattice site specified by coord
+        mat = [[paras[0]+1j*paras[3], paras[2]+1j*paras[1]], 
                 [-paras[2]+1j*paras[1], paras[0]-1j*paras[3]]]
-            mats[i,j] = np.matrix(mat)
+        mats[mask] = np.matrix(mat)
 
     return mats
 
@@ -76,16 +83,16 @@ def hc(a):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    a_hc: (L,L,4) array
+    a_hc: (lattice shape,4) array
         parameters of hermitian conjugate SU(2) valued lattice
     '''
     a_hc = -a 
-    a_hc[:,:,0] = a[:,:,0]
+    a_hc[...,0] = a[...,0]
 
     return a_hc
 
@@ -96,15 +103,15 @@ def tr(a):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    trace: (L,L) array 
+    trace: (lattice shape) array 
         trace at each site of the SU(2) valued lattice
     '''
-    trace = 2*a[:,:,0]
+    trace = 2*a[...,0]
     return trace
 
 
@@ -114,12 +121,12 @@ def det(a):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    determinant: (L,L) array
+    determinant: (lattice shape) array
         determinants of the SU(2) valued lattice
     '''
     determinant = norm2(a)
@@ -132,15 +139,15 @@ def norm2(a):
     
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    norm_sq: (L,L) array 
+    norm_sq: (lattice shape) array 
         containing the norm at each site
     '''
-    norm_sq = np.sum(a**2, axis=2)
+    norm_sq = np.sum(a**2, axis=-1)
     return norm_sq
 
 
@@ -150,16 +157,16 @@ def renorm(a):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of the SU(2) valued lattice
 
     Returns
     -------
-    renormed: (L,L,4) array
+    renormed: (lattice shape,4) array
         renormalised parameters of the SU(2) valued lattice
     '''
-    L = a.shape[0]
-    norm =  np.sqrt(norm2(a)).reshape((L,L,1)) # broadcast to do arithmetic with (L,L,4) array a
+    lattice_shape = a.shape[:-1] # gives tuple (L,...,L)
+    norm =  np.sqrt(norm2(a)).reshape(lattice_shape+(1,)) # broadcast to do arithmetic with (lattice shape,4) array a
     renormed = np.divide(a, norm, out=np.zeros_like(a), where=norm!=0)
     
     return renormed
@@ -174,21 +181,21 @@ def dot(a, b):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of first SU(2) valued lattice
-    b: (L,L,4) array
+    b: (lattice shape,4) array
         parameters of second SU(2) valued lattice
 
     Returns
     -------
-    c: (L,L,4) array
+    c: (lattice shape,4) array
         parameters of SU(2) valued lattice resulting from the elementwise matrix products   
     '''
     c = np.empty_like(a)
-    c[:,:,0] = a[:,:,0]*b[:,:,0] - np.sum(a[:,:,1:]*b[:,:,1:], axis=2)
-    c[:,:,1] = a[:,:,0]*b[:,:,1] + a[:,:,1]*b[:,:,0] + a[:,:,3]*b[:,:,2] - a[:,:,2]*b[:,:,3]
-    c[:,:,2] = a[:,:,0]*b[:,:,2] + a[:,:,2]*b[:,:,0] + a[:,:,1]*b[:,:,3] - a[:,:,3]*b[:,:,1]
-    c[:,:,3] = a[:,:,0]*b[:,:,3] + a[:,:,3]*b[:,:,0] + a[:,:,2]*b[:,:,1] - a[:,:,1]*b[:,:,2]
+    c[...,0] = a[...,0]*b[...,0] - np.sum(a[...,1:]*b[...,1:], axis=-1)
+    c[...,1] = a[...,0]*b[...,1] + a[...,1]*b[...,0] + a[...,3]*b[...,2] - a[...,2]*b[...,3]
+    c[...,2] = a[...,0]*b[...,2] + a[...,2]*b[...,0] + a[...,1]*b[...,3] - a[...,3]*b[...,1]
+    c[...,3] = a[...,0]*b[...,3] + a[...,3]*b[...,0] + a[...,2]*b[...,1] - a[...,1]*b[...,2]
 
     return c
 
@@ -205,23 +212,23 @@ def sum(a, b):
 
     Parameters
     ----------
-    a: (L,L,4) array
+    a: (lattice shape,4) array
         parameters of first SU(2) valued lattice
-    b: (L,L,4) array
+    b: (lattice shape,4) array
         parameters of second SU(2) valued lattice
 
     Returns
     -------
-    d: (L,L,4) array
+    d: (lattice shape,4) array
         parameters of SU(2) valued lattice proportional to a+b
-    k: (L,L,1) array
+    k: (lattice shape,1) array
         proportionality constant between d and a+b
 
     '''
     c = a + b
-    k2 = 2*(a[:,:,0]*b[:,:,0] + np.sum(a[:,:,1:]*b[:,:,1:], axis=2) + 1) # (L,L)
-    L = a.shape[0]
-    k = np.sqrt(k2, dtype=complex).reshape((L,L,1))
+    k2 = 2*(a[...,0]*b[...,0] + np.sum(a[...,1:]*b[...,1:], axis=-1) + 1) # (L,...,L)
+    lattice_shape = a.shape[:-1] # gives tuple (L,...,L)
+    k = np.sqrt(k2, dtype=complex).reshape(lattice_shape+(1,))
     d = c / k
 
     return d, k

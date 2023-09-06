@@ -27,7 +27,7 @@ Examples
 
     ### basic model creation and simulation call signature ###
     # measuring and plotting the correlation function is used in this example but the structure is identical for other observables  
-    model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6} # define lattice and integration parameters as well as model parameter beta
+    model_paras = {'D':2, 'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6} # define lattice and integration parameters as well as model parameter beta
     # find number of integration steps and their size (under the constraint that their product is 1) to get an acceptance rate in the interval [0.6, 0.75]
     paras_calibrated = calibrate(model_paras, accel=True)
     # make a model with the calibrated parameters
@@ -65,20 +65,22 @@ Examples
 
     ### compute internal energy density and plot it to compare it to coupling expansions ###
     betas = np.linspace(0.1, 4, 10)
-    analysis.internal_energy_coupling_exp(betas, 16, 5000, 0.1, chaindata_pathbase='energy_data/', simdata_path='energy.txt', plot_path='energy_exp.pdf')
+    D, L = 2, 16
+    analysis.internal_energy_coupling_exp(betas, D, L, 5000, 0.1, chaindata_pathbase='energy_data/', simdata_path='energy.txt', plot_path='energy_exp.pdf')
 
 
     ### mass over lambda ratio ###
     # value pairs which largely avoid finite size effects
+    D = 2
     Ls = [40, 40, 64, 64, 64, 96, 96, 160, 160, 224, 400, 512, 700]
     betas = np.array([0.6, 0.6667, 0.7333, 0.8, 0.8667, 0.9333, 1.0, 1.0667, 1.1333, 1.2, 1.2667, 1.3333, 1.4])
-    analysis.mass_lambda(betas, Ls, 1e5, 0.02)
+    analysis.mass_lambda(betas, D, Ls, 1e5, 0.02)
 
 
     ### acceleration mass grid search ###
     xi = 7.93
     masses = 1 / np.linspace(0.1*xi, 3*xi, num=10, endpoint=True)
-    analysis.acceleration_mass_search(1e4, 0.05, 1, 96, xi, masses)
+    analysis.acceleration_mass_search(1e4, 0.05, 1, 2, 96, xi, masses)
 
 
     ### critical slowing down ###

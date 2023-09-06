@@ -15,34 +15,47 @@ import pytest
 
 def test_nearest_neighbors():
     '''
-    Checks if the nearest neighbor mask works does indeed return the nearest neighbors when applied to the lattice.
+    Checks if the nearest neighbor mask does indeed return the nearest neighbors when applied to the field.
+    The test is performed on a D=4 lattice with L=16 (the memory requirement grows as L**D)
     '''
-    L, a = 16, 1
-    model = SU2xSU2(L, a, ell=1, eps=1, beta=1)
+    D, L, a = 4, 16, 1
+    model = SU2xSU2(D, L, a, ell=1, eps=1, beta=1)
     mask = model.NN_mask
-    field = np.random.standard_normal((L,L,4))
-    NNs = field[mask] # each position of the lattice contains the nearest neighbor matrices in the order right, left, top, bottom on axis 2
 
-    # NN of random site [i,j]
-    i, j = np.random.randint(0,L), np.random.randint(0,L)
-    assert np.array_equal(field[i,(j+1)%L],NNs[i,j,0]) # right
-    assert np.array_equal(field[i,(j-1)%L],NNs[i,j,1]) # left
-    assert np.array_equal(field[(i-1)%L,j],NNs[i,j,2]) # top
-    assert np.array_equal(field[(i+1)%L,j],NNs[i,j,3]) # bottom
+    lattice_shape = tuple(np.repeat(L,D))
+    field_shape = lattice_shape+(4,)
+    field = np.random.standard_normal(field_shape)
+    NNs = field[mask] # each position of the lattice contains the nearest neighbor matrices, starting with the D positive directions along the lattice, 
+    # followed by the D negative directions (describes ordering along the last axis of NNs)
 
+    # NN of random site
+    c = np.random.randint(0,L,size=D)
+    # check NN along positive directions
+    assert np.array_equal(field[(c[0]+1)%L,c[1],c[2],c[3]], NNs[c[0],c[1],c[2],c[3],0])
+    assert np.array_equal(field[c[0],(c[1]+1)%L,c[2],c[3]], NNs[c[0],c[1],c[2],c[3],1])
+    assert np.array_equal(field[c[0],c[1],(c[2]+1)%L,c[3]], NNs[c[0],c[1],c[2],c[3],2])
+    assert np.array_equal(field[c[0],c[1],c[2],(c[3]+1)%L], NNs[c[0],c[1],c[2],c[3],3])
+    # check NN along negative directions
+    assert np.array_equal(field[(c[0]-1)%L,c[1],c[2],c[3]], NNs[c[0],c[1],c[2],c[3],4])
+    assert np.array_equal(field[c[0],(c[1]-1)%L,c[2],c[3]], NNs[c[0],c[1],c[2],c[3],5])
+    assert np.array_equal(field[c[0],c[1],(c[2]-1)%L,c[3]], NNs[c[0],c[1],c[2],c[3],6])
+    assert np.array_equal(field[c[0],c[1],c[2],(c[3]-1)%L], NNs[c[0],c[1],c[2],c[3],7])
+    
 
 def test_leapfrog():
     '''
     Checks if the leapfrog implementation (for standard and accelerated HMC) is reversible.
     '''
-    L = np.random.randint(2,100)
+    D = np.random.randint(2,5)
+    L = np.random.randint(2,16)
+    lattice_shape = tuple(np.repeat(L,D))
     ell = np.random.randint(1,25)
     eps = 1/ell # forcing a fixed unit trajectory length 
 
-    model = SU2xSU2(L, a=1, ell=ell, eps=eps, beta=1)
-    field = np.random.standard_normal((L,L,4))
+    model = SU2xSU2(D, L, a=1, ell=ell, eps=eps, beta=1)
+    field = np.random.standard_normal(lattice_shape+(4,))
     field_start = SU2.renorm(field)
-    mom_start = np.random.standard_normal((L,L,3))
+    mom_start = np.random.standard_normal(lattice_shape+(3,))
 
     # standard HMC
     field_end, mom_end = model.leapfrog(field_start, mom_start)
@@ -67,15 +80,17 @@ def test_equipartition():
     When not performing enough measurements or not rejecting enough burn in, it is possible that the test fails.
     To assure that the test runs quickly, a small lattice size is used.
     '''    
-    L = 16 # L = np.random.randint(2,100)
+    D = 4
+    L = 8 # L = np.random.randint(2,100)
     beta = np.random.uniform(0.5, 2)
-    model_paras = {'L':L, 'a':1, 'ell':4, 'eps':1/4, 'beta':beta}
+    model_paras = {'D':D, 'L':L, 'a':1, 'ell':4, 'eps':1/4, 'beta':beta}
 
     ### standard HMC ###
     def KE_per_site(phi, pi):
         L = phi.shape[0]
+        D = len(phi.shape[:-1])
         K = 1/2 * np.sum(pi**2)
-        return K/L**2
+        return K/L**D
     
     # calibrate number of integration steps and their size and run simulation
     paras_calibrated = calibrate(model_paras, accel=False)
@@ -99,12 +114,14 @@ def test_equipartition():
     paras_calibrated = calibrate(model_paras, accel=True)
     model = SU2xSU2(**paras_calibrated)
     A = model.kernel_inv_F()
+
     def KE_per_site_FA(phi, pi):
         L = phi.shape[0]
         # find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components
         pi_F_mag = np.sum( np.abs(np.fft.fft2(pi, axes=(0,1)))**2, axis=-1 ) # (L,L) 
         T = 1/(2*L**2) * np.sum(pi_F_mag*A) # sum over momentum Fourier lattice
         return T/L**2
+    
     sim_paras = {'M':2000, 'burnin_frac':0.2, 'accel':True, 
             'measurements':[KE_per_site_FA], 'ext_measurement_shape':[(),], 'chain_paths':['kinetic_energy_FA']}
     model.run_HMC(**sim_paras) 

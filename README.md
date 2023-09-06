@@ -31,7 +31,7 @@ Further examples can be found [here](https://su2xsu2.readthedocs.io/en/stable/us
 from SU2xSU2.SU2xSU2 import SU2xSU2
 
 # define model and lattice parameters 
-model_paras = {'L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
+model_paras = {'D':2, L':40, 'a':1, 'ell':5, 'eps':1/5, 'beta':0.6}
 model = SU2xSU2(**model_paras)
 # define simulation parameters and measurements
 sim_paras = {'M':500, 'burnin_frac':0.5, 'accel':True, 'measurements':[model.ww_correlation_func], 'chain_paths':['corfunc_chain.npy']}
@@ -60,4 +60,7 @@ Please cite the following paper if you found this code useful in your research:
 
 ## To Do
 - Runtime warning in correlations l.64
-- generalize simulation and data analysis to d-dimensional cubic lattice 
+- get wall to wall correlation function as average of going along each axis of the lattice
+- Check if coupling expansions and scaling predictions depend on D
+- generalize to D dimensions when using acceleration 
+<!-- check self.L**2 -> self.L**self.D (test equpartition, ) and FFT from 2 to D dimensional (also in test_simulation.test_equipartition() )-->

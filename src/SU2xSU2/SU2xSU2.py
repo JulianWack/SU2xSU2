@@ -11,10 +11,12 @@ from .correlations import correlator
 class SU2xSU2():
     '''Each instance describes a realization of the SU(2)xSU(2) model on a square lattice whose dynamics can be simulated using the 
     Fourier Accelerated Hybrid Monte Carlo algorithm.'''
-    def __init__(self, L, a, ell, eps, beta, mass=0.1): 
+    def __init__(self, D, L, a, ell, eps, beta, mass=0.1): 
         '''
         Parameters
         ----------
+        D: int
+            dimension of lattice
         L: int
             Number of lattice sites along one dimension. Must be even for implementation of Fourier acceleration to work properly 
         a: float
@@ -30,7 +32,8 @@ class SU2xSU2():
             The most efficient choice depends on beta.
         '''
         # lattice parameters
-        self.L, self.a = int(L), a
+        self.D, self.L, self.a = int(D), int(L), a
+        self.lattice_shape = tuple(np.repeat(self.L,self.D))
         # leapfrog parameters
         self.ell, self.eps = int(ell), eps
         # model parameters
@@ -38,48 +41,42 @@ class SU2xSU2():
         # acceleration parameters
         self.mass = mass
 
-        # find mask to index the SU(2) valued field phi, giving the parameters of the right, left, top, and bottom nearest neighbor
+        # find mask to index the SU(2) valued field phi, giving the parameters of the nearest neighbors along the D positive directions in the lattice, followed by the negative ones
         self.NN_mask = self.make_NN_mask() 
 
 
     def make_NN_mask(self):
         '''Makes mask to apply to SU(2) valued field phi or momentum field pi which then gives the matrix parameter values of the nearest neighbors (NN) for each lattice site.
-        Hence ``phi[self.NN_mask]`` is of shape (L,L,#neighbors,#parameters) i.e (L,L,4,4).
+        Hence ``phi[self.NN_mask]`` is of shape (lattice shape,#neighbors,#parameters) i.e (L, ..., L, 2*D, 4) with D occurrences of L.
         
         Returns
         -------
         NN_mask: tuple
-            tuple of two (L,L,4,1) arrays, each giving the row and column coordinate for all nearest neighbors
+            tuple of D (lattice shape, 2*D, 1) arrays, each giving the coordinate along one axis for the nearest neighbors
         '''
-     
-        # make a (L,L,2) array storing the row and col indices of each lattice sites
-        grid = np.indices((self.L,self.L)) 
-        lattice_coords = grid.transpose(1,2,0)
+        # make array containing the the coordinates of each lattice site 
+        grid = np.indices(self.lattice_shape) 
+        lattice_coords = np.moveaxis(grid, 0, -1) # (lattice shape, D) D-dimensional coordinates of each lattice site
 
-        # shift lattice coordinates by 1 such that the coordinates at (i,j) are those of the right, left, top, and bottom neighbor of lattice site (i,j)
-        # rolling axis=1 by -1 means all columns are moved one step to the left with periodic bcs. 
-        # Hence value of resulting array at (i,j) is (i,j+1), i.e the coordinates of the right neighbor.
-        # all of shape (L,L,2)
-        right_n = np.roll(lattice_coords, -1, axis=1)
-        left_n = np.roll(lattice_coords, 1, axis=1)
-        top_n = np.roll(lattice_coords, 1, axis=0)
-        bottom_n = np.roll(lattice_coords, -1, axis=0)
+        # make array where each element contains the nearest neighbor (NN) coordinates of the element 
+        # the first D nearest neighbors are those along the positive directions of the lattice, while the later D neighbors are along negative direction 
+        NN_shape = self.lattice_shape+(int(2*self.D),self.D) # (lattice shape, number of NN, D)
+        NN = np.empty(NN_shape, dtype=int) # contains coords of NN for each lattice site
 
-        # for each lattice site, for each neighbor, store row and column coordinates
-        # order of neighbors: right, left, top, bottom
-        NN = np.empty((self.L,self.L,4,2), dtype=int)
-        NN[:,:,0,:] = right_n # row and col indices of right neighbors
-        NN[:,:,1,:] = left_n
-        NN[:,:,2,:] = top_n
-        NN[:,:,3,:] = bottom_n
+        for ax in range(self.D):
+            # using ... for variable lattice shape
+            # np.roll takes care of periodic boundary conditions and with a step of -1 elements are moved one unit along the positive direction of the axis
+            NN[...,ax,:] = np.roll(lattice_coords, -1, axis=ax) # neighbor coordinates along positive direction of current axis
+            NN[...,self.D+ax,:] = np.roll(lattice_coords, 1, axis=ax) # neighbor coordinates along negative direction of current axis
 
-        # make mask to index phi
-        # separate the row and column neighbor coordinates for each lattice site: (L,L,4,1)
-        NN_rows = NN[:,:,:,0]
-        NN_cols = NN[:,:,:,1]
-        NN_mask = (NN_rows, NN_cols)
+    	# make mask to easily index the field, yielding the nearest neighbors
+        NN_mask_list = []
+        for idx in range(self.D):
+            NN_mask_list.append(NN[...,idx])
 
-        return NN_mask 
+        NN_mask = tuple(NN_mask_list)
+
+        return NN_mask
 
         
     def action(self, phi):
@@ -88,7 +85,7 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape, 4) array
             parameters of the SU(2) valued field at each lattice site
 
         Returns
@@ -97,12 +94,12 @@ class SU2xSU2():
             the action
         '''
         phi_hc = SU2.hc(phi)
-        phi_NN = phi[self.NN_mask] # (L,L,4,4): containing the 4 paras of each of the 4 NN
+        phi_NN = phi[self.NN_mask] # (L,...,L,2*D,4): containing the 4 paras of each of the 2*D NN
 
-        # sum over lattice unit vectors: to the right and up. Hence only need right and top NN, stored at position 0,3 respectively
-        G = np.zeros((self.L,self.L))
-        for i in [0,3]:
-            A = SU2.dot(phi_hc, phi_NN[:,:,i,:])
+        # sum over lattice unit vectors i.e. positive directions only: to the right and up. Hence only need right and top NN, stored at position 0,3 respectively
+        G = np.zeros(self.lattice_shape)
+        for i in range(self.D):
+            A = SU2.dot(phi_hc, phi_NN[...,i,:])
             G += SU2.tr(A + SU2.hc(A)) # when getting UFuncTypeError, check that dtype of G and SU2.tr is the same (float64 by default)
 
         # sum over lattice sites    
@@ -118,9 +115,9 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             parameters of the SU(2) valued field
-        pi: (L,L,3) array
+        pi: (lattice shape,3) array
             parameter values of the conjugate momenta at each lattice site
             
         Returns
@@ -207,23 +204,23 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             parameters of the SU(2) valued field
 
         Returns
         -------
-        pi_t: (L,L,3) array
+        pi_t: (lattice shape,3) array
             parameters of the time derivative of the conjugate momenta
         '''
         phi_hc = SU2.hc(phi)
         phi_NN = phi[self.NN_mask]
         # need sum of NN pairs along the two lattice unit vectors i.e. right+left and top+bottom
-        alpha = np.zeros((self.L, self.L, 3))
-        for pos, neg in zip([0,1], [2,3]):
+        alpha = np.zeros(self.lattice_shape+(3,))
+        for idx in range(self.D):
             # sum is proportional to SU2 matrix, allowing to apply the SU2 product routine once proportionality constant has been identified
-            sum_in_SU2, prop_const = SU2.sum(phi_NN[:,:,pos,:], phi_NN[:,:,neg,:]) # both are potentially complex but their product is always real
+            sum_in_SU2, prop_const = SU2.sum(phi_NN[...,idx,:], phi_NN[...,idx+self.D,:]) # both are potentially complex but their product is always real
             V = (prop_const * SU2.dot(sum_in_SU2, phi_hc)).real
-            alpha += 2*V[:,:,1:] # 3 parameters describing matrix -i(V - V^dagger) for the currently considered direction in the lattice
+            alpha += 2*V[...,1:] # 3 parameters describing matrix -i(V - V^dagger) for the currently considered direction in the lattice
         pi_t = self.beta * alpha
 
         return pi_t
@@ -237,11 +234,11 @@ class SU2xSU2():
 
         Parameters
         ----------
-        pi_dt: (L,L,4) array
+        pi_dt: (lattice shape,4) array
             parameters of the momenta times the integration step size
         Returns
         -------
-        update: (L,L,4) array
+        update: (lattice shape,4) array
             parameters of the update matrices
         '''
         update = SU2.alpha_to_a(pi_dt)
@@ -254,16 +251,16 @@ class SU2xSU2():
         
         Parameters
         ----------
-        phi_old: (L,L,4) array
+        phi_old: (lattice shape,4) array
             last accepted sample in the chain of the SU(2) valued field
-        pi_old: (L,L,3) array
+        pi_old: (lattice shape,3) array
             parameters of conjugate momenta associated with phi_old
             
         Returns
         -------
-        phi_cur: (L,L,4) array
+        phi_cur: (lattice shape,4) array
             SU(2) matrix parameters after simulating dynamics
-        pi_cur: (L,L,3) array
+        pi_cur: (lattice shape,3) array
             momenta parameters after simulating dynamics
         '''
         # half step in pi, full step in phi
@@ -490,14 +487,14 @@ class SU2xSU2():
         t1 = time.time()
         if starting_config_path == '':
             # # cold/ordered start
-            # a0 = np.ones((self.L,self.L,1))
-            # ai = np.zeros((self.L,self.L,3))
-            # phi = np.concatenate([a0,ai], axis=2)
+            # a0 = np.ones(self.lattice_shape+(1,))
+            # ai = np.zeros(self.lattice_shape+(3,))
+            # phi = np.concatenate([a0,ai], axis=-1)
 
             # # hot start
             # sampling 4 points form 4D unit sphere assures that norm of parameter vector is 1 to describe SU(2) matrices. 
             # Use a spherically symmetric distribution such as gaussian
-            a = np.random.standard_normal((self.L,self.L,4))
+            a = np.random.standard_normal(self.lattice_shape+(4,))
             phi = SU2.renorm(a)
         else:
             phi = np.load(starting_config_path)
@@ -523,7 +520,7 @@ class SU2xSU2():
 
             else:
                 # the conjugate momenta are linear combination of Pauli matrices and thus described by 3 parameters
-                pi = np.random.standard_normal((self.L,self.L,3))
+                pi = np.random.standard_normal(self.lattice_shape+(3,))
                 phi_new, pi_new = self.leapfrog(phi, pi)
                 delta_H = self.Ham(phi_new,-pi_new) - self.Ham(phi,pi)
 
@@ -575,7 +572,7 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             lattice configuration to perform computation on
 
         Returns
@@ -583,7 +580,7 @@ class SU2xSU2():
         e: float
             action per site
         '''
-        e = self.action(phi) / (-self.beta * 4 * self.L**2) # definition of internal energy in terms of the action
+        e = self.action(phi) / (-self.beta * 4 * self.L**self.D) # definition of internal energy in terms of the action
 
         return e
       
@@ -596,7 +593,7 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             configuration to perform computation on
 
         Returns
@@ -605,11 +602,14 @@ class SU2xSU2():
             wall to wall correlation evaluated for wall separation in interval [0, L), **not** normalized to value at zero separation.
         '''
         ww_cor = np.zeros(self.L)
-        Phi = np.sum(phi, axis=0) # (L,4)
+        # specify axis to sum over: all but one of the spatial lattice axes. Here arbitrarily chosen as the first one. 
+        # Axes corresponding to the lattice are 0,...,D-1. The last axis of phi corresponds to the parameter vector.
+        lattice_axes = tuple(range(self.D))
+        Phi = np.sum(phi, axis=lattice_axes[1:]) # (L,4)
         for k in range(4):
             cf, _ = correlator(Phi[:,k], Phi[:,k])
             ww_cor += cf
-        ww_cor *= 4/self.L**2
+        ww_cor *= 4/self.L**self.D
 
         return ww_cor
 
@@ -620,7 +620,7 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             configuration to perform computation on
 
         Returns
