@@ -60,7 +60,6 @@ Please cite the following paper if you found this code useful in your research:
 
 ## To Do
 - Runtime warning in correlations l.64
-- get wall to wall correlation function as average of going along each axis of the lattice
 - Check if coupling expansions and scaling predictions depend on D
 - generalize to D dimensions when using acceleration 
 <!-- check self.L**2 -> self.L**self.D (test equpartition, ) and FFT from 2 to D dimensional (also in test_simulation.test_equipartition() )-->

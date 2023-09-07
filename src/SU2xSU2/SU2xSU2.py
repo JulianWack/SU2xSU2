@@ -590,6 +590,8 @@ class SU2xSU2():
         Computes the **non**-normalized wall to wall correlation function for the lattice configuration ``phi``.
         Observing that the correlation of two variables can be written as a convolution, one can apply the cross correlation theorem to efficiently compute
         the latter using FFTs.  
+        A class of walls is described by their normal vector which will be one of the lattice unit vectors. Due to the symmetry of the lattice, all these classes
+        are equivalent, allowing to compute D wall to wall correlation functions from a single lattice configuration. The returned correlation function is the average of these. 
 
         Parameters
         ----------
@@ -601,15 +603,20 @@ class SU2xSU2():
         ww_cor: (L,) array
             wall to wall correlation evaluated for wall separation in interval [0, L), **not** normalized to value at zero separation.
         '''
-        ww_cor = np.zeros(self.L)
-        # specify axis to sum over: all but one of the spatial lattice axes. Here arbitrarily chosen as the first one. 
-        # Axes corresponding to the lattice are 0,...,D-1. The last axis of phi corresponds to the parameter vector.
-        lattice_axes = tuple(range(self.D))
-        Phi = np.sum(phi, axis=lattice_axes[1:]) # (L,4)
-        for k in range(4):
-            cf, _ = correlator(Phi[:,k], Phi[:,k])
-            ww_cor += cf
-        ww_cor *= 4/self.L**self.D
+        ww_cors = np.zeros((self.D,self.L))
+        lattice_axes = np.arange(self.D)
+        # sum over all but one of the spatial axes (0,...,D-1), corresponding to the one over which the correlation is computed
+        for i in lattice_axes:
+            ax =  np.delete(lattice_axes, i) # axes which are summed over
+            Phi = np.sum(phi, axis=tuple(ax)) # (L,4)
+            cor = np.zeros(self.L)
+            for k in range(4):
+                cf, _ = correlator(Phi[:,k], Phi[:,k])
+                cor += cf
+            cor *= 4/self.L**self.D
+            ww_cors[i] = cor
+
+        ww_cor = np.mean(ww_cors, axis=0)
 
         return ww_cor
 
