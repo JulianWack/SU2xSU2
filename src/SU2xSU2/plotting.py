@@ -113,13 +113,16 @@ def correlation_func_plot(data_path, plot_path, fit_upper=None, show_plot=True, 
     return
 
 
-def internal_energy_density_plot(simdata_path, plot_path, show_plot=True):
+def internal_energy_density_plot(D, simdata_path, plot_path, show_plot=True):
     '''
     Produces a plot comparing the numerically found internal energy density, stored at ``simdata_path``,
     with the weak and strong coupling expansions (w.c. and s.c.). The plot is saved at ``plot_path``.
+    The weak coupling expansion is only plotted for D=2. 
 
     Parameters
     ----------
+    D: int
+        dimension of the lattice
     simdata_path: str
         path to .txt file (including extension) containing beta, internal energy density and its error stored as rows
     plot_path: str
@@ -129,20 +132,26 @@ def internal_energy_density_plot(simdata_path, plot_path, show_plot=True):
     ''' 
     betas, e, e_err = np.loadtxt(simdata_path)
 
-    # strong coupling expansion
+    # strong coupling expansion: eq 2.21 in Guha, Lee, *Improved mean field studies of SU(N) chiral models and comparison with numerical simulations*,
+    # `Nucl. Phys. B240, 141 (1984) <https://doi.org/10.1016/0550-3213(84)90473-5>`_
     b_s = np.linspace(0,1)
-    strong = 1/2*b_s + 1/6*b_s**3 + 1/6*b_s**5
+    strong = 1/2*b_s + 1/12*(3*D-4)*b_s**3 - 1/12*(24*D**2-75*D+52)*b_s**5
 
-    # weak coupling expansion
-    Q1 = 0.0958876
-    Q2 = -0.0670
-    b_w = np.linspace(0.6, 4)
-    weak = 1 - 3/(8*b_w) * (1 + 1/(16*b_w) + (1/64 + 3/16*Q1 + 1/8*Q2)/b_w**2)
+    # weak coupling expansion: couldn't not find a closed form expression for general D apart from eq 3.8 in Brihaye, Rossi, 
+    # *The weak-coupling phase of lattice spin and gauge models*, `Nucl. phys. B235, 226 (1984) <https://doi.org/10.1016/0550-3213(84)90099-3>`_
+    # and p.145-146 in Guha, Lee, *Improved mean field studies of SU(N) chiral models and comparison with numerical simulations*,
+    # `Nucl. Phys. B240, 141 (1984) <https://doi.org/10.1016/0550-3213(84)90473-5>`_
+    if D == 2:
+        Q1 = 0.0958876
+        Q2 = -0.0670
+        b_w = np.linspace(0.6, 4)
+        weak = 1 - 3/(8*b_w) * (1 + 1/(16*b_w) + (1/64 + 3/16*Q1 + 1/8*Q2)/b_w**2)
 
     fig = plt.figure()
     plt.errorbar(betas, e, yerr=e_err, fmt='.', label='FA HMC')
     plt.plot(b_s, strong, c='b', label='strong coupling')
-    plt.plot(b_w, weak, c='r', label='weak coupling')
+    if D == 2:
+        plt.plot(b_w, weak, c='r', label='weak coupling')
     plt.xlabel(r'$\beta$')
     plt.ylabel(r'internal energy density $e$')
     plt.legend(loc='lower right')

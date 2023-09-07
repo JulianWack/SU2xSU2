@@ -204,7 +204,7 @@ def internal_energy_coupling_exp(betas, D, Ls, num_traj, burnin_frac, accel=True
     print('Total simulation time: %s'%(str(timedelta(seconds=t2-t1))))
 
     # make plot
-    plotting.internal_energy_density_plot(simdata_path, plot_path, show_plot=False)
+    plotting.internal_energy_density_plot(D, simdata_path, plot_path, show_plot=False)
     return 
 
 

@@ -60,6 +60,6 @@ Please cite the following paper if you found this code useful in your research:
 
 ## To Do
 - Runtime warning in correlations l.64
-- Check if coupling expansions and scaling predictions depend on D
+- implement weak coupling expansion for all D
 - generalize to D dimensions when using acceleration 
 <!-- check self.L**2 -> self.L**self.D (test equpartition, ) and FFT from 2 to D dimensional (also in test_simulation.test_equipartition() )-->
