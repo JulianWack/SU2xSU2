@@ -91,7 +91,7 @@ def get_corlength(ww_cor, ww_cor_err, data_save_path):
         chi-square per degree of freedom as a goodness of fit proxy
     '''
     def fit(d,xi):
-        return (np.cosh((d-L_2)/xi) - 1) / (np.cosh(L_2/xi) - 1)
+        return np.cosh((d-L_2)/xi) / np.cosh(L_2/xi)
 
     # normalize and use periodic bcs to get correlation for wall separation of L to equal that of separation 0
     ww_cor, ww_cor_err = ww_cor/ww_cor[0], ww_cor_err/ww_cor[0]
