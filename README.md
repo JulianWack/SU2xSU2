@@ -3,7 +3,7 @@
 [![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
 [![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
 [![ArXiv](https://img.shields.io/badge/arXiv-2308.14628v2-%23B31B1B?logo=arxiv)](https://arxiv.org/abs/2308.14628v2)
-[![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=stable)](https://su2xsu2.readthedocs.io/en/stable/?badge=stable)
+[![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=latest)](https://su2xsu2.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/SU2xSU2.svg)](https://badge.fury.io/py/SU2xSU2)
 [![Downloads](https://static.pepy.tech/badge/SU2xSU2)](https://pepy.tech/project/SU2xSU2)
 

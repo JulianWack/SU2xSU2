@@ -22,7 +22,7 @@ autodoc_mock_imports = ['matplotlib']
 project = 'SU2xSU2'
 copyright = '2023, Julian Wack'
 author = 'Julian Wack'
-release = '1.3.2'
+release = '2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
