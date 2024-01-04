@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-JulianWack%2FSU2xSU2-blue?logo=GitHub)](https://github.com/JulianWack/SU2xSU2)
 [![DOI](https://zenodo.org/badge/668764614.svg)](https://zenodo.org/badge/latestdoi/668764614)
-[![ArXiv](https://img.shields.io/badge/arXiv-2308.14628-%23B31B1B?logo=arxiv)](https://arxiv.org/abs/2308.14628)
+[![ArXiv](https://img.shields.io/badge/arXiv-2308.14628v2-%23B31B1B?logo=arxiv)](https://arxiv.org/abs/2308.14628v2)
 [![Documentation Status](https://readthedocs.org/projects/su2xsu2/badge/?version=stable)](https://su2xsu2.readthedocs.io/en/stable/?badge=stable)
 [![PyPI version](https://badge.fury.io/py/SU2xSU2.svg)](https://badge.fury.io/py/SU2xSU2)
 [![Downloads](https://static.pepy.tech/badge/SU2xSU2)](https://pepy.tech/project/SU2xSU2)
@@ -43,11 +43,16 @@ model.run_HMC(**sim_paras)
 
 Please cite the following paper if you found this code useful in your research:
 ```bash
-@misc{wack2023FAHMC,
-    title={Hybrid Monte Carlo Simulation with Fourier Acceleration of the $N=2$ Principal Chiral Model in two Dimensions}, 
-    author={Horsley, Roger and Pendleton, Brian and Wack, Julian},
-    year={2023},
-    eprint={2308.14628},
+@article{WackFAHMC2024,
+    author = {Roger Horsley and Brian Pendleton and Julian Wack},
+    title = {Hybrid Monte Carlo simulation with Fourier acceleration of the N = 2 principal chiral model in two dimensions},
+    journal = {Physics Letters B},
+    volume = {849},
+    pages = {138429},
+    year = {2024},
+    issn = {0370-2693},
+    doi = {https://doi.org/10.1016/j.physletb.2023.138429},
+    eprint={2308.14628v2},
     archivePrefix={arXiv},
     primaryClass={hep-lat}
 }
