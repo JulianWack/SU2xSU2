@@ -9,7 +9,7 @@
 
 This python package offers efficient simulation and data analysis routines for the $SU(2) \times SU(2)$ Principal Chiral model. The key feature offered is the integration of Fourier Acceleration into the Hybrid Monte Carlo algorithm which leads to a significant reduction in the degree of critical slowing down.
 
-Currently the simulation is only supported for a two dimensional cubic lattice.
+The simulation is supported for cubic lattices with even side length in arbitary dimensions.
 
 ## Installation 
 To install ``SU2xSU2`` using ``pip`` run:
@@ -66,5 +66,3 @@ Please cite the following paper if you found this code useful in your research:
 ## To Do
 - Runtime warning in correlations l.64
 - implement weak coupling expansion for all D
-- generalize to D dimensions when using acceleration 
-<!-- check self.L**2 -> self.L**self.D (test equpartition, ) and FFT from 2 to D dimensional (also in test_simulation.test_equipartition() )-->

@@ -14,8 +14,7 @@ Check out the :doc:`usage` section for further information, including how to
 :ref:`install <installation>` the project and some :ref:`examples <examples>`.
 
 .. note::
-   Currently simulations using Fourier Acceleration are only supported for a two dimensional cubic lattice.
-   Unaccelerated simulations can be performed on a cubic lattice of arbitrary dimensions. 
+   A cubic lattice with of even length is assumed.
 
 .. toctree::
    :caption: Contents:

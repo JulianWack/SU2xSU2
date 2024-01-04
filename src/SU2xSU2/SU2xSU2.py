@@ -3,6 +3,7 @@ from pickle import dump, load
 import os
 import time
 from datetime import timedelta
+from itertools import permutations
 
 from . import SU2_mat_routines as SU2
 from .correlations import correlator
@@ -138,9 +139,9 @@ class SU2xSU2():
 
         Parameters
         ----------
-        phi: (L,L,4) array
+        phi: (lattice shape,4) array
             parameters of the SU(2) valued field
-        pi: (L,L,3) array
+        pi: (lattice shape,3) array
             parameter values of the conjugate momenta at each lattice site
             
         Returns
@@ -152,9 +153,10 @@ class SU2xSU2():
         --------
         SU2xSU2.SU2xSU2.Ham
         '''
-        # (L,L) find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components
-        pi_F_mag = np.sum( np.abs(np.fft.fft2(pi, axes=(0,1)))**2, axis=-1 ) 
-        T = 1/(2*self.L**2) * np.sum(pi_F_mag*self.A) # sum over momentum Fourier lattice
+        # find magnitude of FT of each component of momentum in Fourier space. Then sum over all 3 components
+        ax = tuple(np.arange(self.D))
+        pi_F_mag = np.sum( np.abs(np.fft.fftn(pi, axes=ax))**2, axis=-1 ) # (lattice shape)
+        T = 1/(2*self.L**self.D) * np.sum(pi_F_mag*self.A) # sum over momentum Fourier lattice
         S = self.action(phi)
         H = T + S 
 
@@ -166,34 +168,32 @@ class SU2xSU2():
 
         Parameters
         ----------
-        pi_F: (L,L,3) array
+        pi_F: (lattice shape,3) array
             parameter vector of momenta in Fourier space
 
         Returns
         -------
-        prod: (L,L,3)
+        prod: (lattice shape,3) array
             parameter vector of momenta in Fourier space, each site being weighted by the inverse Fourier space kernel
         '''
-        prod = np.multiply(self.A.reshape((self.L,self.L,1)), pi_F)
+        prod = np.multiply(self.A.reshape(self.lattice_shape+(1,)), pi_F)
         return prod
 
 
     def kernel_inv_F(self):
         '''Finds inverse of the action kernel computed in the Fourier space, here referred to as ``A``.
+        Does not exploit the symmetry of A, but the efficient computation via universal functions (ufuncs) yields a negligible
+        run time even for large lattices.
 
         Returns
         -------
-        A: (L,L) array
+        A: (lattice shape) array
             inverse action kernel in Fourier space
         '''
-        # x = 0.9 # parameter interpolating between accelerated (x=1) and unaccelerated (x=0) case. 
-        # Appropriate kernel: A[k,k_] = (1 - x/2 - x/4*(np.cos(np.pi*ks[k]/self.L) + np.cos(np.pi*ks[k_]/self.L)) )**(-1)
-        ks = np.arange(0, self.L) # lattice sites in Fourier space along one direction
-        A = np.zeros((self.L,self.L)) # inverse kernel computed at every site in Fourier space
-        for k in range(self.L):
-            for k_ in range(k,self.L):
-                A[k,k_] = ( 4*np.sin(np.pi*ks[k]/self.L)**2 + 4*np.sin(np.pi*ks[k_]/self.L)**2 + self.mass**2)**(-1)   
-                A[k_,k] = A[k,k_] # exploit symmetry of kernel under exchange of directions 
+        grid = np.indices(self.lattice_shape) # (D, lattice shape) ith array gives value of ith coordinate at each lattice site
+        t = 4*np.sin(np.pi*grid/self.L)**2
+        val = np.sum(t, axis=0) # (lattice shape)
+        A = (val + self.mass**2)**(-1)
 
         return A
 
@@ -304,8 +304,9 @@ class SU2xSU2():
             pi_mod: (L,L,4) array
                 real space parameters of modified conjugate momenta
             '''
-            pi_F = np.fft.fft2(pi, axes=(0,1))
-            pi_mod = np.real( np.fft.ifft2(self.prod_A_pi(pi_F), axes=(0,1)) )
+            ax = tuple(np.arange(self.D))
+            pi_F = np.fft.fftn(pi, axes=ax)
+            pi_mod = np.real( np.fft.ifftn(self.prod_A_pi(pi_F), axes=ax) )
             return pi_mod
 
         # half step in pi, full step in phi
@@ -327,52 +328,100 @@ class SU2xSU2():
 
 
     def pi_samples(self):
-        '''Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.
-        The sampling is easiest done in Fourier space and in terms of a real and hermitian object ``PI`` from which the momentum samples can be reconstructed (both in Fourier space) 
-        The size of the lattice along one dimension L is assumed to be even.
+        '''
+        Returns real space sample of momenta according to the distribution based on the modified kinetic term in the modified Hamiltonian.
+        Due to the presence of the inverse kernel, the sampling is easiest done in Fourier space under the hermitian symmetry constraint to assure that the
+        real space momenta are real-valued. From the 2L^D parameters (real and imaginary components at each site), this leaves L^D independent ones. These are 
+        organised into the object ``PI`` and sampled from a Gaussian distribution. The Fourier space momentum samples are then reconstructed from ``PI``. 
+        The size L of the lattice along one dimension is assumed to be even.
 
         Returns
         -------
-        pi: (L,L,3) array
+        pi: (lattice shape,3) array
             parameters for the sample of the conjugate momenta in real space
         '''
-        # momenta in Fourier space
-        pi_F = np.zeros((self.L, self.L, 3), dtype=complex)
+        L_2 = int(self.L/2)
 
-        PI_std = np.sqrt(self.L**2 / self.A) 
-        STD = np.repeat(PI_std[:,:,None], repeats=3, axis=2) # standard deviation is identical for components at same position
-        PI = np.random.normal(loc=0, scale=STD) #  (L,L,3) as returned array matches shape of STD
+        pi_F = np.zeros((self.lattice_shape+(3,)), dtype=complex)
 
-        # assign special modes for which FT exponential becomes +/-1. To get real pi in real space, the modes must be real themselves.
-        N_2 = int(self.L/2)
-        # two spacial indices
-        pi_F[0,0] = PI[0,0]
-        pi_F[0,N_2] = PI[0,N_2]
-        pi_F[N_2,0] = PI[N_2,0]
-        pi_F[N_2,N_2] = PI[N_2,N_2]
+        PI_std = np.sqrt(self.L**self.D / self.A) 
+        STD = np.repeat(PI_std[...,None], repeats=3, axis=-1) # standard deviation is identical for components at same position
+        PI = np.random.normal(loc=0, scale=STD) # (lattice shape, 3) as returned array matches shape of STD
 
-        # one special index
-        pi_F[0,1:N_2] = 1/np.sqrt(2) * (PI[0,1:N_2] + 1j * PI[0,N_2+1:][::-1])
-        pi_F[0,N_2+1:] = np.conj(pi_F[0,1:N_2][::-1]) # imposing hermitean symmetry
+        def get_special_points():
+            '''
+            Returns a list of all the coordinates (D-dimensional tuple) containing only the values 0 and L/2.
+            '''
+            all_special_points = np.full((2**self.D, self.D), np.nan)
+            count = 0 # counts number of special points and used to index the above array
+            # loop over number of L/2 occurances in special points 
+            for num in range(0,self.D+1):
+                aux = np.zeros(self.D, dtype='int')
+                aux[:num] = L_2
+                combs = list(set(permutations(aux)))
+                for comb in combs:
+                    all_special_points[count] = np.array(comb)
+                    count += 1
+            
+            return all_special_points
 
-        pi_F[N_2,1:N_2] = 1/np.sqrt(2) * (PI[N_2,1:N_2] + 1j * PI[N_2,N_2+1:][::-1])
-        pi_F[N_2,N_2+1:] = np.conj(pi_F[N_2,1:N_2][::-1])
+        def hermitian_index(idx):
+            '''
+            returns the index of the hermitian conjugate pair of idx.
+            '''
+            idx_hconj = list(idx)
+            for i,val in enumerate(idx):
+                idx_hconj[i] = (self.L-val)%self.L
+            
+            return tuple(idx_hconj)
+        
+        def fill_pi_F(idx):
+            '''
+            Constructs the Foruier space momentum based on the Gaussian samples PI. 
+            '''
+            # special indices
+            if np.prod(special_points==idx, axis=-1).any():
+                idx = tuple(idx) # for correct indexing of ndarray
+                pi_F[idx] = PI[idx]
+            else: # non-special indices
+                idx = tuple(idx)
+                idx_her = hermitian_index(idx) 
+                pi_F[idx] = 1/np.sqrt(2)*(PI[idx] + 1j*PI[idx_her]) # to match exactly old 2D implementation use pi_F[idx] = 1/np.sqrt(2)*(PI[idx_her] - 1j*PI[idx])
+                # impose hermitian symmetry
+                pi_F[idx_her] = np.conjugate(pi_F[idx])
 
-        pi_F[1:N_2,0] = 1/np.sqrt(2) * (PI[1:N_2,0] + 1j * PI[N_2+1:,0][::-1])
-        pi_F[N_2+1:,0] = np.conj(pi_F[1:N_2,0][::-1])
+            return
+        
+        # D nested for loops are simulated by storing the state of each counter in the vector idx. 
+        # This also corresponds to the point in the Fourier space lattice for which pi_F is next computed.
+        # The loop index 'k' indicates which loop is currently performed with 0 being the outer most one and D-1 the inner most one
+        # The start and end index fields defined the initial and final configuration of the loop counter
+        start = np.full(self.D, 0)
+        idx = np.copy(start) 
+        end = np.full(self.D, self.L)
 
-        pi_F[1:N_2,N_2] = 1/np.sqrt(2) * (PI[1:N_2,N_2] + 1j * PI[N_2+1:,N_2][::-1])
-        pi_F[N_2+1:,N_2] = np.conj(pi_F[1:N_2,N_2][::-1])
+        # list of points with all coorindates being 0 or L/2
+        special_points = get_special_points()
 
-        # no special index
-        pi_F[1:N_2,1:N_2] = 1/np.sqrt(2) * (PI[1:N_2,1:N_2] + 1j * PI[N_2+1:,N_2+1:][::-1,::-1])
-        pi_F[N_2+1:,N_2+1:] = np.conj(pi_F[1:N_2,1:N_2][::-1,::-1]) # imposing hermitean symmetry
-   
-        pi_F[1:N_2,N_2+1:] = 1/np.sqrt(2) * (PI[1:N_2,N_2+1:] + 1j * PI[N_2+1:,1:N_2][::-1,::-1])
-        pi_F[N_2+1:,1:N_2] = np.conj(pi_F[1:N_2,N_2+1:][::-1,::-1])
+        all_loops_done = False    
+        while not all_loops_done:
+            fill_pi_F(idx)
+            k = self.D-1 # loop index
+            while 1:
+                idx[k] = idx[k] + 1 
+                if idx[k] >= end[k]:
+                    if k == 0: # completed all loops
+                        all_loops_done = True
+                        break # break inner while and by setting flag to true outer one also terminates
+                    idx[k] = start[k]
+                    # move next most inner for loop one iteration forwards
+                    k -= 1
+                else:
+                    break
 
         # pi is real by construction
-        pi = np.real(np.fft.ifft2(pi_F, axes=(0,1)))
+        ax = tuple(np.arange(self.D))
+        pi = np.real(np.fft.ifftn(pi_F, axes=ax))
 
         return pi
 
